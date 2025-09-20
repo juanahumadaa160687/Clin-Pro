@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Reserva de Hora {% endblock title %}
+
+{% block content %}
+    <br>
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 30%;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% elif message.tags == 'error' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30%;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+
+<div class="row d-flex justify-content-center align-items-center flex-row p-4 m-3 gap-3" style="min-height: 100vh; border: 1px solid black;">
+
+    <div class="col d-flex justify-content-start align-items-start flex-column p-3 w-100" style="border: 1px solid black;">
+            {% if request.user.paciente %}
+                <div class="card h-100 d-flex justify-content-start align-items-start flex-column w-100">
+                    <div class="card-header w-100" style="background-color:  #134E5E;">
+                        <h5 class="card-title text-white">Información del Paciente</h5>
+                    </div>
+                    <div class="card-body w-100 p-3">
+                        <p><strong>Rut: </strong>{{request.user.paciente.rut}}</p>
+                        <p><strong>Nombre: </strong>{{request.user.paciente.nombre}}</p>
+                        <p><strong>Apellido: </strong>{{request.user.paciente.apellido}}</p>
+                        <p><strong>Dirección: </strong>{{request.user.paciente.direccion}}</p>
+                        <p><strong>Teléfono: </strong>{{request.user.paciente.telefono}}</p>
+                        <p><strong>Previsión: </strong>{{request.user.paciente.prevision}}</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card">
+
+                    <div class="card-header" style="background-color:  #134E5E">
+                        <h5 class="card-title text-white">Información del Paciente</h5>
+                    </div>
+                    <div class="card-body d-flex justify-content-center flex-column align-items-center">
+
+                        <form method="POST" enctype="multipart/form-data" style="width: 60%">
+                            {% csrf_token %}
+
+                            {{ form.rut.label }}
+                            {{ form.rut }}
+
+                            {{ form.nombre.label }}
+                            {{ form.nombre }}
+
+                            {{ form.apellido.label }}
+                            {{ form.apellido }}
+
+                            {{ form.direccion.label }}
+                            {{ form.direccion }}
+
+                            {{ form.telefono.label }}
+                            {{ form.telefono }}
+
+                            {{ form.prevision.label }}
+                            {{ form.prevision }}
+
+                            <div class="d-flex justify-content-end gap-2 mt-3">
+                                <button class="btn btn-danger float-end" type="submit" name="paciente" id="paciente" style="background-color: #134E5E; border: 1px solid #134E5E">Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-8 card d-flex justify-content-center align-items-center flex-column p-4" style="border: 1px solid #134E5E; height: 100%">
+
+            {% if request.user.paciente %}
+                <div class="d-flex justify-content-center flex-column align-items-center mb-3 p-3" style="border: 1px solid #134E5E; width: 100%">
+                    <form method="POST" enctype="multipart/form-data" style="width: 60%" class="d-flex justify-content-start flex-row align-items-start">
+                        {% csrf_token %}
+                        <select class="form-select" name="servicio" id="servicio">
+                            <option value="">Selecciona el Servicio</option>
+                            {% for s in servicios %}
+                                <option value="{{s.servicio}}">{{s.servicio}}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-secondary ms-2" name="servicio" id="servicio">Enviar</button>
+                    </form>
+                </div>
+            {% endif %}
+            {% if servicio %}
+
+                <div class=" d-flex justify-content-center flex-column align-items-center mb-3 p-3" style="border: 1px solid #134E5E; width: 100%">
+                    <form method="POST" enctype="multipart/form-data" style="width: 60%" class="d-flex justify-content-start flex-row align-items-start">
+                        {% csrf_token %}
+                        <select class="form-select" name="especialidad" id="especialidad">
+                            <option value="">Seleccione Especialidad</option>
+                            {% for esp in especialidades %}
+                                <option value="{{ esp.especialidad }}">{{ esp.especialidad }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-secondary ms-2" name="especialidad" id="especialidad">Enviar</button>
+                    </form>
+                </div>
+            {% endif %}
+
+            {% if  especialidad %}
+
+                <div class="d-flex justify-content-center flex-column align-items-center mb-3 p-3" style="border: 1px solid #134E5E; width: 100%">
+                    <form method="POST" enctype="multipart/form-data" style="width: 60%" class="d-flex justify-content-start flex-row align-items-star">
+                        {% csrf_token %}
+                        <select class="form-select" name="profesional" id="profesional">
+                            {% for profesional in profesionales %}
+                                <option value="{{ profesional.profesional }}">{{ profesional.profesional }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-secondary ms-2">Enviar</button>
+                    </form>
+                </div>
+            {% endif %}
+
+
+            {% if profesional %}
+
+                <div class=" d-flex justify-content-center flex-column align-items-center">
+                    <h5 class="">Seleccione Prestación</h5>
+                    {% csrf_token %}
+                    <form method="POST" enctype="multipart/form-data" style="width: 90%">
+                        <select class="form-select" name="prestacion" id="prestacion">
+                            {% for prestacion in prestaciones  %}
+                                <option value="{{ prestacion.nombre }}">{{ prestacion.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary btn-sm">Enviar</button>
+                    </form>
+                </div>
+
+            {% endif %}
+
+            {% if prestacion %}
+
+                <div class="card-body d-flex justify-content-center flex-column align-items-center">
+                    <h5 class="card-title">Resumen de la Hora Médica</h5>
+                    <p class="text-start"><strong>Cargo:</strong>{{ cargo }}</p>
+                    <p class="text-start"><strong>Especialidad:</strong>{{ especialidad }}</p>
+                    <p class="text-start"><strong>Profesional:</strong>{{ profesional }}</p>
+                    <p class="text-start"><strong>Prestación</strong>{{ prestacion }}</p>
+                    <p class="text-start"><strong>Subtotal:</strong>{{ subtotal }}</p>
+                    <p class="text-start"><strong>Descuento:</strong>{{ convenio }} {{ descuento }}</p>
+                    <p class="text-start"><strong>Total:</strong>{{ total }}</p>
+                </div>
+
+            {% endif %}
+            {% if total %}
+                <div class="card-body d-flex justify-content-center flex-column align-items-center">
+                    <h5 class="card-title">Medio de Pago</h5>
+                    <form method="post" action="{{ url }}">
+                        <input type="hidden" name="token_ws" value="{{ token }}" />
+                        <button type="submit"><img src="{% static 'img/transbank.png' %}" width="1500" height="50"></button>
+                    </form>
+                </div>
+                <div class="card-body d-flex justify-content-center flex-column align-items-center">
+                    {% csrf_token %}
+                    <form method="post" action="">
+                        <input type="hidden" name="transferencia" value="transferencia" />
+                        <button type="submit"><img src="{% static 'img/transferencia.png' %}" width="1500" height="50"></button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+from django.urls import include, path, include
+from .views import *
+
+urlpatterns = [
+    #paciente y reserva de hora
+    path('', index, name='index'),
+    path('login/', login, name='login'),
+    path('register/', register, name='register'),
+    path('logout/', logout, name='logout'),
+    path('password_reset/', password_reset, name='password_reset'),
+    path('profile/', profile, name='profile'),
+    path('reserva/', reserva_hora, name='reserva_hora'),
+
+    #recepcion
+    path('recepcion/', recepcionista_view, name='recepcion'),
+
+    #profesional
+    path('profesional/', profesional_view, name='profesional'),
+
+    #administrador
+    path('administrador/', admin_view, name='administrador'),
+    path('registro_funcionarios/', registro_funcionarios, name='registro_funcionarios'),
+
+    #Autorizacion denegada
+    path('no_autorizado/', no_autorizado, name='no_autorizado'),
+
+    # Social Auth
+    path("", include('social_django.urls', namespace="social")),
+]

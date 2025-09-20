@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Registro de Usuario {% endblock title %}
+
+{% block content %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 30%; position: absolute; z-index: 1; left: 2%; margin-left: 10px; top: 10%;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% elif message.tags == 'error' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30%; position: absolute; z-index: 1; left: 2%; margin-left: 10px; top: 10%;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <div class="w-100 d-flex justify-content-center align-items-center" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url({% static 'img/clin2.jpeg' %}); height: 100vh; background-size: cover; background-position: center;">
+        <div class="card p-2" style="border-radius: 20px; background-color: transparent; backdrop-filter: blur(10px); border: 1px solid #ccc; width: 30%; height: 90%;">
+            <div class="card-body d-flex justify-content-center align-items-center flex-column w-100">
+                <img src="{% static 'img/logo_white.png' %}" class="mb-4" alt="Card image cap" width="150" height="150">
+                <h2 class="card-title text-center mb-2 mt-3 text-white">Registro de Usuario</h2>
+                <br>
+                <form method="post" class="text-white w-100" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    <div class="mb-3 row d-flex justify-content-center flex-column">
+                        <div class="col mb-3 control-group d-flex flex-column justify-content-start">
+                            {{ form.email.label }}
+                            {{ form.email }}
+                        </div>
+                        <div class="col mb-3 control-group d-flex flex-column justify-content-start">
+                            {{ form.password1.label }}
+                            {{ form.password1 }}
+                        </div>
+                        <div class="col mb-3 control-group d-flex flex-column justify-content-start">
+                            {{ form.password2.label }}
+                            {{ form.password2 }}
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col d-flex flex-column justify-content-center align-items-center mt-3">
+                            <button type="submit" class="btn btn-primary" style="width: 90%; background-color: #134E5E; border: 1px solid #134E5E">Registrarse</button>
+                            <p class="text-white mt-2">¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia Sesión</a></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

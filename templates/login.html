@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Inicio de Sesión {% endblock title %}
+
+{% block content %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 30%; position: absolute; z-index: 1;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% elif message.tags == 'error' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30%; position: absolute; z-index: 1;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+
+    <div class="d-flex justify-content-center align-items-center" style="position: relative; background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url({% static 'img/clin1.jpeg' %}); height: 100vh; background-size: cover; background-position: center;">
+        <div class=" d-flex flex-column justify-content-center align-items-center p-4" style="position: absolute; z-index: 1; background-color: transparent; backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid #ccc; width: 30%; height: 90%;)">
+            <img src="{% static 'img/logo_white.png' %}" alt="Clin Logo" width="150" height="150">
+            <h2 class="text-white mb-2 mt-5">Iniciar Sesión</h2>
+
+            <form action="" method="post" class="d-flex flex-column gap-2 w-100 text-white mt-2" >
+
+                {% csrf_token %}
+
+                {{ form.email.label }}
+                {{ form.email }}
+
+                {{ form.password.label }}
+                {{ form.password }}
+
+                <div class="d-grid gap-2 d-flex flex-column justify-content-center align-items-center mt-4" >
+                    <button class="btn btn-danger" type="submit" name="login" id="login" style="width: 90%; background-color: #134E5E; border: 1px solid #134E5E">Iniciar Sesión</button>
+                </div>
+            </form>
+
+            <div class="d-flex justify-content-center align-items-center mb-1 mt-1">
+                <a href="{% url 'register' %}" class="text-white"><small>¿No tienes una cuenta? Regístrate aquí</small></a>
+            </div>
+            <div class="d-flex justify-content-center align-items-center mb-4">
+                <a href="{% url 'password_reset' %}" class="text-white"><small>¿Olvidaste tu contraseña?</small></a>
+            </div>
+            <hr style="width: 80%; border-top: 1px solid #fff;">
+            <div class="d-flex justify-content-center align-items-center w-100 mt-1">
+                <a class="btn btn-primary" style="width: 60%; background-color: white; border: 1px solid #CCC; border-radius: 20px; color: black;" href="{% url "social:begin" "google-oauth2" %}"><img src="{% static 'img/google.svg' %}" width="20"> Continue with Google</a>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
