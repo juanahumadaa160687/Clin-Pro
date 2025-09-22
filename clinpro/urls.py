@@ -24,6 +24,9 @@ urlpatterns = [
     #Autorizacion denegada
     path('no_autorizado/', no_autorizado, name='no_autorizado'),
 
+    #Pago Exitoso
+    path('pago_exitoso/', pago_exitoso, name='pago_exitoso'),
+
     # Social Auth
     path("", include('social_django.urls', namespace="social")),
 ]

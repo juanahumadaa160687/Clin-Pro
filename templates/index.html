@@ -29,14 +29,14 @@
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg d-flex justify-content-center" style="background-color: transparent; position: absolute; width: 100%; z-index: 10;">
-    <div class="container-fluid">
+    <div class="container-fluid pt-1">
         <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="50" height="50">
-        <a class="navbar-brand text-white" href="{% url 'index' %}">Clinicare</a>
+        <a class="navbar-brand text-white ms-2" href="{% url 'index' %}">Clinicare</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="nav justify-content-end">
+            <ul class="nav justify-content-end w-100">
                 <li class="nav-item">
                     <a class="nav-link text-white" aria-current="page" href="{% url 'index' %}">Home</a>
                 </li>
@@ -75,9 +75,9 @@
     <div class="" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url({% static 'img/hero.jpeg' %}); height: 100vh; background-size: cover; background-position: center; color: white;">
 
         <div class="d-flex flex-column justify-content-center align-items-start h-100 ps-5 ms-4">
-            <h1 class="" style="font-size: 4rem; font-family: 'Segoe UI',sans-serif; font-weight: bold;">Tu salud es nuestra prioridad.</h1>
-            <p class="fst-italic" style="font-size: 1rem">"Somos una clínica especializada en brindar atención médica de calidad, con un equipo de profesionales comprometidos <br>con el bienestar de nuestros pacientes."</p>
-            <a class="btn btn-primary pt-2 pb-2 mt-3" href="{% url 'reserva_hora' %}" style="width: 12%; background-color: #2193b0; border: 1px solid #2193b0; border-radius: 20px;">Reserva tu Hora</a>
+            <h1 class="" style="font-size: 4rem; font-family: 'Segoe UI',sans-serif; font-weight: bold;">Tu salud es nuestra <br>prioridad.</h1>
+            <p class="fst-italic" style="font-size: 1rem">"Somos una clínica especializada en brindar atención médica de calidad, con un <br>equipo de profesionales comprometidos con el bienestar de nuestros pacientes."</p>
+            <a class="btn btn-primary pt-2 pb-2 mt-3" href="{% url 'reserva_hora' %}" style="width: 12%; background: linear-gradient(#48b1bf, #06beb6); border: 1px solid #2193b0; border-radius: 20px;">Reserva tu Hora</a>
 
         </div>
 
@@ -88,16 +88,14 @@
 </div>
 
 <!-- Footer -->
-<footer class="text-white d-flex flex-column justify-content-center flex-row align-items-center" style="background-color: #134E5E;">
+<footer class="text-white d-flex flex-column justify-content-center flex-row align-items-center" style="background: linear-gradient(#48b1bf, #06beb6)">
     <div class="container d-flex justify-content-end flex-row align-items-center w-100 pt-2 pb-0" style="border-bottom: 1px solid white;">
         <p class="me-4"><i class="fas fa-home me-3"></i>Av. Arturo Prat 1234, Iquique, Chile </p>
         <p class="me-4"><i class="fas fa-phone me-3"></i>+56 57 123 4567</p>
     </div>
-    <div class="container p-2 row">
+    <div class="container p-3 row">
         <div class="col d-flex flex-column justify-content-center align-items-center">
-            <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="100" height="100">
-            <h5 class="text-uppercase mt-2 text-white">Clinicare</h5>
-            <p class="text-white" style="max-width: 300px; text-align: center;"><small>"Somos una clínica especializada en brindar atención médica de calidad, con un equipo de profesionales comprometidos con el bienestar de nuestros pacientes."</small></p>
+            <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="150" height="150">
         </div>
         <div class="col text-center d-flex flex-column justify-content-center align-items-center">
             <a href="{% url 'index' %}" style="color: white; text-decoration: none;">Home</a>
@@ -111,7 +109,7 @@
         </div>
 
     </div>
-    <div class="container text-center p-3 row " style="background-color: #134E5E; border-top: 1px solid white;">
+    <div class="container text-center p-3 row " style="border-top: 1px solid white;">
         <div class="col text-center text-white" >
             © 2025 Copyright Clinicare Todos los derechos reservados.
         </div>

@@ -89,7 +89,7 @@ class PacienteForm(forms.ModelForm):
 
     prevision = forms.CharField(
         label='Previsión',
-        widget=forms.Select(attrs={'class': 'form-control'}, choices=[('Fonasa', 'Fonasa'), ('Isapre', 'Isapre'), ('Capredena', 'Capredena')]),
+        widget=forms.Select(attrs={'class': 'form-control'}, choices=[('Fonasa', 'Fonasa'), ('Isapre', 'Isapre')]),
         error_messages={
             'required': 'La previsión es obligatoria'
         },
@@ -138,7 +138,9 @@ class ProfesionalForm(forms.Form):
     ),
     telefono = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),
     ),
-    especialidad = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),)
+    especialidad = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),),
+
+    servicio = forms.ModelChoiceField(queryset=Profesional.objects.values_list('servicio', flat=True).distinct(), empty_label='Selecciona un Servicio')
 
     class Meta:
         model = Profesional

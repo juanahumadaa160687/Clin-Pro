@@ -5,11 +5,10 @@ from .forms import PacienteForm, RegisterForm, LoginForm, ProfesionalForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from .decorators import allowed_users, admin_only
-from .models import User, Paciente, Profesional
-from .functions import getCargo
+from .models import User, Paciente, Profesional, Prestacion, Convenio
+from transbank.webpay.webpay_plus.transaction import Transaction
+import random
 
-
-# Index page view
 def index(request):
     return render(request, 'index.html')
 
@@ -93,42 +92,122 @@ def profile(request):
 #@allowed_users(allowed_roles=['Paciente'])
 def reserva_hora(request):
 
-    servicios = Profesional.objects.all().values('servicio').distinct()
+    form = PacienteForm()
+    s_form = ProfesionalForm()
+
+    servicios = Profesional.objects.values('servicio').distinct()
+
+    print(servicios)
 
     if request.method == 'POST' and 'servicio' in request.POST:
 
-        servicio = request.POST.getlist('servicio', '')[0]
-        print(servicio)
+        request.session['servicio'] = request.POST.getlist('servicio')[0]
+        print(request.session['servicio'])
 
-        especialidades = Profesional.objects.filter(servicio=servicio).values('especialidad').distinct()
+        especialidades = Profesional.objects.filter(servicio=request.session['servicio']).values('especialidad').distinct()
         print(especialidades)
 
-        return render(request, 'reserva_hora/reserva_hora.html',
-                      {
-                          'servicios': servicios,
-                          'servicio': servicio,
-                          'especialidades': especialidades
-                      })
+
+        return render(request, 'reserva_hora/reserva_hora.html', {
+            'especialidades': especialidades,
+        })
 
     elif request.method == 'POST' and 'especialidad' in request.POST:
 
-        especialidad = request.POST.getlist('especialidad', 'a')[0]
-        print(especialidad)
+        request.session['especialidad'] = request.POST.getlist('especialidad')[0]
+        print(request.session['especialidad'])
 
-        profesionales = Profesional.objects.filter(especialidad=especialidad).all()
+        profesionales = Profesional.objects.filter(especialidad=request.session['especialidad']).values('id', 'nombre', 'apellido').distinct()
         print(profesionales)
 
         return render(request, 'reserva_hora/reserva_hora.html',
                       {
-                          'especialidad': especialidad,
-                          'pofesionales': profesionales
+                          'profesionales': profesionales,
+                      })
+
+    elif request.method == 'POST' and 'profesional' in request.POST:
+
+        request.session['profesional'] = request.POST.getlist('profesional')[0]
+        print(request.session['profesional'])
+
+        request.session['pro_nombre'] = Profesional.objects.get(id=request.session['profesional']).nombre
+        print(request.session['pro_nombre'])
+
+        request.session['pro_apellido'] = Profesional.objects.get(id=request.session['profesional']).apellido
+        print(request.session['pro_apellido'])
+
+        profesional_id = request.session['profesional']
+        print(profesional_id)
+
+        prestaciones = Prestacion.objects.prefetch_related('profesional_id').all()
+        for prestacion in prestaciones:
+            for profesional_id in prestacion.profesional_id.all():
+                print(prestacion.nombre, prestacion.precio, prestacion.codigo)
+
+        return render(request, 'reserva_hora/reserva_hora.html',
+                      {
+                          'prestaciones': prestaciones,
                       })
 
 
+    elif request.method == 'POST' and 'prestacion' in request.POST:
+
+        request.session['prestacion'] = request.POST.getlist('prestacion')[0]
+        print(request.session['prestacion'])
+
+        request.session['subtotal'] = int(request.session['prestacion'])
+        print(request.session['subtotal'])
+        print(type(request.session['subtotal']))
+
+        id_paciente = request.user.pk
+        print(id_paciente)
+
+        convenios = Convenio.objects.prefetch_related('id_paciente').all()
+        for convenio in convenios:
+            for id_paciente in convenio.id_paciente.all():
+                print(convenio.nombre, convenio.descuento)
+
+
+        return render(request, 'reserva_hora/reserva_hora.html',
+                      {
+                          'subtotal': request.session['subtotal'],
+                          'convenios': convenios,
+                      })
+
+    elif request.method == 'POST' and 'convenio' in request.POST:
+
+        request.session['convenio'] = request.POST.getlist('convenio')[0]
+        descuento = int(request.session['convenio'])
+        print(descuento)
+        print(type(descuento))
+
+        total = request.session['subtotal'] - (descuento * request.session['subtotal'])/100
+        print(total)
+
+        request.session['total'] = total
+        #Pago Webpay
+
+        request.session['nro_compra'] = random.randint(1000000, 10000000)
+
+        buy_order = request.session['nro_compra']
+        session_id = request.session.session_key
+        amount = request.session['total']
+        return_url = "http://127.0.0.1:8000/pago_exitoso/"
+
+        tx = Transaction.build_for_integration("597055555532", "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C")
+        resp = tx.create(buy_order, session_id, amount, return_url)
+
+        token = resp["token"]
+        url = resp["url"]
+
+        return render(request, 'reserva_hora/reserva_hora.html',
+                      {
+                          'token': token,
+                          'url': url,
+                      })
 
 
     if request.method == 'POST' and 'paciente' in request.POST:
-
 
         rut = request.POST['rut']
         nombre = request.POST['nombre']
@@ -146,9 +225,14 @@ def reserva_hora(request):
         return render(request, 'reserva_hora/reserva_hora.html', {'paciente': paciente})
     else:
         form = PacienteForm()
-        servicio_form = ProfesionalForm()
+        s_form = ProfesionalForm()
 
-    return render(request, 'reserva_hora/reserva_hora.html', {'form': form, 'servicios': servicios})
+    return render(request, 'reserva_hora/reserva_hora.html',
+                  {
+                      'form': form,
+                      's_form': s_form,
+                      'servicios': servicios,
+                  })
 
 # logout page view
 @login_required(login_url='login')
@@ -179,3 +263,32 @@ def registro_funcionarios(request):
 
 def no_autorizado(request):
     return render(request, 'no_autorizado.html')
+
+def pago_exitoso(request):
+
+    token = request.GET.get('token_ws')
+    tx = Transaction.build_for_integration("597055555532", "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C")
+    response = tx.commit(token)
+
+    monto = response['amount']
+    status = response['status']
+    orden_compra =response['buy_order']
+    id_sesion = response['session_id']
+    detalle_tarjeta = response['card_detail']
+    fecha_transaccion = response['transaction_date']
+    tipo_págo = response['payment_type_code']
+    codigo_aut = response['authorization_code']
+
+
+    return render(request, 'reserva_hora/pago_exitoso',
+                  {
+                      'monto': monto,
+                      'status': status,
+                      'orden_compra': orden_compra,
+                      'detalle_tarjeta': detalle_tarjeta,
+                      'fecha_transaccion': fecha_transaccion,
+                      'id_sesion': id_sesion,
+                      'detalle_tajeta': detalle_tarjeta,
+                      'codigo_aut': codigo_aut,
+                      'tipo_pago': tipo_págo
+                  })

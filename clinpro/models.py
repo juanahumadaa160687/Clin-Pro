@@ -142,7 +142,7 @@ class OrdenExamen(models.Model):
 class Convenio(models.Model):
 
     nombre = models.CharField(max_length=100, verbose_name='Nombre del Convenio')
-    descuento = models.DecimalField(max_digits=5, decimal_places=2, verbose_name='Descuento (%)', default=0.00)
+    descuento = models.IntegerField(verbose_name='Descuento (%)', default=0)
 
     id_paciente = models.ManyToManyField(Paciente, verbose_name='Paciente', blank=True)
 
