@@ -9,8 +9,11 @@ from django.contrib.auth.decorators import login_required
 from .decorators import allowed_users, admin_only
 from .models import User, Paciente, Profesional, Prestacion, Convenio, Agenda
 from transbank.webpay.webpay_plus.transaction import Transaction
-
+import pywhatkit
 from datetime import datetime, time
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string # Para usar plantillas HTML
+from django.http import HttpResponse
 
 def index(request):
     return render(request, 'index.html')
@@ -373,6 +376,38 @@ def pago_exitoso(request):
     fecha_transaccion = response['transaction_date']
     tipo_págo = response['payment_type_code']
     codigo_aut = response['authorization_code']
+
+    telefono = request.user.paciente.telefono
+
+    profesional_hora = Profesional.objects.filter(id = request.session['profesional_id']).values('nombre', 'apellido').distinct()
+
+    def sendWhatsapp(telefono):
+
+        mensaje = f"Su hora médica para el día {request.session['fecha']} a las {request.session['hora']}, con el profesional {profesional_hora.values('nombre')}{profesional_hora.values('apellido')} ha sido agendada correctamente"
+
+        hora = datetime.datetime.now().hour
+
+        minutos = datetime.datetime.now().minute + 1
+
+        pywhatkit.sendwhatmsg(telefono, mensaje, hora, minutos, 10, True, 2)
+
+    sendWhatsapp(telefono)
+
+    def enviarCorreo(remitentes, destinatario):
+        asunto = "Confirmación de Pago"
+        remitente = remitentes.lower()
+        destinatarios = destinatario.lower()
+
+        html_content = render_to_string('reserva_hora/confirmacion_pago.html', {})
+
+        cuerpo = ""
+
+        mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, destinatarios)
+
+        mensaje.attach_alternative(html_content, 'text/html')
+
+        mensaje.send()
+        return HttpResponse("Correo HTML enviado correctamente.")
 
     request.session.clear()
 
