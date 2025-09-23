@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -5,9 +7,10 @@ from .forms import PacienteForm, RegisterForm, LoginForm, ProfesionalForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from .decorators import allowed_users, admin_only
-from .models import User, Paciente, Profesional, Prestacion, Convenio
+from .models import User, Paciente, Profesional, Prestacion, Convenio, Agenda
 from transbank.webpay.webpay_plus.transaction import Transaction
-import random
+
+from datetime import datetime, time
 
 def index(request):
     return render(request, 'index.html')
@@ -139,7 +142,9 @@ def reserva_hora(request):
         profesional_id = request.session['profesional']
         print(profesional_id)
 
-        prestaciones = Prestacion.objects.prefetch_related('profesional_id').all()
+        prestaciones = Prestacion.objects.prefetch_related('profesional_id').filter(profesional_id=profesional_id)
+        print(prestaciones)
+
         for prestacion in prestaciones:
             for profesional_id in prestacion.profesional_id.all():
                 print(prestacion.nombre, prestacion.precio, prestacion.codigo)
@@ -152,12 +157,104 @@ def reserva_hora(request):
 
     elif request.method == 'POST' and 'prestacion' in request.POST:
 
-        request.session['prestacion'] = request.POST.getlist('prestacion')[0]
+        valor_prestacion = request.POST.getlist('prestacion')[0]
+
+        request.session['prestacion'] = int(valor_prestacion)
         print(request.session['prestacion'])
 
-        request.session['subtotal'] = int(request.session['prestacion'])
+        request.session['subtotal'] = request.session['prestacion']
         print(request.session['subtotal'])
-        print(type(request.session['subtotal']))
+
+        return render(request, 'reserva_hora/reserva_hora.html',
+                      {
+                          'subtotal': request.session['prestacion'],
+                      })
+
+    elif request.method == 'POST' and 'fecha' in request.POST:
+
+        request.session['fecha']  = request.POST.getlist('fecha')[0]
+
+        format = "%Y-%m-%d"
+        fecha_str = request.session['fecha']
+
+        date = datetime.strptime(fecha_str, format)
+        print(date)
+        print(type(date))
+
+        date_date = date.date()
+
+        horario_disponible = Agenda.objects.filter(fecha=date_date, profesional_id=request.session['profesional']).values('hora_inicio').exists()
+        print(horario_disponible)
+
+        if horario_disponible:
+
+            horas_disp = []
+
+            horas = Agenda.objects.filter(fecha=date_date, profesional_id=request.session['profesional']).values('hora_inicio').distinct()
+
+            for hora in horas:
+                hour = hora['hora_inicio'].hour
+                print(hora['hora_inicio'].hour)
+                horas_disp.append(hour)
+
+            print(horas_disp)
+
+            horario = [8, 9, 10, 11, 12, 15, 16, 17, 18 , 19, 20]
+            horas_disponibles = []
+
+            for h in horas_disp:
+                for hr in horario:
+                    if hr != h:
+                        horas_disponibles.append(hr)
+
+            print(horas_disponibles)
+
+            hour = []
+
+            for hd in horas_disponibles:
+                initial_hours = time(hd, 00)
+                final_hours = time(hd, 45)
+
+                hours = {
+                    'hora_inicio': initial_hours.hour,
+                    'min_inicio': initial_hours.minute,
+                    'hora_final': final_hours.hour,
+                    'min_final': final_hours.minute,
+                }
+
+                hour.append(hours)
+
+            print(hour)
+
+            return render(request, 'reserva_hora/reserva_hora.html', {'hour': hour})
+
+    elif request.method == 'POST' and 'hora' in request.POST:
+
+        request.session['hora'] = request.POST.getlist('hora')[0]
+
+        hora = int(request.session['hora'])
+
+        fecha = request.session['fecha']
+
+        start_hour = time(hora, 00)
+        end_hour = time(hora, 45)
+
+        s_hour = start_hour.hour
+        m_hour = start_hour.minute
+        h_end = end_hour.hour
+        m_end = end_hour.minute
+
+        print(s_hour, m_hour)
+
+        request.session['hora_inicio'] = s_hour
+        request.session['min_inicio'] = m_hour
+        request.session['hora_final'] = h_end
+        request.session['min_final'] = m_end
+
+        profesional = Profesional.objects.get(id=request.session['profesional'])
+        print(profesional)
+
+        Agenda.objects.create(fecha=fecha, hora_inicio=start_hour, hora_fin=end_hour, profesional_id=profesional)
 
         id_paciente = request.user.pk
         print(id_paciente)
@@ -168,11 +265,8 @@ def reserva_hora(request):
                 print(convenio.nombre, convenio.descuento)
 
 
-        return render(request, 'reserva_hora/reserva_hora.html',
-                      {
-                          'subtotal': request.session['subtotal'],
-                          'convenios': convenios,
-                      })
+        return render(request, 'reserva_hora/reserva_hora.html', {'convenios': convenios})
+
 
     elif request.method == 'POST' and 'convenio' in request.POST:
 
@@ -184,13 +278,14 @@ def reserva_hora(request):
         total = request.session['subtotal'] - (descuento * request.session['subtotal'])/100
         print(total)
 
-        request.session['total'] = total
-        #Pago Webpay
 
-        request.session['nro_compra'] = random.randint(1000000, 10000000)
+        request.session['total'] = total
+
+        request.session['nro_compra'] = "ordenCompra12345"
+        request.session['session_key'] = "sesion12345"
 
         buy_order = request.session['nro_compra']
-        session_id = request.session.session_key
+        session_id = request.session['session_key']
         amount = request.session['total']
         return_url = "http://127.0.0.1:8000/pago_exitoso/"
 
@@ -279,6 +374,7 @@ def pago_exitoso(request):
     tipo_págo = response['payment_type_code']
     codigo_aut = response['authorization_code']
 
+    request.session.clear()
 
     return render(request, 'reserva_hora/pago_exitoso',
                   {

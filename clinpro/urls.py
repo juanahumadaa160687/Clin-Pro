@@ -1,4 +1,7 @@
 from django.urls import include, path, include
+from django.views.decorators.cache import cache_page
+from django.views.i18n import JavaScriptCatalog
+
 from .views import *
 
 urlpatterns = [
@@ -29,4 +32,10 @@ urlpatterns = [
 
     # Social Auth
     path("", include('social_django.urls', namespace="social")),
+
+    path(
+        'jsi18n/',
+        cache_page(3600)(JavaScriptCatalog.as_view(packages=['formset'])),
+        name='javascript-catalog'
+    ),
 ]

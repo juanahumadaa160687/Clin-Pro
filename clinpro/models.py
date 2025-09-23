@@ -201,3 +201,19 @@ class Administrador(models.Model):
         verbose_name = 'Administrador'
         verbose_name_plural = 'Administradores'
 
+
+class Agenda(models.Model):
+    fecha = models.DateField(verbose_name='Fecha de la Agenda', blank=True, null=True)
+    hora_inicio = models.TimeField(verbose_name='Hora de Inicio', blank=True, null=True)
+    hora_fin = models.TimeField(verbose_name='Hora de Fin', blank=True, null=True)
+
+    profesional_id = models.ForeignKey(Profesional, on_delete=models.CASCADE, verbose_name='Profesional')
+
+    def __str__(self):
+        return f"{self.fecha} - {self.profesional_id.nombre} {self.profesional_id.apellido}"
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = 'Agenda'
+        verbose_name_plural = 'Agendas'

@@ -20,15 +20,15 @@
     {% endfor %}
 
 
-    <div class="row d-flex justify-content-start align-items-start flex-row p-0 m-2 gap-3" style="min-height: 100vh;">
+    <div class="row d-flex justify-content-start align-items-start flex-row p-0 m-0 gap-2" style="min-height: 100vh;">
 
-        <div class="col d-flex justify-content-start align-items-start flex-column p-3 w-100 h-100" style="border: 1px solid black;">
+        <div class="col d-flex justify-content-start align-items-start flex-column h-100 mb-4">
 
             <div class="card h-100 d-flex justify-content-start align-items-start flex-column w-100" style="box-shadow: 5px 5px 15px 5px #CCCCCC;">
                 <div class="card-header w-100" style="background: linear-gradient(#48b1bf, #06beb6)">
                     <h5 class="card-title text-white">Información del Paciente</h5>
                 </div>
-                <div class="card-body d-flex justify-content-center flex-column align-items-center mt-2 w-100">
+                <div class="card-body d-flex justify-content-start flex-column align-items-start mt-2 w-100 ">
                 {% if request.user.paciente.rut %}
                     <p><strong>Rut: </strong>{{request.user.paciente.rut}}</p>
                     <br>
@@ -71,121 +71,172 @@
             </div>
         </div>
 
-        <div class="col-8 card d-flex justify-content-start align-items-center flex-column p-3" style="border: 1px solid #134E5E; height: 100%">
-            <div class="card-header w-100" style="background: linear-gradient(#48b1bf, #06beb6)">
-                <h5 class="text-white">Reserva de Hora</h5>
-            </div>
-            {% if request.user.paciente.rut %}
-            <div class="card-body h-100 d-flex justify-content-start align-items-start flex-column w-100">
-                <div class="d-flex justify-content-center flex-column align-items-center mb-3 p-3" style="border: 1px solid #134E5E; width: 100%">
-                    <form method="POST" enctype="multipart/form-data" style="width: 60%" class="d-flex justify-content-start flex-row align-items-start">
-                        {% csrf_token %}
-                        <div class="form-control">
-                           <select class="form-select" name="servicio" id="servicio">
-                                <option value="">Seleccione el Servicio:</option>
-                               {% for s in servicios %}
-                                   <option value="{{ s.servicio }}">{{ s.servicio }}</option>
-                               {% endfor %}
-                           </select>
-                        </div>
-                        <button type="submit" class="btn btn-secondary ms-2" name="servicio" id="servicio">Buscar</button>
-                    </form>
-                </div>
-                <div class="d-flex justify-content-center flex-column align-items-center mb-3 p-3" style="border: 1px solid #134E5E; width: 100%">
-                    <form method="POST" enctype="multipart/form-data" style="width: 60%" class="d-flex justify-content-start flex-row align-items-start">
-                        {% csrf_token %}
-                        <div class="form-control">
-                            <select class="form-select" name="especialidad" id="especialidad">
-                                <option value="">Seleccione Especialidad:</option>
-                                {% for e in especialidades %}
-                                    <option value="{{ e.especialidad }}">{{ e.especialidad }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-secondary ms-2" name="especialidad" id="especialidad">Buscar</button>
-                    </form>
+        <div class="col d-flex justify-content-start align-items-start flex-column w-100 h-100 mb-4">
+            <div class="card d-flex justify-content-center align-items-center flex-column w-100 h-100" style="box-shadow: 5px 5px 15px 5px #CCCCCC;">
+                <div class="card-header w-100" style="background: linear-gradient(#48b1bf, #06beb6)">
+                    <h5 class="text-white">Reserva de Hora</h5>
                 </div>
 
-                <div class="d-flex justify-content-center flex-column align-items-center mb-3 p-3" style="border: 1px solid #134E5E; width: 100%">
-                    <form method="POST" enctype="multipart/form-data" style="width: 60%" class="d-flex justify-content-start flex-row align-items-start">
-                        {% csrf_token %}
-                        <div class="form-control">
-                            <select class="form-select" name="profesional" id="profesional">
-                                <option value="">Seleccione Profesional:</option>
-                                {% for p in profesionales %}
-                                    <option value="{{ p.id }}">{{ p.nombre }} {{ p.apellido }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-secondary ms-2" name="profesional" id="profesional">Buscar</button>
-                    </form>
-                </div>
+            <div class="card-body h-100 d-flex justify-content-center align-items-center flex-column w-100" >
 
-                <div class="d-flex justify-content-center flex-column align-items-center mb-3 p-3" style="border: 1px solid #134E5E; width: 100%">
-                    <form method="POST" enctype="multipart/form-data" style="width: 60%" class="d-flex justify-content-start flex-row align-items-start">
-                        {% csrf_token %}
-                        <div class="form-control">
-                            <select class="form-select" name="prestacion" id="prestacion">
-                                <option value="">Seleccione Prestacion:</option>
-                                {% for pr in prestaciones %}
-                                    <option value="{{ pr.precio }}">{{ p.codigo }} {{ pr.nombre }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-secondary ms-2" name="prestacion" id="prestacion">Buscar</button>
-                    </form>
-                </div>
+                {% if request.user.paciente.rut %}
 
-
-                <div class="d-flex justify-content-center flex-column align-items-start" style="border: 1px solid #134E5E; width: 100%">
-                    <h5 class="card-title">Resumen</h5>
-                    <br>
-                    <p class="text-start"><strong>Servicio: </strong>{{ request.session.servicio }}</p>
-                    <p class="text-start"><strong>Especialidad: </strong>{{ request.session.especialidad }}</p>
-                    <p class="text-start"><strong>Profesional: </strong>{{ request.session.pro_nombre }} {{ request.session.pro_apellido }}</p>
-                    <p class="text-start"><strong>Prestación: </strong>${{ request.session.prestacion }}</p>
-                </div>
-                <hr>
-                <div class="d-flex justify-content-start flex-column align-items-start" style="border: 1px solid #134E5E; width: 100%">
-                    <p class="text-start"><strong>Subtotal: </strong>${{ request.session.subtotal }}</p>
-                    <br>
-                    <div class="d-flex justify-content-center flex-column align-items-center mb-3 p-3" style="border: 1px solid #134E5E; width: 100%">
-                        <form method="POST" enctype="multipart/form-data" style="width: 60%" class="d-flex justify-content-start flex-row align-items-start">
+                    <div class="d-flex justify-content-center flex-column align-items-center mb-4" style="width: 100%">
+                        <form method="POST" enctype="multipart/form-data" style="width: 90%" class="d-flex justify-content-center flex-row align-items-center">
                             {% csrf_token %}
-                            <div class="form-control">
-                                <select class="form-select" name="convenio" id="convenio">
-                                    <option value="">Seleccione Convenio:</option>
-                                    {% for c in convenios %}
-                                        <option value="{{ c.descuento }}">{{ c.nombre}} {{ c.descuento }}%</option>
+                                <select class="form-select" name="servicio" id="servicio">
+                                    <option value="">Seleccione el Servicio:</option>
+                                    {% for s in servicios %}
+                                        <option value="{{ s.servicio }}">{{ s.servicio }}</option>
                                     {% endfor %}
                                 </select>
+                            <button type="submit" class="btn btn-secondary ms-2" name="servicio" id="servicio">Ingresar</button>
+                        </form>
+                    </div>
+
+                {% endif %}
+
+                {% if request.session.servicio %}
+
+                    <div class="d-flex justify-content-center flex-column align-items-center mb-4" style="width: 100%">
+                        <form method="POST" enctype="multipart/form-data" style="width: 90%" class="d-flex justify-content-center flex-row align-items-center">
+                            {% csrf_token %}
+                                <select class="form-select" name="especialidad" id="especialidad">
+                                    <option value="">Seleccione Especialidad:</option>
+                                    {% for e in especialidades %}
+                                        <option value="{{ e.especialidad }}">{{ e.especialidad }}</option>
+                                    {% endfor %}
+                                </select>
+                            <button type="submit" class="btn btn-secondary ms-2" name="especialidad" id="especialidad">Ingresar</button>
+                        </form>
+                    </div>
+
+                {% endif %}
+
+                {% if request.session.especialidad %}
+
+                    <div class="d-flex justify-content-center flex-column align-items-center mb-4" style="width: 100%">
+                        <form method="POST" enctype="multipart/form-data" style="width: 90%" class="d-flex justify-content-center flex-row align-items-center">
+                            {% csrf_token %}
+                                <select class="form-select" name="profesional" id="profesional">
+                                    <option value="">Seleccione Profesional:</option>
+                                    {% for p in profesionales %}
+                                        <option value={{ p.id }}>{{ p.nombre }} {{ p.apellido }}</option>
+                                    {% endfor %}
+                                </select>
+                            <button type="submit" class="btn btn-secondary ms-2" name="profesional" id="profesional">Ingresar</button>
+                        </form>
+                    </div>
+
+                {% endif %}
+
+                {% if request.session.profesional %}
+
+                    <div class="d-flex justify-content-center flex-column align-items-center mb-4" style="width: 100%">
+                        <form method="POST" enctype="multipart/form-data" style="width: 90%" class="d-flex justify-content-center flex-row align-items-center">
+                            {% csrf_token %}
+                                <select class="form-select" name="prestacion" id="prestacion">
+                                    <option value="">Seleccione Prestacion:</option>
+                                    {% for pr in prestaciones %}
+                                        <option value={{ pr.precio }}>{{ p.codigo }} {{ pr.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            <button type="submit" class="btn btn-secondary ms-2" name="prestacion" id="prestacion">Ingresar</button>
+                        </form>
+                    </div>
+
+                {% endif %}
+
+                {% if request.session.prestacion %}
+
+                    <div class="d-flex justify-content-center flex-column align-items-center mb-1" style="width: 100%">
+                        <form method="POST" enctype="multipart/form-data" style="width: 90%" class="d-flex justify-content-center flex-row align-items-start" name="fecha" id="fecha">
+                            {% csrf_token %}
+                            <input type="date" name="fecha" id="fecha" class="form-control mb-4" placeholder="Fecha">
+                            <div class="d-flex justify-content-start flex-column align-items-start " >
+                                <button type="submit" class="btn btn-secondary ms-2" name="fecha" id="fecha">Ingresar</button>
                             </div>
-                            <button type="submit" class="btn btn-secondary ms-2" name="convenio" id="convenio">Buscar</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                {% if request.session.fecha %}
+
+                    <div class="d-flex justify-content-center flex-column align-items-center mb-4" style="width: 100%">
+                        <form method="POST" enctype="multipart/form-data" style="width: 90%" class="d-flex justify-content-center flex-row align-items-center" name="hora" id="hora">
+                            {% csrf_token %}
+                            <select class="form-select" name="hora" id="hora">
+                                <option value="">Horas Disponibles:</option>
+                                {% for hr in hour %}
+                                    <option value="{{ hr.hora_inicio }}">{{ hr.hora_inicio }}:{{ hr.min_inicio }}0 - {{ hr.hora_final }}:{{ hr.min_final }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-secondary ms-2" name="hora" id="hora">Ingresar</button>
+                        </form>
+                    </div>
+
+                {% endif %}
+
+                {% if request.session.hora %}
+
+                    <div class="d-flex justify-content-start flex-column align-items-start mb-4 ps-5 pt-2 pb-2" style="width: 100%; border-bottom: 1px solid black; border-top: 1px solid black;">
+                        <h5 class="card-title">Resumen</h5>
+                        <br>
+                        <p class="text-start"><strong>Servicio: </strong>{{ request.session.servicio }}</p>
+                        <p class="text-start"><strong>Especialidad: </strong>{{ request.session.especialidad }}</p>
+                        <p class="text-start"><strong>Profesional: </strong>{{ request.session.pro_nombre }} {{ request.session.pro_apellido }}</p>
+                        <p class="text-start"><strong>Valor Prestación: </strong>${{ request.session.prestacion }}</p>
+                        <p class="text-start"><strong>Fecha: </strong>{{ request.session.fecha }}</p>
+                        <p class="text-start"><strong>Hora: </strong>{{ request.session.hora_inicio }}:{{ request.session.min_inicio }}0 - {{ request.session.hora_final }}:{{ request.session.min_final }}</p>
+                    </div>
+
+                    <div class="d-flex justify-content-start flex-column align-items-start ps-5" style="width: 100%">
+                        <p class="text-start ps-3"><strong>Subtotal: </strong>${{ request.session.subtotal }}</p>
+                        <br>
+                        <div class="d-flex justify-content-center flex-column align-items-center " style="width: 100%">
+                            <form method="POST" enctype="multipart/form-data" style="width: 80%" class="d-flex justify-content-center flex-row align-items-center" name="convenio" id="convenio">
+                                {% csrf_token %}
+                                <div class="form-control">
+                                    <select class="form-select" name="convenio" id="convenio">
+                                        <option value="">Seleccione Convenio:</option>
+                                        <option value=0>Sin Convenio</option>
+                                        {% for c in convenios %}
+                                            <option value="{{ c.descuento }}">{{ c.nombre}} {{ c.descuento }}%</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-secondary ms-2" name="convenio" id="convenio">Ingresar</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if request.session.convenio %}
+
+                    <div class="d-flex justify-content-center flex-column align-items-start" style="width: 100%">
+                        <p class="text-start"><strong>Descuento: </strong>{{ request.session.nombre_convenio }} {{ request.session.descuento_convenio }}</p>
+                        <p class="text-start" style="font-size: 2rem"><strong>Total: </strong>${{ request.session.total }}</p>
+                    </div>
+
+                    <br>
+                    <div class="d-flex justify-content-center flex-column align-items-start" style="width: 100%">
+                        <h5 class="card-title">Medio de Pago</h5>
+                        <br>
+                        <form method="post" action="{{ url }}">
+                            <input type="hidden" name="token_ws" value="{{ token }}" />
+                            <button type="submit"><img src="{% static 'img/transbank.png' %}" width="150" height="50"></button>
                         </form>
                     </div>
                     <br>
-                    <p class="text-start"><strong>Descuento: </strong>{{ request.session.nombre_convenio }} {{ request.session.descuento_convenio }}</p>
-                    <p class="text-start" style="font-size: 2rem"><strong>Total: </strong>{{ request.session.total }}</p>
-                </div>
-                <br>
-                <div class="d-flex justify-content-center flex-column align-items-start" style="border: 1px solid #134E5E; width: 100%">
-                    <h5 class="card-title">Medio de Pago</h5>
-                    <br>
-                    <form method="post" action="{{ url }}">
-                        <input type="hidden" name="token_ws" value="{{ token }}" />
-                        <button type="submit"><img src="{% static 'img/transbank.png' %}" width="150" height="50"></button>
-                    </form>
-                </div>
-                <br>
-                <div class="d-flex justify-content-center flex-column align-items-start" style="border: 1px solid #134E5E; width: 100%">
-                    {% csrf_token %}
-                    <form method="post" action="">
-                        <input type="hidden" name="transferencia" value="transferencia" />
-                        <button type="submit"><img src="{% static 'img/transferencia.png' %}" width="150" height="50"></button>
-                    </form>
-                </div>
+                    <div class="d-flex justify-content-center flex-column align-items-start" style="width: 100%">
+                        {% csrf_token %}
+                        <form method="post" action="">
+                            <input type="hidden" name="transferencia" value="transferencia" />
+                            <button type="submit"><img src="{% static 'img/transferencia.png' %}" width="150" height="50"></button>
+                        </form>
+                    </div>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </div>
 
