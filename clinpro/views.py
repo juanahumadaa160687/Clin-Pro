@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -6,12 +8,14 @@ from .forms import RegisterForm, LoginForm, PacienteForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from .decorators import allowed_users
+from .functions import enviarCorreo, sendWhatsapp, enviarconfirmacionregistro
 from .models import User, Convenio, ReservaHora, Pago, Paciente
 from transbank.webpay.webpay_plus.transaction import Transaction
 import pywhatkit
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from .task import sendConfirmacion
 
 
 #Landing Page
@@ -70,7 +74,14 @@ def register(request):
             user.groups.add(group)
 
             messages.success(request, 'Usuario creado exitosamente.')
+
+            remitentes = os.getenv('EMAIL_HOST_USER')
+            destinatario = request.user.email
+
+            enviarconfirmacionregistro(remitentes, destinatario)
+
             redirect('login')
+
         else:
             messages.error(request, 'Error en el registro, intente nuevamente')
 
@@ -82,12 +93,19 @@ def register(request):
 #######################################################################################################################
 
 #password reset page view
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['Administrador', 'Paciente'])
+#@allowed_users(allowed_roles=['Administrador', 'Paciente'])
 def password_reset(request):
 
+    return render(request, 'registration/password_reset_form.html')
 
-    return render(request, 'password_reset.html')
+def password_reset_done(request):
+    return render(request, 'registration/password_reset_done.html')
+
+def password_reset_confirm(request, uidb64, token):
+    return render(request, 'registration/password_reset_confirm.html')
+
+def password_reset_complete(request):
+    return render(request, 'registration/password_reset_complete.html')
 
 #######################################################################################################################
 
@@ -392,36 +410,22 @@ def pago_exitoso(request):
 
     ReservaHora.objects.create(fecha=fecha_transaccion, hora_inicio=request.session['start'], hora_fin=request.session['end'], is_confirmada=True, paciente_id_id=request.user, pago_id_id=pago, profesional_id_id=profesional_hora)
 
+    telefono = request.user.paciente.telefono
+    fecha = datetime.strptime(request.session['fecha'], "%Y-%m-%d").date()
+    hora_inicio = request.session['hora_inicio']
+    fecha_ejecucion = datetime.combine(fecha - timedelta(days=5), time(10, 0))
 
-    def sendWhatsapp(telefono):
+    remitente = os.getenv('EMAIL_HOST_USER')
+    destinatario = request.user.email
 
-        mensaje = f"Su hora médica para el día {request.session['fecha']} a las {request.session['hora']}, con el profesional {profesional_hora.values('nombre')}{profesional_hora.values('apellido')} ha sido agendada correctamente"
+    sendWhatsapp(telefono, fecha, hora_inicio, profesional_hora.values('nombre'), profesional_hora.values('apellido'))
 
-        hora = datetime.datetime.now().hour
+    enviarCorreo(remitente, destinatario, detalle_tarjeta, monto)
 
-        minutos = datetime.datetime.now().minute + 1
-
-        pywhatkit.sendwhatmsg(telefono, mensaje, hora, minutos, 10, True, 2)
-
-    sendWhatsapp(request.user.paciente.telefono)
-
-    def enviarCorreo(remitentes, destinatario):
-        asunto = "Confirmación de Pago"
-        remitente = remitentes.lower()
-        destinatarios = destinatario.lower()
-
-        html_content = render_to_string('reserva_hora/confirmacion_pago.html', {})
-
-        cuerpo = f"El pago realizado con la tarjeta terminada en {detalle_tarjeta}, por un monto de ${monto} fue realizado con éxito"
-
-        mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, destinatarios)
-
-        mensaje.attach_alternative(html_content, 'text/html')
-
-        mensaje.send()
-        print("Correo enviado correctamente")
-
-    enviarCorreo('juan.pablo656@gmail.com', request.user.email)
+    sendConfirmacion(telefono, fecha, hora_inicio).apply_async(
+        args=[telefono, fecha, hora_inicio],
+        eta=fecha_ejecucion
+    )
 
     request.session.clear()
 
@@ -437,3 +441,6 @@ def pago_exitoso(request):
                   })
 
 #######################################################################################################################
+
+
+

@@ -2,8 +2,7 @@
 {% load static %}
 
 {% block content %}
-    
-    
+
     <div class="container mt-5">
         <div class="card">
             <div class="card-header"></div>
@@ -19,6 +18,7 @@
                         <li>Codigo de autorización: {{ codigo_auth }}</li>
                         <li>Tipo de pago: {{ tipo_pago }}</li>
                     </ul>
+                    <p>Recibirá un mensaje con un enlace para confirmar su hora.</p>
                     <a class="btn btn-success" href="{% url 'index' %}">Volver</a>
                 </div>
                 <div class="col">
