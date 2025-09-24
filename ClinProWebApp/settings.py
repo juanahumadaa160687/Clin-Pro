@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'clinpro',
     'social_django',
-    'formset'
+    'administracion',
 
 ]
 

@@ -135,19 +135,19 @@
                     <div class="d-flex justify-content-center flex-column align-items-center mb-4" style="width: 100%">
                         <form method="POST" enctype="multipart/form-data" style="width: 90%" class="d-flex justify-content-center flex-row align-items-center">
                             {% csrf_token %}
-                                <select class="form-select" name="prestacion" id="prestacion">
-                                    <option value="">Seleccione Prestacion:</option>
-                                    {% for pr in prestaciones %}
+                                <select class="form-select" name="procedimiento" id="procedimiento">
+                                    <option value="">Seleccione Procedimiento:</option>
+                                    {% for pr in procedimientos %}
                                         <option value={{ pr.precio }}>{{ p.codigo }} {{ pr.nombre }}</option>
                                     {% endfor %}
                                 </select>
-                            <button type="submit" class="btn btn-secondary ms-2" name="prestacion" id="prestacion">Ingresar</button>
+                            <button type="submit" class="btn btn-secondary ms-2" name="procedimiento" id="procedimiento">Ingresar</button>
                         </form>
                     </div>
 
                 {% endif %}
 
-                {% if request.session.prestacion %}
+                {% if request.session.procedimiento %}
 
                     <div class="d-flex justify-content-center flex-column align-items-center mb-1" style="width: 100%">
                         <form method="POST" enctype="multipart/form-data" style="width: 90%" class="d-flex justify-content-center flex-row align-items-start" name="fecha" id="fecha">

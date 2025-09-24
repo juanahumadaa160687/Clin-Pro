@@ -10,11 +10,19 @@
             <div class="card-body row">
                 <div class="col">
                     <h3 class="card-title">Pago Exitoso</h3>
-                    <p class="card-text"></p>
+                    <p class="card-text">El pago número {{ orden_compra }} por ${{ monto }} se ha realizado con éxito.</p>
+                    <h4>Detalles de la transacción.</h4>
+                    <ul class="list-group list-group-flush">
+                        <li>Estatus de la transacción: {{ status }}</li>
+                        <li>Tarjeta terminada en: {{ detalle_tarjeta }}</li>
+                        <li>Fecha de la transacción: {{ fecha_transaccion }}</li>
+                        <li>Codigo de autorización: {{ codigo_auth }}</li>
+                        <li>Tipo de pago: {{ tipo_pago }}</li>
+                    </ul>
                     <a class="btn btn-success" href="{% url 'index' %}">Volver</a>
                 </div>
                 <div class="col">
-                    <img src="" alt="">
+                    <img src="{% static 'img/checked_seccess.png' %}" alt="">
                 </div>
             </div>
         </div>

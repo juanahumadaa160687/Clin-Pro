@@ -1,10 +1,6 @@
-from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from datetime import timedelta, time
 from django import forms
-from django.utils.timezone import datetime
-from formset.formfields import DateTimeRangeField
-from formset.widgets import DateTimeRangePicker
+
 
 from .models import *
 
@@ -98,9 +94,15 @@ class PacienteForm(forms.ModelForm):
         },
     )
 
+    convenios = forms.ModelMultipleChoiceField(
+        label='Convenios',
+        queryset=Convenio.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control'},)
+    )
+
     class Meta:
         model = Paciente
-        fields = ['rut', 'nombre', 'apellido', 'direccion', 'telefono', 'prevision']
+        fields = ['rut', 'nombre', 'apellido', 'direccion', 'telefono', 'prevision', 'convenios']
 
 
 
@@ -128,26 +130,6 @@ class LoginForm(AuthenticationForm):
     class Meta:
         model = User
         fields = ['email', 'password']
-
-
-class ProfesionalForm(forms.Form):
-
-    rut = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control'}),
-    ),
-    nombre = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),
-    ),
-    apellido = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),
-    ),
-    telefono = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),
-    ),
-    especialidad = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}),),
-
-    servicio = forms.ModelChoiceField(queryset=Profesional.objects.values_list('servicio', flat=True).distinct(), empty_label='Selecciona un Servicio')
-
-    class Meta:
-        model = Profesional
-        fields = ['rut', 'nombre', 'apellido', 'telefono', 'servicio', 'especialidad']
 
 
 
