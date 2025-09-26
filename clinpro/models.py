@@ -24,22 +24,6 @@ class User(AbstractUser):
 
 ########################################################################################################################
 
-class Convenio(models.Model):
-
-    nombre = models.CharField(max_length=100, verbose_name='Nombre del Convenio', default='Sin Convenio')
-    descuento = models.IntegerField(verbose_name='Descuento', default=0)
-
-    def __str__(self):
-        return f"Convenio: {self.nombre}"
-
-    objects = models.Manager()
-
-    class Meta:
-        verbose_name = 'Convenio'
-        verbose_name_plural = 'Convenios'
-
-########################################################################################################################
-
 class Paciente(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Usuario', null=True, blank=True)
@@ -50,10 +34,8 @@ class Paciente(models.Model):
     telefono = models.CharField(max_length=15, verbose_name='Telefono', blank=True, null=True)
     prevision = models.CharField(max_length=100, verbose_name='Previsión', blank=True, null=True)
 
-    convenios = models.ManyToManyField(Convenio, verbose_name='Convenios')
-
     def __str__(self):
-        return f"{self.nombre} - {self.apellido} - {self.rut}"
+        return f"{self.nombre} {self.apellido} - {self.rut}"
 
     objects = models.Manager()
 
@@ -71,6 +53,22 @@ post_save.connect(create_paciente, sender=User)
 
 ########################################################################################################################
 
+class Convenio(models.Model):
+
+    nombre = models.CharField(max_length=100, verbose_name='Nombre del Convenio', default='Sin Convenio')
+    descuento = models.IntegerField(verbose_name='Descuento', default=0)
+
+    def __str__(self):
+        return f"Convenio: {self.nombre}"
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = 'Convenio'
+        verbose_name_plural = 'Convenios'
+
+########################################################################################################################
+
 class Pago(models.Model):
 
     orden_compra = models.CharField(max_length=50, verbose_name='Número de Orden de Compra', blank=True, null=True)
@@ -78,6 +76,8 @@ class Pago(models.Model):
     monto = models.DecimalField(max_digits=10, decimal_places=0, verbose_name='Monto del Pago')
     metodo_pago = models.CharField(max_length=50, verbose_name='Método de Pago', blank=True, null=True)
     is_pagado = models.BooleanField(default=False, verbose_name='¿Está Pagado?')
+
+    convenio = models.ForeignKey(Convenio, on_delete=models.CASCADE, verbose_name='Convenio', blank=True, null=True)
 
     def __str__(self):
         return f"Pago nro {self.orden_compra} por {self.monto}"

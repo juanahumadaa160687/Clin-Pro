@@ -1,0 +1,66 @@
+{% extends 'base_funcionarios.html' %}
+{% load static %}
+
+{% block title %}Registro de Personal{% endblock %}
+
+{% block content %}
+
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 30%;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% elif message.tags == 'error' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30%;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <div class="w-100 d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="card p-2" style="border-radius: 20px; background-color: #2c3e50; backdrop-filter: blur(10px); border: 1px solid #ccc; width: 30%; height: 90%;">
+            <div class="card-body d-flex justify-content-center align-items-center flex-column w-100">
+                <img src="{% static 'img/logo_clinpro.png' %}" class="mb-4" alt="Card image cap" width="150" height="150">
+                <h2 class="card-title text-center mb-2 mt-3 text-white">Registro de Usuario</h2>
+                <br>
+                <form method="post" action="" class="d-flex flex-column gap-2 w-100 text-white mt-2">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ form.email.label }}
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger" role="alert">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.password1.label }}
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <div class="text-danger" role="alert">{{ form.password1.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.password2.label }}
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="text-danger" role="alert">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.rol.label }}
+                        {{ form.rol }}
+                        {% if form.rol.errors %}
+                            <div class="text-danger" role="alert">{{ form.rol.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="d-grid gap-2 d-flex flex-column justify-content-center align-items-center mt-4" >
+                        <button class="btn " type="submit" name="login" id="login" style="width: 90%; background-color: #bdc3c7; border: 1px solid #bdc3c7">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -14,7 +14,7 @@ def enviarCorreo(remitentes, destinatario, detalle_tarjeta, monto):
 
     cuerpo = f"El pago realizado con la tarjeta terminada en {detalle_tarjeta}, por un monto de ${monto} fue realizado con éxito"
 
-    mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, destinatarios)
+    mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, [destinatarios])
 
     mensaje.attach_alternative(html_content, 'text/html')
 
@@ -31,7 +31,7 @@ def enviarCorreoRecuperacion(remitentes,  destinatario, codigo):
 
     cuerpo = f"Su código de recuperación es: {codigo}"
 
-    mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, destinatarios)
+    mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, [destinatarios])
 
     mensaje.attach_alternative(html_content, 'text/html')
 
@@ -43,13 +43,13 @@ def enviarconfirmacionregistro(remitentes, destinatario):
     remitente = remitentes.lower()
     destinatarios = destinatario.lower()
 
-    link_login = "127.0.0.1:8000/login/"
+    link_login = "http://127.0.0.1:8000/login/"
 
     html_content = render_to_string('confirmacion_registro.html', {})
 
-    cuerpo = f"Su registro en Clínica Clinicare ha sido exitoso. ¡Bienvenido! Ahora puede acceder a su cuenta y comenzar a utilizar nuestros servicios. Haga clic en el siguiente enlace para iniciar sesión: {link_login}"
+    cuerpo = f"Su registro en Clínica Clinicare ha sido exitoso. Ahora puede acceder a su cuenta y comenzar a utilizar nuestros servicios. Haga clic en el siguiente enlace para iniciar sesión: {link_login}"
 
-    mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, destinatarios)
+    mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, [destinatarios])
 
     mensaje.attach_alternative(html_content, 'text/html')
 
@@ -57,9 +57,9 @@ def enviarconfirmacionregistro(remitentes, destinatario):
     print("Correo enviado correctamente")
 
 # Enviar mensaje de WhatsApp
-def sendWhatsapp(telefono, fecha, hora_inicio, nombre, apellido):
+def sendWhatsapp(telefono, fecha, hora_inicio, nombre):
 
-    mensaje = f"Su hora médica para el día {fecha} a las {hora_inicio}, con el profesional {nombre} {apellido} ha sido agendada correctamente"
+    mensaje = f"Su hora médica para el día {fecha} a las {hora_inicio}, con el profesional {nombre} ha sido agendada correctamente"
 
     hora = datetime.time(10, 0).hora
 

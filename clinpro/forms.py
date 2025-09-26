@@ -1,7 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django import forms
-
-
 from .models import *
 
 class RegisterForm(UserCreationForm):
@@ -32,8 +30,6 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['email', 'password1']
-
-
 
 
 class PacienteForm(forms.ModelForm):
@@ -88,21 +84,15 @@ class PacienteForm(forms.ModelForm):
 
     prevision = forms.CharField(
         label='Previsión',
-        widget=forms.Select(attrs={'class': 'form-control'}, choices=[('Fonasa', 'Fonasa'), ('Isapre', 'Isapre')]),
+        widget=forms.Select(attrs={'class': 'form-control'}, choices=[('', 'Seleccione su Previsión'), ('Fonasa', 'Fonasa'), ('Isapre', 'Isapre'), ('Particular', 'Particular') ]),
         error_messages={
             'required': 'La previsión es obligatoria'
         },
     )
 
-    convenios = forms.ModelMultipleChoiceField(
-        label='Convenios',
-        queryset=Convenio.objects.all(),
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control'},)
-    )
-
     class Meta:
         model = Paciente
-        fields = ['rut', 'nombre', 'apellido', 'direccion', 'telefono', 'prevision', 'convenios']
+        fields = ['rut', 'nombre', 'apellido', 'direccion', 'telefono', 'prevision']
 
 
 
@@ -126,10 +116,15 @@ class LoginForm(AuthenticationForm):
         },
         required=True,
     )
+    remember_me = forms.BooleanField(
+        label='Recuérdame',
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    )
 
     class Meta:
         model = User
-        fields = ['email', 'password']
+        fields = ['email', 'password', 'remember_me']
 
 
 

@@ -1,5 +1,5 @@
+import json
 import os
-
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -7,15 +7,14 @@ from administracion.models import *
 from .forms import RegisterForm, LoginForm, PacienteForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from .decorators import allowed_users
+from .decorators import allowed_users, unallowed_users
 from .functions import enviarCorreo, sendWhatsapp, enviarconfirmacionregistro
-from .models import User, Convenio, ReservaHora, Pago, Paciente
+from .models import User, ReservaHora, Pago, Paciente, Convenio
 from transbank.webpay.webpay_plus.transaction import Transaction
-import pywhatkit
 from datetime import datetime, time, timedelta
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 from .task import sendConfirmacion
+from administracion.models import *
+
 
 
 #Landing Page
@@ -38,6 +37,12 @@ def login(request):
         password = request.POST['password']
         user = authenticate(request, username=email, password=password)
 
+        remember_me = request.POST.get('remember_me', None)
+        if remember_me is not None:
+            request.session.set_expiry(1209600)  # 2 weeks
+        else:
+            request.session.set_expiry(0)  # Session expires on browser close
+
         if user is not None:
             auth_login(request, user)
             return redirect('reserva_hora')
@@ -55,32 +60,36 @@ def login(request):
 #Register Page View
 def register(request):
 
+    if request.user.is_authenticated:
+        return redirect('index')
+
     if request.method == 'POST':
 
-        form = RegisterForm(request.POST)
+        form = RegisterForm()
 
         email = request.POST['email']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
-
         username = email.split('@')[0]
+
 
         if password1 != password2:
             messages.error(request, 'Las contaseñas no coinciden, intenta nuevamente')
-        elif password1 == password2:
-            user = User.objects.create_user(username=username, email=email, password=password1)
 
+        elif password1 == password2:
+
+            user = User.objects.create_user(username=username, email=email, password=password1)
             group = Group.objects.get(name='Paciente')
             user.groups.add(group)
 
-            messages.success(request, 'Usuario creado exitosamente.')
+            messages.success(request, 'Usuario creado exitosamente. Por favor, inicie sesión.')
 
             remitentes = os.getenv('EMAIL_HOST_USER')
-            destinatario = request.user.email
+            destinatario = email
 
             enviarconfirmacionregistro(remitentes, destinatario)
 
-            redirect('login')
+            return redirect('login')
 
         else:
             messages.error(request, 'Error en el registro, intente nuevamente')
@@ -88,7 +97,7 @@ def register(request):
     else:
         form = RegisterForm()
 
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'register.html', {'form': form, 'success': 'Usuario creado exitosamente. Por favor, inicie sesión.'})
 
 #######################################################################################################################
 
@@ -110,7 +119,7 @@ def password_reset_complete(request):
 #######################################################################################################################
 
 # user profile page view
-@allowed_users(allowed_roles=['Paciente'])
+
 @login_required(login_url='login')
 def profile(request):
 
@@ -131,21 +140,18 @@ def delete_profile(request):
 
 #######################################################################################################################
 
-# reserva_hora page view
-#@login_required(login_url='login')
-#@allowed_users(allowed_roles=['Paciente'])
+
+@login_required(login_url='login')
 def reserva_hora(request):
 
-    ##############Servicios#######################################################################################
-
-    servicios = ProfesionalSalud.objects.values('servicio').distinct()
+    servicios = Servicio.objects.values('nombre').distinct()
 
     if request.method == 'POST' and 'servicio' in request.POST:
 
         request.session['servicio'] = request.POST.getlist('servicio')[0]
         print(request.session['servicio'])
 
-        especialidades = ProfesionalSalud.objects.filter(servicio=request.session['servicio']).values('especialidad').distinct()
+        especialidades = PersonalSalud.objects.filter(servicio__nombre=request.session['servicio']).values('especialidad').distinct()
         print(especialidades)
 
         return render(request, 'reserva_hora/reserva_hora.html', {
@@ -159,41 +165,34 @@ def reserva_hora(request):
         request.session['especialidad'] = request.POST.getlist('especialidad')[0]
         print(request.session['especialidad'])
 
-        profesionales = ProfesionalSalud.objects.filter(especialidad=request.session['especialidad']).values('id', 'nombre', 'apellido').distinct()
+        profesionales = PersonalSalud.objects.filter(especialidad=request.session['especialidad']).values('id', 'nombre').distinct()
         print(profesionales)
 
         return render(request, 'reserva_hora/reserva_hora.html',
                       {
                           'profesionales': profesionales,
                       })
-
-    ##############Procedimiento######################################################################################
+    ##############Profesional######################################################################################
 
     elif request.method == 'POST' and 'profesional' in request.POST:
 
         request.session['profesional'] = request.POST.getlist('profesional')[0]
         print(request.session['profesional'])
 
-        request.session['pro_nombre'] = ProfesionalSalud.objects.get(id=request.session['profesional']).nombre
+        request.session['pro_nombre'] = PersonalSalud.objects.get(id=request.session['profesional']).nombre
         print(request.session['pro_nombre'])
-
-        request.session['pro_apellido'] = ProfesionalSalud.objects.get(id=request.session['profesional']).apellido
-        print(request.session['pro_apellido'])
 
         profesional_id = request.session['profesional']
         print(profesional_id)
 
-        procedimientos = Procedimiento.objects.prefetch_related('profesional_id').filter(profesional_id=profesional_id)
+        procedimientos = Procedimiento.objects.prefetch_related('personal_salud').filter(personal_salud=profesional_id).distinct()
         print(procedimientos)
 
-        for procedimiento in procedimientos:
-            for profesional_id in procedimiento.profesional_salud.all():
-                print(procedimiento.procedimiento, procedimiento.precio, procedimiento.codigo)
 
         return render(request, 'reserva_hora/reserva_hora.html',
-                      {
-                          'procedimientos': procedimientos,
-                      })
+        {
+            'procedimientos': procedimientos,
+            })
 
     ##############Procedimiento######################################################################################
 
@@ -212,8 +211,7 @@ def reserva_hora(request):
                           'subtotal': request.session['procedimiento'],
                       })
 
-    ##############Fecha#####################################################################################################
-
+    ##############Agenda############################################################################################
     elif request.method == 'POST' and 'fecha' in request.POST:
 
         request.session['fecha']  = request.POST.getlist('fecha')[0]
@@ -228,21 +226,21 @@ def reserva_hora(request):
 
         final_date = date.date()
 
-        horario_disponible = Agenda.objects.filter(fecha=final_date, profesional_id=request.session['profesional']).values('hora_inicio').exists()
+        horario_disponible = Agenda.objects.filter(fecha=final_date, profesional=request.session['profesional']).values('hora').exists()
         print(horario_disponible)
 
         if horario_disponible:
 
             horas_no_disp = []
 
-            horas = Agenda.objects.filter(fecha=final_date, profesional_id=request.session['profesional']).values('hora_inicio').distinct()
+            horas = Agenda.objects.filter(fecha=final_date, profesional=request.session['profesional']).values('hora')
 
             for hora in horas:
-                hour = hora['hora_inicio'].hour
-                print(hora['hora_inicio'].hour)
+                hour = hora['hora'].hour
+                print(hora['hora'].hour)
                 horas_no_disp.append(hour)
 
-            print(horas_no_disp)
+                print(horas_no_disp)
 
             horario = [8, 9, 10, 11, 12, 15, 16, 17, 18 , 19, 20]
 
@@ -268,8 +266,34 @@ def reserva_hora(request):
                 hour.append(hours)
 
             print(hour)
+        else:
+            horas_no_disp = []
 
-            return render(request, 'reserva_hora/reserva_hora.html', {'hour': hour})
+            horario = [8, 9, 10, 11, 12, 15, 16, 17, 18 , 19, 20]
+
+            horas_no_disp = set(horas_no_disp)
+            horario = set(horario)
+
+            horas_disponibles = horario.union(horas_no_disp)
+
+            hour=[]
+
+            for hd in horas_disponibles:
+                initial_hours = time(hd, 00)
+                final_hours = time(hd, 45)
+
+                hours = {
+                    'hora_inicio': initial_hours.hour,
+                    'min_inicio': initial_hours.minute,
+                    'hora_final': final_hours.hour,
+                    'min_final': final_hours.minute,
+                }
+                hour.append(hours)
+
+
+            print(horas_disponibles)
+
+        return render(request, 'reserva_hora/reserva_hora.html', {'hour': hour})
 
     ##############Hora######################################################################################################
 
@@ -281,35 +305,32 @@ def reserva_hora(request):
 
         fecha = request.session['fecha']
 
-        start_hour = time(hora, 00)
-        end_hour = time(hora, 45)
+        start_hour = time(hora, 00, 00)
 
         s_hour = start_hour.hour
         m_hour = start_hour.minute
-        h_end = end_hour.hour
-        m_end = end_hour.minute
 
         print(s_hour, m_hour)
 
-        request.session['hora_inicio'] = s_hour
-        request.session['min_inicio'] = m_hour
-        request.session['hora_final'] = h_end
-        request.session['min_final'] = m_end
+        time_str = start_hour.strftime("%H:%M:%S")
+        data = { 'hora': time_str }
+        time = json.dumps(data)
+        print(json_output)
+        print(time_str)
 
         request.session['start'] = start_hour
-        request.session['end'] = end_hour
 
-        profesional = ProfesionalSalud.objects.get(id=request.session['profesional'])
-        print(profesional)
+        personal = PersonalSalud.objects.get(id=request.session['profesional'])
 
-        Agenda.objects.create(fecha=fecha, hora=start_hour, procedimiento=request.session['procedimiento'], profesional_id=profesional)
+        Agenda.objects.create(fecha=fecha, hora=time, profesional = personal)
 
-        id_paciente = request.user.pk
-        print(id_paciente)
+        convenios = Convenio.objects.values('nombre', 'descuento').all()
 
-        convenios = Paciente.objects.filter(id=id_paciente).values('convenios').distinct()
-
-        return render(request, 'reserva_hora/reserva_hora.html', {'convenios': convenios})
+        return render(request, 'reserva_hora/reserva_hora.html',
+                      {
+                          convenios: convenios,
+                      })
+    ##############Convenio############################################################################################
 
     ##############Convenios y Pago##########################################################################################
 
@@ -320,7 +341,11 @@ def reserva_hora(request):
         print(descuento)
         print(type(descuento))
 
-        total = request.session['subtotal'] - ((descuento * request.session['subtotal'])/100)
+        subtotal = request.session['subtotal']
+        print(subtotal)
+        print(type(subtotal))
+
+        total = subtotal - ((descuento * subtotal)/100)
         print(total)
 
         request.session['total'] = total
@@ -354,11 +379,10 @@ def reserva_hora(request):
         direccion = request.POST['direccion']
         telefono = request.POST['telefono']
         prevision = request.POST['prevision']
-        convenio = request.POST.getlist('convenio')
 
         usuario = request.user
 
-        paciente = Paciente.objects.create(rut=rut, nombre=nombre, apellido=apellido, direccion=direccion, telefono=telefono, prevision=prevision, user=usuario, convenio=convenio)
+        paciente = Paciente.objects.create(rut=rut, nombre=nombre, apellido=apellido, direccion=direccion, telefono=telefono, prevision=prevision, usuario=usuario)
 
         messages.success(request, 'Datos guardados con éxito')
 
@@ -371,21 +395,7 @@ def reserva_hora(request):
                       'form': form,
                       'servicios': servicios,
                   })
-
-#######################################################################################################################
-
-# logout page view
-@login_required(login_url='login')
-def logout(request):
-    auth_logout(request)
-    return redirect('index')
-
-#######################################################################################################################
-
-def no_autorizado(request):
-    return render(request, 'no_autorizado.html')
-
-#######################################################################################################################
+##############Pago Exitoso############################################################################################
 
 def pago_exitoso(request):
 
@@ -402,23 +412,25 @@ def pago_exitoso(request):
     tipo_pago = response['payment_type_code']
     codigo_aut = response['authorization_code']
 
-    Pago.objects.create(orden_compra=orden_compra, fecha=fecha_transaccion, monto=monto, metodo_pago=tipo_pago, is_pagado=True)
+    convenio = request.session['convenio']
+
+    Pago.objects.create(orden_compra=orden_compra, fecha=fecha_transaccion, monto=monto, metodo_pago=tipo_pago, is_pagado=True, convenio=convenio)
 
     pago = Pago.objects.get(orden_compra=orden_compra)
 
-    profesional_hora = ProfesionalSalud.objects.filter(id = request.session['profesional']).values('nombre', 'apellido').distinct()
+    profesional_hora = PersonalSalud.objects.filter(id = request.session['profesional']).values('nombre').distinct()
 
     ReservaHora.objects.create(fecha=fecha_transaccion, hora_inicio=request.session['start'], hora_fin=request.session['end'], is_confirmada=True, paciente_id_id=request.user, pago_id_id=pago, profesional_id_id=profesional_hora)
 
     telefono = request.user.paciente.telefono
     fecha = datetime.strptime(request.session['fecha'], "%Y-%m-%d").date()
-    hora_inicio = request.session['hora_inicio']
+    hora_inicio = request.session['hora']
     fecha_ejecucion = datetime.combine(fecha - timedelta(days=5), time(10, 0))
 
     remitente = os.getenv('EMAIL_HOST_USER')
     destinatario = request.user.email
 
-    sendWhatsapp(telefono, fecha, hora_inicio, profesional_hora.values('nombre'), profesional_hora.values('apellido'))
+    sendWhatsapp(telefono, fecha, hora_inicio, profesional_hora.values('nombre'))
 
     enviarCorreo(remitente, destinatario, detalle_tarjeta, monto)
 
@@ -442,5 +454,17 @@ def pago_exitoso(request):
 
 #######################################################################################################################
 
+#######################################################################################################################
 
+# logout page view
+@login_required(login_url='login')
+def logout(request):
+    auth_logout(request)
+    return redirect('index')
 
+#######################################################################################################################
+
+def no_autorizado(request):
+    return render(request, 'no_autorizado.html')
+
+#######################################################################################################################

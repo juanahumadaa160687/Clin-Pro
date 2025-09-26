@@ -162,14 +162,12 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 
 SOCIAL_AUTH_REDIRECT_URI = os.getenv('REDIRECT_URI')
 
-LOGIN_REDIRECT_URL = '/reserva/'
+LOGIN_REDIRECT_URL = '/reserva_hora/'
 LOGOUT_REDIRECT_URL = ''
 
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['email', 'password', 'first_name', 'last_name']
 
 AUTH_USER_MODEL = 'clinpro.User'
-
-DATE_INPUT_FORMATS = ['%d/%m/%Y']
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

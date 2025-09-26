@@ -30,6 +30,7 @@
                 </div>
                 <div class="card-body d-flex justify-content-start flex-column align-items-start mt-2 w-100 ">
                 {% if request.user.paciente.rut %}
+
                     <p><strong>Rut: </strong>{{request.user.paciente.rut}}</p>
                     <br>
                     <p><strong>Nombre: </strong>{{request.user.paciente.nombre}}</p>
@@ -41,6 +42,7 @@
                     <p><strong>Teléfono: </strong>{{request.user.paciente.telefono}}</p>
                     <br>
                     <p><strong>Previsión: </strong>{{request.user.paciente.prevision}}</p>
+
                 {% else %}
                     <form method="POST" enctype="multipart/form-data" style="width: 100%">
                         {% csrf_token %}
@@ -87,7 +89,7 @@
                                 <select class="form-select" name="servicio" id="servicio">
                                     <option value="">Seleccione el Servicio:</option>
                                     {% for s in servicios %}
-                                        <option value="{{ s.servicio }}">{{ s.servicio }}</option>
+                                        <option value="{{ s.nombre }}">{{ s.nombre }}</option>
                                     {% endfor %}
                                 </select>
                             <button type="submit" class="btn btn-secondary ms-2" name="servicio" id="servicio">Ingresar</button>
@@ -138,7 +140,7 @@
                                 <select class="form-select" name="procedimiento" id="procedimiento">
                                     <option value="">Seleccione Procedimiento:</option>
                                     {% for pr in procedimientos %}
-                                        <option value={{ pr.precio }}>{{ p.codigo }} {{ pr.nombre }}</option>
+                                        <option value={{ pr.precio }}>{{ p.codigo }} {{ pr.procedimiento }}</option>
                                     {% endfor %}
                                 </select>
                             <button type="submit" class="btn btn-secondary ms-2" name="procedimiento" id="procedimiento">Ingresar</button>
@@ -201,11 +203,11 @@
                                         <option value="">Seleccione Convenio:</option>
                                         <option value=0>Sin Convenio</option>
                                         {% for c in convenios %}
-                                            <option value="{{ c.descuento }}">{{ c.nombre}} {{ c.descuento }}%</option>
+                                            <option value="{{ c.descuento }}">{{ c.nombre}} %</option>
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <button type="submit" class="btn btn-secondary ms-2" name="convenio" id="convenio">Ingresar</button>
+                                <button type="submit" class="btn btn-secondary ms-2" name="convenio" id="convenio">Ingresar</button
                             </form>
                         </div>
                     </div>
