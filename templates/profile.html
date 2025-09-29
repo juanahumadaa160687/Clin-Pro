@@ -19,8 +19,8 @@
         {% endif %}
     {% endfor %}
 
-    <div class="container mt-4">
-        <h1 class="text-start">Bienvenido {{ user.first_name }} {{ user.last_name }}</h1>
+    <div class="container row mt-4">
+        <h1 class="text-start">Bienvenido {{ request.user.paciente.nombre }}</h1>
     </div>
 
 {% endblock %}

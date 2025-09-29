@@ -4,6 +4,9 @@ from django.template.loader import render_to_string
 import datetime
 from django.conf import settings
 
+from administracion.models import PersonalSalud
+
+
 # Enviar correo de confirmación de pago
 def enviarCorreo(remitentes, destinatario, detalle_tarjeta, monto):
     asunto = "Confirmación de Pago"

@@ -1,15 +1,16 @@
-import json
 import os
 from django.contrib.auth.models import Group
+from django.core import serializers
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.utils.dateformat import time_format
+
 from administracion.models import *
-from .forms import RegisterForm, LoginForm, PacienteForm
+from .forms import RegistroUsuarioForm, LoginPacienteForm, PacienteModelForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from .decorators import allowed_users, unallowed_users
 from .functions import enviarCorreo, sendWhatsapp, enviarconfirmacionregistro
-from .models import User, ReservaHora, Pago, Paciente, Convenio
+from .models import User, Convenio, Pago, ReservaHora
 from transbank.webpay.webpay_plus.transaction import Transaction
 from datetime import datetime, time, timedelta
 from .task import sendConfirmacion
@@ -29,9 +30,9 @@ def login(request):
     if request.user.is_authenticated:
         return redirect('reserva_hora')
 
-    if request.method == 'POST':
+    form = LoginPacienteForm()
 
-        form = LoginForm()
+    if request.method == 'POST':
 
         email = request.POST['email']
         password = request.POST['password']
@@ -39,9 +40,9 @@ def login(request):
 
         remember_me = request.POST.get('remember_me', None)
         if remember_me is not None:
-            request.session.set_expiry(1209600)  # 2 weeks
+            request.session.set_expiry(1209600)
         else:
-            request.session.set_expiry(0)  # Session expires on browser close
+            request.session.set_expiry(0)
 
         if user is not None:
             auth_login(request, user)
@@ -51,7 +52,7 @@ def login(request):
             return render(request, 'login.html', {'form': form})
 
     else:
-        form = LoginForm()
+        form = LoginPacienteForm()
 
     return render(request, 'login.html', {'form': form})
 
@@ -65,13 +66,12 @@ def register(request):
 
     if request.method == 'POST':
 
-        form = RegisterForm()
+        form = RegistroUsuarioForm()
 
         email = request.POST['email']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
         username = email.split('@')[0]
-
 
         if password1 != password2:
             messages.error(request, 'Las contaseñas no coinciden, intenta nuevamente')
@@ -79,6 +79,7 @@ def register(request):
         elif password1 == password2:
 
             user = User.objects.create_user(username=username, email=email, password=password1)
+
             group = Group.objects.get(name='Paciente')
             user.groups.add(group)
 
@@ -95,7 +96,7 @@ def register(request):
             messages.error(request, 'Error en el registro, intente nuevamente')
 
     else:
-        form = RegisterForm()
+        form = RegistroUsuarioForm()
 
     return render(request, 'register.html', {'form': form, 'success': 'Usuario creado exitosamente. Por favor, inicie sesión.'})
 
@@ -138,224 +139,198 @@ def delete_profile(request):
     messages.success(request, 'Tu cuenta ha sido eliminada exitosamente.')
     return redirect('index')
 
-#######################################################################################################################
 
-
-@login_required(login_url='login')
+#@login_required(login_url='login')
 def reserva_hora(request):
+
+    form = PacienteModelForm()
 
     servicios = Servicio.objects.values('nombre').distinct()
 
-    if request.method == 'POST' and 'servicio' in request.POST:
+##############_Paciente Nuevo_
 
-        request.session['servicio'] = request.POST.getlist('servicio')[0]
-        print(request.session['servicio'])
+    if request.method == 'POST' and 'paciente' in request.POST:
 
-        especialidades = PersonalSalud.objects.filter(servicio__nombre=request.session['servicio']).values('especialidad').distinct()
-        print(especialidades)
+        form = PacienteModelForm(request.POST)
 
-        return render(request, 'reserva_hora/reserva_hora.html', {
-            'especialidades': especialidades,
-        })
+        if form.is_valid():
+            paciente = form.save(commit=False)
+            paciente.user = request.user
+            paciente.save()
 
-    ##############Especialidad######################################################################################
+            messages.success(request, 'Datos del paciente guardados exitosamente.')
+
+            servicios = Servicio.objects.values('nombre').distinct()
+
+            return render(request, 'reserva_hora/reserva_hora.html',{'paciente': paciente, 'servicios': servicios,})
+
+        else:
+            messages.error(request, 'Error al guardar los datos del paciente. Por favor, intente nuevamente.')
+            return render(request, 'reserva_hora/reserva_hora.html',{'form': form,})
+
+##############_Servicio_
+
+    elif request.method == 'POST' and 'servicio' in request.POST:
+
+            request.session['servicio'] = request.POST['servicio']
+            print(request.session['servicio'])
+            especialidades_servicio = PersonalSalud.objects.filter(servicio__nombre=request.session['servicio']).values('especialidad').distinct()
+            ls = list(especialidades_servicio)
+            print(ls)
+            request.session['especialidades_servicio'] = ls
+            print(
+                request.session['especialidades_servicio']
+            )
+
+            return render(request, 'reserva_hora/reserva_hora.html', {'especialidades': request.session['especialidades_servicio'],})
+
+##############_Especialidad_
 
     elif request.method == 'POST' and 'especialidad' in request.POST:
 
-        request.session['especialidad'] = request.POST.getlist('especialidad')[0]
+        request.session['especialidad'] = request.POST['especialidad']
         print(request.session['especialidad'])
 
-        profesionales = PersonalSalud.objects.filter(especialidad=request.session['especialidad']).values('id', 'nombre').distinct()
-        print(profesionales)
+        profesionales_especialidad = list(PersonalSalud.objects.filter(especialidad=request.session['especialidad']).values('id', 'nombre').distinct())
+        print(profesionales_especialidad)
 
-        return render(request, 'reserva_hora/reserva_hora.html',
-                      {
-                          'profesionales': profesionales,
-                      })
-    ##############Profesional######################################################################################
+        return render(request, 'reserva_hora/reserva_hora.html', {'profesionales': profesionales_especialidad,})
+
+##############_Profesional_
 
     elif request.method == 'POST' and 'profesional' in request.POST:
 
-        request.session['profesional'] = request.POST.getlist('profesional')[0]
+        request.session['profesional'] = request.POST['profesional']
         print(request.session['profesional'])
 
-        request.session['pro_nombre'] = PersonalSalud.objects.get(id=request.session['profesional']).nombre
-        print(request.session['pro_nombre'])
+        request.session['nombre_pro'] = PersonalSalud.objects.get(id=request.session['profesional']).nombre
+        print(request.session['nombre_pro'])
 
-        profesional_id = request.session['profesional']
-        print(profesional_id)
+        id_pro = request.session['profesional']
+        print('ID:'+ id_pro)
 
-        procedimientos = Procedimiento.objects.prefetch_related('personal_salud').filter(personal_salud=profesional_id).distinct()
-        print(procedimientos)
+        procedimientos_profesional = list(Procedimiento.objects.filter(personal_salud__id=id_pro).values('precio', 'procedimiento').distinct())
 
+        print(procedimientos_profesional)
 
-        return render(request, 'reserva_hora/reserva_hora.html',
-        {
-            'procedimientos': procedimientos,
-            })
+        return render(request, 'reserva_hora/reserva_hora.html', {'procedimientos': procedimientos_profesional,})
 
-    ##############Procedimiento######################################################################################
+##############_Procedimiento_
 
     elif request.method == 'POST' and 'procedimiento' in request.POST:
 
-        valor_procedimiento = request.POST.getlist('procedimiento')[0]
+        valor_procedimiento = request.POST['procedimiento']
+        print(f"Valor procedimiento: {valor_procedimiento}")
 
         request.session['procedimiento'] = int(valor_procedimiento)
         print(request.session['procedimiento'])
+        print(type(request.session['procedimiento']))
 
         request.session['subtotal'] = request.session['procedimiento']
         print(request.session['subtotal'])
+        print(type(request.session['subtotal']))
 
-        return render(request, 'reserva_hora/reserva_hora.html',
-                      {
-                          'subtotal': request.session['procedimiento'],
-                      })
+        request.session['iva'] = int(request.session['subtotal'] * 0.19)
+        print(request.session['iva'])
 
-    ##############Agenda############################################################################################
+        return render(request, 'reserva_hora/reserva_hora.html', {})
+
+##############_Agenda_
+
     elif request.method == 'POST' and 'fecha' in request.POST:
 
-        request.session['fecha']  = request.POST.getlist('fecha')[0]
+        request.session['fecha'] = request.POST['fecha']
+        print(request.session['fecha'])
 
-        format = "%Y-%m-%d"
-        fecha_str = request.session['fecha']
+        fecha_seleccionada = datetime.strptime(request.session['fecha'], '%Y-%m-%d').date()
+        print(fecha_seleccionada)
 
-        date = datetime.strptime(fecha_str, format)
+        if fecha_seleccionada.day == 5 or fecha_seleccionada.day == 6:
+            messages.error(request, 'El centro clínico está cerrado los fines de semana. Por favor, seleccione un día hábil.')
+            return render(request, 'reserva_hora/reserva_hora.html', {'error': 'El centro clínico está cerrado los fines de semana. Por favor, seleccione un día hábil.',})
 
-        print(date)
-        print(type(date))
+        elif fecha_seleccionada < datetime.now().date():
+            messages.error(request, 'La fecha no puede ser en el pasado. Por favor, seleccione una fecha válida.')
+            return render(request, 'reserva_hora/reserva_hora.html', {'error': 'La fecha no puede ser en el pasado. Por favor, seleccione una fecha válida.',})
 
-        final_date = date.date()
+        profesional = request.session['profesional']
+        print(profesional)
 
-        horario_disponible = Agenda.objects.filter(fecha=final_date, profesional=request.session['profesional']).values('hora').exists()
-        print(horario_disponible)
+        horario_atencion = list([time(hour=h) for h in range(8, 21) if h < 13 or h > 14])
+        print(horario_atencion)
 
-        if horario_disponible:
+        horas_ocupadas = list(Agenda.objects.filter(fecha=fecha_seleccionada, profesional_id=profesional).values_list('hora', flat=True))
 
-            horas_no_disp = []
+        disponibles = [hora for hora in horario_atencion if hora not in horas_ocupadas]
+        print(disponibles)
 
-            horas = Agenda.objects.filter(fecha=final_date, profesional=request.session['profesional']).values('hora')
+        return render(request, 'reserva_hora/reserva_hora.html', {'horas_disponibles': disponibles,})
 
-            for hora in horas:
-                hour = hora['hora'].hour
-                print(hora['hora'].hour)
-                horas_no_disp.append(hour)
-
-                print(horas_no_disp)
-
-            horario = [8, 9, 10, 11, 12, 15, 16, 17, 18 , 19, 20]
-
-            horas_no_disp = set(horas_no_disp)
-            horario = set(horario)
-
-            horas_disponibles = horario.union(horas_no_disp)
-
-            print(horas_disponibles)
-
-            hour = []
-
-            for hd in horas_disponibles:
-                initial_hours = time(hd, 00)
-                final_hours = time(hd, 45)
-
-                hours = {
-                    'hora_inicio': initial_hours.hour,
-                    'min_inicio': initial_hours.minute,
-                    'hora_final': final_hours.hour,
-                    'min_final': final_hours.minute,
-                }
-                hour.append(hours)
-
-            print(hour)
-        else:
-            horas_no_disp = []
-
-            horario = [8, 9, 10, 11, 12, 15, 16, 17, 18 , 19, 20]
-
-            horas_no_disp = set(horas_no_disp)
-            horario = set(horario)
-
-            horas_disponibles = horario.union(horas_no_disp)
-
-            hour=[]
-
-            for hd in horas_disponibles:
-                initial_hours = time(hd, 00)
-                final_hours = time(hd, 45)
-
-                hours = {
-                    'hora_inicio': initial_hours.hour,
-                    'min_inicio': initial_hours.minute,
-                    'hora_final': final_hours.hour,
-                    'min_final': final_hours.minute,
-                }
-                hour.append(hours)
-
-
-            print(horas_disponibles)
-
-        return render(request, 'reserva_hora/reserva_hora.html', {'hour': hour})
-
-    ##############Hora######################################################################################################
 
     elif request.method == 'POST' and 'hora' in request.POST:
 
-        request.session['hora'] = request.POST.getlist('hora')[0]
+        request.session['hora'] = request.POST['hora']
+        print(request.session['hora'])
+        hora_seleccionada = datetime.strptime(request.session['hora'], '%H:%M').time()
+        print(hora_seleccionada)
 
-        hora = int(request.session['hora'])
+        horario_atencion = [time(hour=h) for h in range(8, 21) if h < 13 or h > 14]
+        print(horario_atencion)
 
-        fecha = request.session['fecha']
+        horas_ocupadas = Agenda.objects.filter(fecha=request.session['fecha'], profesional_id=request.session['profesional']).values_list('hora', flat=True)
+        print(horas_ocupadas)
 
-        start_hour = time(hora, 00, 00)
+        hora = time_format(hora_seleccionada, 'H:i')
+        print(hora)
 
-        s_hour = start_hour.hour
-        m_hour = start_hour.minute
+        horas_disponibles = [hora for hora in horario_atencion if hora not in horas_ocupadas]
+        print(horas_disponibles)
 
-        print(s_hour, m_hour)
+        if hora_seleccionada not in horas_ocupadas and hora_seleccionada in horario_atencion:
 
-        time_str = start_hour.strftime("%H:%M:%S")
-        data = { 'hora': time_str }
-        time = json.dumps(data)
-        print(json_output)
-        print(time_str)
+            agenda = Agenda.objects.create(
+                fecha=request.session['fecha'],
+                hora=hora_seleccionada,
+                profesional_id=request.session['profesional'],
+            )
+            agenda.save()
 
-        request.session['start'] = start_hour
+            convenios = Convenio.objects.all()
 
-        personal = PersonalSalud.objects.get(id=request.session['profesional'])
+            return render(request, 'reserva_hora/reserva_hora.html', {'convenios': convenios})
 
-        Agenda.objects.create(fecha=fecha, hora=time, profesional = personal)
 
-        convenios = Convenio.objects.values('nombre', 'descuento').all()
-
-        return render(request, 'reserva_hora/reserva_hora.html',
-                      {
-                          convenios: convenios,
-                      })
-    ##############Convenio############################################################################################
-
-    ##############Convenios y Pago##########################################################################################
 
     elif request.method == 'POST' and 'convenio' in request.POST:
 
-        request.session['convenio'] = request.POST.getlist('convenio')[0]
-        descuento = int(request.session['convenio'])
+        request.session['convenio'] = request.POST['convenio']
+        descuento = Convenio.objects.get(id=request.session['convenio']).descuento
+        request.session['nombre_convenio'] = Convenio.objects.get(id=request.session['convenio']).nombre
         print(descuento)
         print(type(descuento))
 
         subtotal = request.session['subtotal']
+        iva = request.session['iva']
         print(subtotal)
+        print(iva)
         print(type(subtotal))
 
-        total = subtotal - ((descuento * subtotal)/100)
+        total_descuento = int(subtotal * (descuento / 100))
+        print(total_descuento)
+        total = subtotal - total_descuento
         print(total)
 
-        request.session['total'] = total
+        def money_format(value):
+            return "${:,.0f}".format(value).replace(",", ".")
 
-        request.session['nro_compra'] = "ordenCompra12345"
-        request.session['session_key'] = "sesion12345"
+        subtotal = money_format(subtotal)
+        iva = money_format(iva)
+        total_descuento = money_format(total_descuento)
+        total_frt = money_format(total)
 
-        buy_order = request.session['nro_compra']
-        session_id = request.session['session_key']
-        amount = request.session['total']
+        buy_order = "ordenCompra12345"
+        session_id = "sesion12345"
+        amount = total
         return_url = "http://127.0.0.1:8000/pago_exitoso/"
 
         tx = Transaction.build_for_integration("597055555532", "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C")
@@ -364,38 +339,11 @@ def reserva_hora(request):
         token = resp["token"]
         url = resp["url"]
 
-        return render(request, 'reserva_hora/reserva_hora.html',
-                      {
-                          'token': token,
-                          'url': url,
-                      })
+        return render(request, 'reserva_hora/reserva_hora.html', {'total': total_frt, 'iva': iva, 'descuento': total_descuento, 'subtotal': subtotal, 'nombre': nombre, 'dcto': descuento, 'token': token, 'url': url,})
 
-    ##############Paciente Nuevo############################################################################################
-    if request.method == 'POST' and 'paciente' in request.POST:
+    return render(request, 'reserva_hora/reserva_hora.html', {'form': form, 'servicios': servicios})
 
-        rut = request.POST['rut']
-        nombre = request.POST['nombre']
-        apellido = request.POST['apellido']
-        direccion = request.POST['direccion']
-        telefono = request.POST['telefono']
-        prevision = request.POST['prevision']
-
-        usuario = request.user
-
-        paciente = Paciente.objects.create(rut=rut, nombre=nombre, apellido=apellido, direccion=direccion, telefono=telefono, prevision=prevision, usuario=usuario)
-
-        messages.success(request, 'Datos guardados con éxito')
-
-        return render(request, 'reserva_hora/reserva_hora.html', {'paciente': paciente})
-    else:
-        form = PacienteForm()
-
-    return render(request, 'reserva_hora/reserva_hora.html',
-                  {
-                      'form': form,
-                      'servicios': servicios,
-                  })
-##############Pago Exitoso############################################################################################
+#######################################################################################################################
 
 def pago_exitoso(request):
 
@@ -412,7 +360,7 @@ def pago_exitoso(request):
     tipo_pago = response['payment_type_code']
     codigo_aut = response['authorization_code']
 
-    convenio = request.session['convenio']
+    convenio = request.session['nombre_convenio']
 
     Pago.objects.create(orden_compra=orden_compra, fecha=fecha_transaccion, monto=monto, metodo_pago=tipo_pago, is_pagado=True, convenio=convenio)
 
@@ -420,7 +368,7 @@ def pago_exitoso(request):
 
     profesional_hora = PersonalSalud.objects.filter(id = request.session['profesional']).values('nombre').distinct()
 
-    ReservaHora.objects.create(fecha=fecha_transaccion, hora_inicio=request.session['start'], hora_fin=request.session['end'], is_confirmada=True, paciente_id_id=request.user, pago_id_id=pago, profesional_id_id=profesional_hora)
+    ReservaHora.objects.create(fecha_reserva=request.session['fecha'], hora_reserva=request.session['hora'], is_confirmada=False, is_asistencia=False, is_cancelada=False, paciente_id=request.user.paciente.id, pago=pago)
 
     telefono = request.user.paciente.telefono
     fecha = datetime.strptime(request.session['fecha'], "%Y-%m-%d").date()
@@ -441,7 +389,7 @@ def pago_exitoso(request):
 
     request.session.clear()
 
-    return render(request, 'reserva_hora/pago_exitoso',
+    return render(request, 'reserva_hora/pago_exitoso.html',
                   {
                       'monto': monto,
                       'status': status,
@@ -452,9 +400,6 @@ def pago_exitoso(request):
                       'tipo_pago': tipo_pago
                   })
 
-#######################################################################################################################
-
-#######################################################################################################################
 
 # logout page view
 @login_required(login_url='login')
@@ -468,3 +413,6 @@ def no_autorizado(request):
     return render(request, 'no_autorizado.html')
 
 #######################################################################################################################
+
+def login_personal(request):
+    return render(request, 'login_personal.html')

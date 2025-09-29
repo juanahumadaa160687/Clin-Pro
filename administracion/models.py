@@ -1,5 +1,4 @@
 from django.db import models
-from kombu.abstract import Object
 
 
 class PersonalSalud(models.Model):

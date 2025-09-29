@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'clinpro',
     'social_django',
     'administracion',
-
+    'django_password_eye',
 ]
 
 MIDDLEWARE = [
@@ -118,6 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8,}
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -126,6 +127,10 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+SESSION_COOKIE_AGE = 3600  # 1 hour in seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Expire the session when the browser is closed
+SESSION_SAVE_EVERY_REQUEST = True  # Reset the session timer on each request
 
 
 # Internationalization
@@ -177,3 +182,6 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
+TIME_INPUT_FORMATS=['%H:%M', '%H:%M:%S']
+DATE_INPUT_FORMATS=['%d-%m-%Y', '%Y-%m-%d']

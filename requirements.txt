@@ -1,3 +1,4 @@
+django-password-eye
 asgiref==3.9.1
 beautifulsoup4==4.13.5
 blinker==1.9.0

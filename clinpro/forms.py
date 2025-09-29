@@ -1,8 +1,13 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django import forms
-from .models import *
+from django.core.validators import RegexValidator
 
-class RegisterForm(UserCreationForm):
+from .models import *
+from django_password_eye.fields import PasswordEye
+from django_password_eye.widgets import PasswordEyeWidget
+
+
+class RegistroUsuarioForm(UserCreationForm):
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control'}),
@@ -12,12 +17,20 @@ class RegisterForm(UserCreationForm):
         },
         max_length=100,
     )
-    password1 = forms.CharField(
+    password1 = PasswordEye(
+        widget=PasswordEyeWidget(
+            independent=True,
+            attrs={'placeholder': '********',
+                   'autocomplete': 'off',
+                   'data-toggle': 'password',
+                   'class': 'form-control password-field'}),
         label='Contraseña',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
-        error_messages={
-            'required': 'La contraseña es obligatoria.',
-        },
+        validators=[
+            RegexValidator(
+                regex=r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$',
+                message="Password debe tener al menos 8 caracteres y contener al menos una letra mayúscula, "
+                        "una letra minúscula, un dígito y un carácter especial."
+            )]
     )
     password2 = forms.CharField(
         label='Confirmar Contraseña',
@@ -26,77 +39,17 @@ class RegisterForm(UserCreationForm):
             'required': 'La confirmación de la contraseña es obligatoria.',
         },
     )
+    rol = forms.CharField(
+        label='Rol',
+        widget=forms.HiddenInput(attrs={'class': 'form-control', 'readonly': 'readonly', 'type': 'text', 'name': 'rol', 'id': 'rol', 'value': 'Paciente'}),
+    )
 
     class Meta:
         model = User
-        fields = ['email', 'password1']
+        fields = ['email', 'password1', 'rol']
 
 
-class PacienteForm(forms.ModelForm):
-    rut = forms.CharField(
-        label='RUT',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '12.345.678-9'}),
-        error_messages={
-            'required': 'El RUT es obligatorio.',
-            'max_length': 'El RUT no puede tener más de 12 caracteres.',
-        },
-        max_length=12,
-    )
-    nombre = forms.CharField(
-        label='Nombre',
-        widget=forms.TextInput(attrs={'class': 'form-control'}),
-        error_messages={
-            'required': 'El nombre es obligatorio.',
-            'max_length': 'El nombre no puede tener más de 100 caracteres.',
-        },
-        max_length=100,
-    )
-
-    apellido = forms.CharField(
-        label='Apellido',
-        widget=forms.TextInput(attrs={'class': 'form-control'}),
-        error_messages={
-            'required': 'El apellido es obligatorio.',
-            'max_length': 'El apellido no puede tener más de 100 caracteres.',
-        },
-        max_length=100,
-    )
-
-    direccion = forms.CharField(
-        label='Dirección',
-        widget=forms.TextInput(attrs={'class': 'form-control'}),
-        error_messages={
-            'required': 'La dirección es obligatoria.',
-            'max_length': 'La dirección no puede tener más de 100 caracteres.',
-        },
-        max_length=100,
-    )
-
-    telefono = forms.CharField(
-        label='Teléfono',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+56 9 1234 5678'}),
-        error_messages={
-            'required': 'El teléfono es obligatorio.',
-            'max_length': 'El teléfono no puede tener más de 15 caracteres.',
-        },
-        max_length=15,
-    )
-
-    prevision = forms.CharField(
-        label='Previsión',
-        widget=forms.Select(attrs={'class': 'form-control'}, choices=[('', 'Seleccione su Previsión'), ('Fonasa', 'Fonasa'), ('Isapre', 'Isapre'), ('Particular', 'Particular') ]),
-        error_messages={
-            'required': 'La previsión es obligatoria'
-        },
-    )
-
-    class Meta:
-        model = Paciente
-        fields = ['rut', 'nombre', 'apellido', 'direccion', 'telefono', 'prevision']
-
-
-
-class LoginForm(AuthenticationForm):
+class LoginPacienteForm(AuthenticationForm):
     email = forms.EmailField(
         label='Email',
         widget=forms.EmailInput(attrs={'class': 'form-control'}),
@@ -108,18 +61,18 @@ class LoginForm(AuthenticationForm):
         max_length=100,
         required=True,
     )
-    password = forms.CharField(
-        label='Contraseña',
-        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
-        error_messages={
-            'required': 'La contraseña es obligatoria.',
-        },
-        required=True,
+    password = PasswordEye(
+        widget=PasswordEyeWidget(
+            independent=True,
+            attrs={
+                   'autocomplete': 'off',
+                   'data-toggle': 'password',
+                     'class': 'form-control password-field'}),
     )
     remember_me = forms.BooleanField(
         label='Recuérdame',
         required=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'type': 'checkbox'}),
     )
 
     class Meta:
@@ -127,4 +80,24 @@ class LoginForm(AuthenticationForm):
         fields = ['email', 'password', 'remember_me']
 
 
+
+class PacienteModelForm(forms.ModelForm):
+    class Meta:
+        model = Paciente
+        fields = ['rut', 'nombre', 'direccion', 'telefono', 'prevision']
+        widgets = {
+            'rut': forms.TextInput(attrs={'class': 'form-control', 'type': 'text', 'id': 'rut', 'name': 'rut', 'pattern': r'\d{1,2}\.\d{3}\.\d{3}-[\dkK]', 'title': 'Formato RUT: 12.345.678-9'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'type': 'text', 'id': 'nombre', 'name': 'nombre'}),
+            'direccion': forms.TextInput(attrs={'class': 'form-control', 'type': 'text', 'id': 'direccion', 'name': 'direccion'}),
+            'telefono': forms.TextInput(attrs={'class': 'form-control', 'type': 'tel', 'pattern': '+[5-6]{2} [0-9]{1} [6]{1} [0-9]{2} [0-9]{2} [0-9]{3}', 'id': 'telefono', 'name': 'telefono'}),
+            'prevision': forms.Select(attrs={'class': 'form-select', 'id':'prevision', 'name': 'nombre'}, choices=[('', 'Seleccione su Previsión'), ('Fonasa', 'Fonasa'), ('Isapre', 'Isapre'), ('Particular', 'Particular') ]),
+        }
+
+        labels = {
+            'rut': 'RUT',
+            'nombre': 'Nombre Completo',
+            'direccion': 'Dirección',
+            'telefono': 'Teléfono',
+            'prevision': 'Previsión',
+        }
 

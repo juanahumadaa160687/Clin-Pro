@@ -25,37 +25,69 @@
         Clinicare
     </title>
 </head>
+
+
+
 <body class="p-0 m-0" style="height: 100vh; position: relative">
+
+<style>
+
+    .btn-login {
+        width: 12%;
+        background-color: transparent;
+        color: #fff9f0;
+        border: 1px solid #fff9f0;
+        border-radius: 4px
+    }
+    .btn-registro {
+        background-color: #fff9f0;
+        color: black;
+        border: 1px solid #fff9f0;
+        border-radius: 4px;
+        width: 12%;
+    }
+
+    .btn-login:hover {
+        background-color: #fff9f0;
+        color: black;
+    }
+
+    .btn-registro:hover {
+        background-color: transparent;
+        color: #fff9f0;
+        border: 1px solid #fff9f0;
+    }
+</style>
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg d-flex justify-content-center" style="background-color: transparent; position: absolute; width: 100%; z-index: 10;">
-    <div class="container-fluid pt-1">
-        <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="50" height="50">
-        <a class="navbar-brand text-white ms-2" href="{% url 'index' %}">Clinicare</a>
+    <div class="container-fluid row pt-1 d-flex flex-column justify-content-center align-items-center">
+        <div class="col d-flex flex-column justify-content-center align-items-center">
+            <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="50" height="50">
+            <a class="navbar-brand text-white ms-2" href="{% url 'index' %}">Clinicare</a>
+        </div>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="nav justify-content-end w-100">
+            <ul class="col nav justify-content-center align-items-center w-100">
                 <li class="nav-item">
-                    <a class="nav-link text-white" aria-current="page" href="{% url 'index' %}">Home</a>
+                    <a class="nav-link " style="color: #fff9f0" aria-current="page" href="{% url 'index' %}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" aria-current="page" href="{% url 'reserva_hora' %}">Reservar Hora</a>
+                    <a class="nav-link" style="color: #fff9f0" aria-current="page" href="#">Nuestra Clínica</a>
                 </li>
-                {% if not user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" style="color: #fff9f0" href="{% url 'login_personal' %}">Área Funcionarios</a>
+                </li>
+                {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'login' %}">Iniciar Sesión</a>
+                        <a class="nav-link" style="color: #fff9f0" href="{% url 'profile/' id=request.user.pk %}">Area Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'register' %}">Registrarse</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'profile' id=request.user.pk %}">{{ request.user.paciente.nombre }} {{ request.user.paciente.apellido }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'logout' %}">Cerrar Sesión</a>
+                        <a class="nav-link" style="color: #fff9f0" href="{% url 'logout' %}">Cerrar Sesión</a>
                     </li>
                 {% endif %}
             </ul>
@@ -71,9 +103,17 @@
     <div class="" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url({% static 'img/hero.jpeg' %}); height: 100vh; background-size: cover; background-position: center; color: white;">
 
         <div class="d-flex flex-column justify-content-center align-items-start h-100 ps-5 ms-4">
-            <h1 class="" style="font-size: 4rem; font-family: 'Segoe UI',sans-serif; font-weight: bold;">Tu salud es nuestra <br>prioridad.</h1>
-            <p class="fst-italic" style="font-size: 1rem">"Somos una clínica especializada en brindar atención médica de calidad, con un <br>equipo de profesionales comprometidos con el bienestar de nuestros pacientes."</p>
-            <a class="btn btn-primary pt-2 pb-2 mt-3" href="{% url 'reserva_hora' %}" style="width: 12%; background: linear-gradient(#48b1bf, #06beb6); border: 1px solid #2193b0; border-radius: 20px;">Reserva tu Hora</a>
+            <h1 class="" style="font-size: 4rem; font-family: 'Segoe UI',sans-serif; font-weight: bold; color: #fff9f0;">Tu salud es nuestra <br>prioridad.</h1>
+            <p class="fst-italic" style="font-size: 1rem; color: #fff9f0;">"Somos una clínica especializada en brindar atención médica de calidad, con un <br>equipo de profesionales comprometidos con el bienestar de nuestros pacientes."</p>
+
+            <div class="d-flex flex-row justify-content-start align-items-start w-100 gap-2">
+                {% if user.is_authenticated %}
+                    <a class="btn btn-primary pt-2 pb-2 mt-3 btn-reserva" href="{% url 'reserva_hora' %}" style="width: 12%; background-color: transparent; border: 1px solid #fff9f0; border-radius: 4px; color: #fff9f0">Reserva tu Hora</a>
+                {% else %}
+                    <a class="btn pt-2 pb-2 mt-3 btn-login" href="{% url 'reserva_hora' %}">Inicia Sesión</a>
+                    <a class="btn pt-2 pb-2 mt-3 btn-registro" href="{% url 'reserva_hora' %}">Registrate</a>
+                {% endif %}
+            </div>
 
         </div>
 
@@ -84,40 +124,41 @@
 </div>
 
 <!-- Footer -->
-<footer class="text-white d-flex flex-column justify-content-center flex-row align-items-center" style="background: linear-gradient(#48b1bf, #06beb6)">
-    <div class="container d-flex justify-content-end flex-row align-items-center w-100 pt-2 pb-0" style="border-bottom: 1px solid white;">
-        <p class="me-4"><i class="fas fa-home me-3"></i>Av. Arturo Prat 1234, Iquique, Chile </p>
-        <p class="me-4"><i class="fas fa-phone me-3"></i>+56 57 123 4567</p>
+<footer class="d-flex flex-column justify-content-center flex-row align-items-center" style="color: #fff9f0; background-color: #24B0BA">
+    <div class="container d-flex justify-content-end flex-row align-items-center w-100 pt-2 pb-0" style="border-bottom: 1px solid #fff9f0;">
+        <p class="me-4" style="color: #fff9f0"><i class="fas fa-home me-3" style="color: #fff9f0"></i>Av. Arturo Prat 1234, Iquique, Chile </p>
+        <p class="me-4" style="color: #fff9f0"><i class="fas fa-phone me-3" style="color: #fff9f0"></i>+56 57 123 4567</p>
     </div>
     <div class="container p-3 row">
         <div class="col d-flex flex-column justify-content-center align-items-center">
             <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="150" height="150">
+            <h4 class="mt-3" style="color: #fff9f0">Clinicare</h4>
         </div>
         <div class="col text-center d-flex flex-column justify-content-center align-items-center">
-            <a href="{% url 'index' %}" style="color: white; text-decoration: none;">Home</a>
-            <a href="{% url 'reserva_hora' %}" style="color: white; text-decoration: none;">Reserva</a>
-            <a style="color: white; text-decoration: none;">Quienes Somos</a>
-            <a style="color: white; text-decoration: none;">Términos y Condiciones</a>
-            <a style="color: white; text-decoration: none;">Política de Privacidad</a>
+            <a href="{% url 'index' %}" style="color: #fff9f0; text-decoration: none;">Home</a>
+            <a href="{% url 'reserva_hora' %}" style="color: #fff9f0; text-decoration: none;">Reserva</a>
+            <a style="color: #fff9f0; text-decoration: none;">Quienes Somos</a>
+            <a style="color: #fff9f0; text-decoration: none;">Términos y Condiciones</a>
+            <a style="color: #fff9f0; text-decoration: none;">Política de Privacidad</a>
         </div>
         <div class="col d-flex flex-column justify-content-center align-items-center">
             <div id="map" style="width: 350px; height: 250px"></div>
         </div>
 
     </div>
-    <div class="container text-center p-3 row " style="border-top: 1px solid white;">
-        <div class="col text-center text-white" >
+    <div class="container text-center p-3 row " style="border-top: 1px solid #fff9f0;">
+        <div class="col text-center" style="color: #fff9f0;" >
             © 2025 Copyright Clinicare Todos los derechos reservados.
         </div>
 
         <div class="col d-flex justify-content-end">
-            <a href="#" class="text-white me-5">
+            <a href="#" class="me-5" style="color: #fff9f0;">
                 <i class="fa-brands fa-square-facebook"></i>
             </a>
-            <a href="#" class="text-white me-5">
+            <a href="#" class="text-white me-5" style="color: #fff9f0;">
                 <i class="fa-brands fa-instagram"></i>
             </a>
-            <a href="#" class="text-white me-5">
+            <a href="#" class="text-white me-5" style="color: #fff9f0;">
                 <i class="fa-solid fa-envelope"></i>
             </a>
         </div>

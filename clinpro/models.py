@@ -6,11 +6,12 @@ from django.dispatch import receiver
 
 
 class User(AbstractUser):
-    email = models.EmailField(verbose_name='email address', max_length=100, unique=True)
+    email = models.EmailField(verbose_name='email', max_length=100, unique=True)
     password1 = models.CharField(verbose_name='password', max_length=128, null=True, blank=True)
     is_staff = models.BooleanField(blank=True, default=False)
     is_active = models.BooleanField(blank=True, default=True)
     is_superuser = models.BooleanField(blank=True, default=False)
+    rol = models.CharField(verbose_name='rol', max_length=128, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -29,13 +30,12 @@ class Paciente(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Usuario', null=True, blank=True)
     rut = models.CharField(max_length=15, verbose_name='RUT del Paciente')
     nombre = models.CharField(max_length=100, verbose_name='Nombre', blank=True, null=True)
-    apellido = models.CharField(max_length=100, verbose_name='Apellido', blank=True, null=True)
     direccion = models.CharField(max_length=100, verbose_name='Direccion', blank=True, null=True)
     telefono = models.CharField(max_length=15, verbose_name='Telefono', blank=True, null=True)
     prevision = models.CharField(max_length=100, verbose_name='Previsión', blank=True, null=True)
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido} - {self.rut}"
+        return f"{self.rut} {self.nombre}"
 
     objects = models.Manager()
 
@@ -91,17 +91,18 @@ class Pago(models.Model):
 
 class ReservaHora(models.Model):
 
-    fecha = models.DateField(verbose_name='Fecha de la Reserva')
-    hora_inicio = models.TimeField(verbose_name='Hora de Inicio')
-    hora_fin = models.TimeField(verbose_name='Hora de Fin')
+    fecha_reserva = models.DateField(verbose_name='Fecha de la Reserva')
+    hora_reserva = models.TimeField(verbose_name='Hora de Inicio')
     is_confirmada = models.BooleanField(default=False, verbose_name='¿Está Confirmada?')
+    is_asistencia = models.BooleanField(default=False, verbose_name='¿Asistió?')
+    is_cancelada = models.BooleanField(default=False, verbose_name='¿Está Cancelada?')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación')
 
-    paciente_id = models.ForeignKey(Paciente, on_delete=models.CASCADE, verbose_name='Paciente')
-    pago_id = models.ForeignKey(Pago, on_delete=models.CASCADE, verbose_name='Pago', blank=True, null=True)
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, verbose_name='Paciente')
+    pago = models.ForeignKey(Pago, on_delete=models.CASCADE, verbose_name='Pago', blank=True, null=True)
 
     def __str__(self):
-        return f"Reserva para {self.fecha} de {self.hora_inicio} a {self.hora_fin}"
+        return f"Reserva para el día {self.fecha} de {self.hora_reserva}"
 
     objects = models.Manager()
 

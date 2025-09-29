@@ -27,7 +27,7 @@
 <body class="p-0 m-0" style="height: 100vh;">
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg" style="background: linear-gradient(#48b1bf, #06beb6)">
+<nav class="navbar navbar-expand-lg" style="background-color: #24B0BA">
     <div class="container-fluid ps-3 pt-0 pb-0 pe-2">
         <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="50" height="50" class="d-inline-block align-text-top">
         <a class="navbar-brand text-white ms-1" href="{% url 'index' %}">Clinicare </a>
@@ -52,7 +52,7 @@
                 {% else %}
                 <li class="nav-item">
                 {% if request.user.paciente %}
-                    <a class="nav-link text-white" href="{% url 'profile' id=request.user.pk %}">{{ request.user.paciente.nombre }} {{ request.user.paciente.apellido }}</a>
+                    <a class="nav-link text-white" href="{% url 'profile' id=request.user.pk %}">{{ request.user.paciente.nombre }}</a>
                 {% else %}
                     <a class="nav-link text-white" href="{% url 'profile' id=request.user.pk %}">{{ request.user.username }}</a>
                 {% endif %}
@@ -74,7 +74,7 @@
 <!-- End Content -->
 
 <!-- Footer -->
-<footer class="text-white d-flex flex-column justify-content-center flex-row align-items-center" style="background: linear-gradient(#48b1bf, #06beb6)">
+<footer class="d-flex flex-column justify-content-center flex-row align-items-center" style="background-color: #24B0BA; color: #fff9f0">
     <div class="container d-flex justify-content-end flex-row align-items-center w-100 pt-2 pb-0" style="border-bottom: 1px solid white;">
         <p class="me-4"><i class="fas fa-home me-3"></i>Av. Arturo Prat 1234, Iquique, Chile </p>
         <p class="me-4"><i class="fas fa-phone me-3"></i>+56 57 123 4567</p>
