@@ -19,8 +19,79 @@
         {% endif %}
     {% endfor %}
 
-    <div class="container row mt-4">
-        <h1 class="text-start">Bienvenido {{ request.user.paciente.nombre }}</h1>
-    </div>
+    <style>
+        #main {
+            -webkit-box-shadow: 0px 14px 15px 4px rgba(0,0,0,0.64);
+            box-shadow: 0px 14px 15px 4px rgba(0,0,0,0.64);
+        }
+    </style>
+
+    <section class="px-0 py-0" style="height: 100vh">
+
+        <div class="row d-flex flex-column w-100 m-0" id="main" style="background: linear-gradient(180deg, hsla(184, 68%, 44%, 1) 0%, hsla(0, 0%, 0%, 1) 100%);">
+            <div class="col p-4" >
+                <h3 style="color: #fff9f0; font-weight: normal; font-size: 2rem">Perfil de Usuario</h3>
+                <h1 style="color: #fff9f0; font-weight: bold; font-size: 4rem">Bienvenido {{ request.user.paciente.nombre }}</h1>
+                <div class="d-flex justify-content-end">
+                    <h5 style="color: #fff9f0;"><i class="fa-solid fa-envelope"></i> {{ request.user.email }}</h5>
+                </div>
+            </div>
+            <div class="col" >
+                <div class="row">
+                    <div class="col p-1 d-flex justify-content-center align-items-center"><h5 style="color: #fff9f0;"><i class="fa-solid fa-house-user"></i> {{ request.user.paciente.direccion }}</h5></div>
+                    <div class="col p-1 d-flex justify-content-center align-items-center"><h5 style="color: #fff9f0;"><i class="fa-solid fa-phone"></i> {{ request.user.paciente.telefono }}</h5></div>
+                    <div class="col p-1 d-flex justify-content-center align-items-center"><h5 style="color: #fff9f0;"><i class="fa-solid fa-hand-holding-medical"></i> {{ request.user.paciente.prevision }}</h5></div>
+                    <div class="col p-1 d-flex justify-content-end align-items-start gap-2">
+                        <a class="btn" href="{% url 'edit_profile' id=request.user.pk %}" style="color: #fff9f0; background-color: transparent; border: 1px solid #fff9f0" ><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a class="btn" href="{% url 'delete_profile' id=request.user.pk %}" style="color: #fff9f0; background-color: transparent; border: 1px solid #fff9f0"><i class="fa-solid fa-trash"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row d-flex w-100 m-0 pt-4">
+            <div class="col p1">
+                <div class="card">
+                    <div class="card-header" style="background-color: #24B0BA"><h4 class="card-title" style="color: #fff9f0;">Historial de Horas</h4></div>
+                    <div class="card-body">
+                        <table class="display text-center"  id="historialTable">
+                            <thead>
+                            <tr>
+                                <th class="text-center">ID</th>
+                                <th class="text-center">Fecha</th>
+                                <th class="text-center">Orden</th>
+                                <th class="text-center">Archivo</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    {% block scripts %}
+
+        <script>
+            let table = new DataTable('#historialTable',{
+                data: [
+                    {
+                        id: [1],
+                        fecha: ['01/04/2025'],
+                        orden: [12234],
+                        archivo: '<a href="{% url 'index' %}" target="_blank" style="color: black"><i class="fa-solid fa-download"></i></a>',
+                    },
+                ],
+                columns: [
+                    { data: 'id' },
+                    { data: 'fecha' },
+                    { data: 'orden' },
+                    { data: 'archivo' },
+                ],
+            });
+        </script>
+
+    {% endblock %}
 
 {% endblock %}

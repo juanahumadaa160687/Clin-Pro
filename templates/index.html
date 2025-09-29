@@ -105,18 +105,8 @@
         <div class="d-flex flex-column justify-content-center align-items-start h-100 ps-5 ms-4">
             <h1 class="" style="font-size: 4rem; font-family: 'Segoe UI',sans-serif; font-weight: bold; color: #fff9f0;">Tu salud es nuestra <br>prioridad.</h1>
             <p class="fst-italic" style="font-size: 1rem; color: #fff9f0;">"Somos una clínica especializada en brindar atención médica de calidad, con un <br>equipo de profesionales comprometidos con el bienestar de nuestros pacientes."</p>
-
-            <div class="d-flex flex-row justify-content-start align-items-start w-100 gap-2">
-                {% if user.is_authenticated %}
-                    <a class="btn btn-primary pt-2 pb-2 mt-3 btn-reserva" href="{% url 'reserva_hora' %}" style="width: 12%; background-color: transparent; border: 1px solid #fff9f0; border-radius: 4px; color: #fff9f0">Reserva tu Hora</a>
-                {% else %}
-                    <a class="btn pt-2 pb-2 mt-3 btn-login" href="{% url 'reserva_hora' %}">Inicia Sesión</a>
-                    <a class="btn pt-2 pb-2 mt-3 btn-registro" href="{% url 'reserva_hora' %}">Registrate</a>
-                {% endif %}
-            </div>
-
+            <a class="btn btn-primary pt-2 pb-2 mt-3 btn-reserva" href="{% url 'reserva_hora' %}" style="width: 12%; background-color: transparent; border: 1px solid #fff9f0; border-radius: 4px; color: #fff9f0">Reserva tu Hora</a>
         </div>
-
     </div>
 
     <!-- End Hero -->

@@ -122,7 +122,7 @@ def password_reset_complete(request):
 # user profile page view
 
 @login_required(login_url='login')
-def profile(request):
+def profile(request, id):
 
     return render(request, 'profile.html')
 
