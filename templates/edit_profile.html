@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load sweetify %}
+{% sweetify %}
+
+
+{% block title %} Editar Perfil {% endblock title %}
+
+{% block content %}
+
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 30%;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% elif message.tags == 'error' %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30%;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% else %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert" style="width: 30%;">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <style>
+        #main {
+            -webkit-box-shadow: 0px 14px 15px 4px rgba(0,0,0,0.64);
+            box-shadow: 0px 14px 15px 4px rgba(0,0,0,0.64);
+        }
+    </style>
+
+    <section class="px-0 py-0" style="height: 100vh">
+
+        <div class="row d-flex flex-column w-100 m-0" id="main" style="background: linear-gradient(180deg, hsla(184, 68%, 44%, 1) 0%, hsla(0, 0%, 0%, 1) 100%);">
+            <div class="col p-4" >
+                <h3 style="color: #fff9f0; font-weight: normal; font-size: 2rem">Editar Perfil</h3>
+                <h1 style="color: #fff9f0; font-weight: bold; font-size: 4rem">Modificar Información</h1>
+                <div class="d-flex justify-content-end">
+                    <h5 style="color: #fff9f0;"><i class="fa-solid fa-envelope"></i> {{ request.user.email }}</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="row d-flex justify-content-center align-items-center w-100 m-0 py-2" >
+            <div class="col p-2 d-flex justify-content-center align-items-center" style="width: 100%;">
+                <div class="card w-75 mt-4">
+                    <div class="card-body">
+                        <form method="POST" class="w-100" action="{% url 'edit_profile' id=request.user.pk %}">
+                            {% csrf_token %}
+                            <div class="form-floating mt-2 mb-2">
+                                {{ form.rut }}
+                                <label for="nombre">Rut</label>
+                            </div>
+                            <br>
+                            <div class="form-floating mb-2">
+                                {{ form.nombre }}
+                                <label for="nombre">Nombre</label>
+                            </div>
+                            <br>
+                            <div class="form-floating mb-2">
+                                {{ form.direccion }}
+                                <label for="direccion">Dirección</label>
+                            </div>
+                            <br>
+                            <div class="form-floating mb-2">
+                                {{ form.telefono }}
+                                <label for="telefono">Teléfono</label>
+                            </div>
+                            <br>
+                            <div class="form-floating mb-2">
+                                {{ form.prevision }}
+                                <label for="prevision">Previsión</label>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn" style="color: #fff9f0; background-color: #24B0BA; border: 1px solid #fff9f0">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

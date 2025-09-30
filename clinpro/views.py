@@ -6,15 +6,17 @@ from django.contrib import messages
 from django.utils.dateformat import time_format
 
 from administracion.models import *
-from .forms import RegistroUsuarioForm, LoginPacienteForm, PacienteModelForm
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+
+from .forms import LoginUserForm, RegistroUserForm, PacienteForm
 from .functions import enviarCorreo, sendWhatsapp, enviarconfirmacionregistro
-from .models import User, Convenio, Pago, ReservaHora
+from .models import User, Convenio, Pago, ReservaHora, Paciente
 from transbank.webpay.webpay_plus.transaction import Transaction
 from datetime import datetime, time, timedelta
 from .task import sendConfirmacion
 from administracion.models import *
+import sweetify
 
 
 
@@ -24,83 +26,66 @@ def index(request):
 
 #######################################################################################################################
 
-# Login page view
+# login page view
 def login(request):
-
-    if request.user.is_authenticated:
-        return redirect('reserva_hora')
-
-    form = LoginPacienteForm()
 
     if request.method == 'POST':
 
-        email = request.POST['email']
-        password = request.POST['password']
-        user = authenticate(request, username=email, password=password)
+        form = LoginUserForm(request, data=request.POST)
+        if form.is_valid():
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password')
+            remember_me = form.cleaned_data.get('remember_me')
 
-        remember_me = request.POST.get('remember_me', None)
-        if remember_me is not None:
-            request.session.set_expiry(1209600)
-        else:
-            request.session.set_expiry(0)
+            user = authenticate(request, email=email, password=password)
 
-        if user is not None:
-            auth_login(request, user)
-            return redirect('reserva_hora')
-        else:
-            messages.error(request, 'Error: usuario o contraseña incorrectos, intente nuevamente.')
-            return render(request, 'login.html', {'form': form})
+            if user is not None:
+                auth_login(request, user)
+
+                if not remember_me:
+                    request.session.set_expiry(0)  # La sesión expira al cerrar el navegador
+
+                return redirect('reserva_hora')
+
+            else:
+                sweetify.error(request, 'Usuario o contraseña incorrectos.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
 
     else:
-        form = LoginPacienteForm()
+        form = LoginUserForm()
 
     return render(request, 'login.html', {'form': form})
 
 #######################################################################################################################
 
-#Register Page View
-def register(request):
-
-    if request.user.is_authenticated:
-        return redirect('index')
-
+def registro(request):
     if request.method == 'POST':
+        form = RegistroUserForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.rut = form.cleaned_data.get('rut')
+            user.email = form.cleaned_data.get('email')
+            user.nombre = form.cleaned_data.get('nombre')
+            user.telefono = form.cleaned_data.get('telefono')
+            user.set_password(form.cleaned_data.get('password1'))
 
-        form = RegistroUsuarioForm()
+            user.save()
 
-        email = request.POST['email']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-        username = email.split('@')[0]
+            grupo_paciente, created = Group.objects.get_or_create(name='Paciente')
+            user.groups.add(grupo_paciente)
 
-        if password1 != password2:
-            messages.error(request, 'Las contaseñas no coinciden, intenta nuevamente')
+            remitente = os.getenv('EMAIL_HOST_USER')
+            destinatario = user.email
 
-        elif password1 == password2:
+            enviarconfirmacionregistro(remitente, destinatario)
 
-            user = User.objects.create_user(username=username, email=email, password=password1)
-
-            group = Group.objects.get(name='Paciente')
-            user.groups.add(group)
-
-            messages.success(request, 'Usuario creado exitosamente. Por favor, inicie sesión.')
-
-            remitentes = os.getenv('EMAIL_HOST_USER')
-            destinatario = email
-
-            enviarconfirmacionregistro(remitentes, destinatario)
-
+            sweetify.success(request, 'Registro exitoso. Ahora puedes iniciar sesión.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
             return redirect('login')
-
         else:
-            messages.error(request, 'Error en el registro, intente nuevamente')
-
+            sweetify.error(request, 'Error en el registro. Por favor, verifica los datos ingresados.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
     else:
-        form = RegistroUsuarioForm()
+        form = RegistroUserForm()
 
-    return render(request, 'register.html', {'form': form, 'success': 'Usuario creado exitosamente. Por favor, inicie sesión.'})
-
-#######################################################################################################################
+    return render(request, 'register.html')
 
 #password reset page view
 #@allowed_users(allowed_roles=['Administrador', 'Paciente'])
@@ -124,16 +109,38 @@ def password_reset_complete(request):
 @login_required(login_url='login')
 def profile(request, id):
 
-    return render(request, 'profile.html')
+    if ReservaHora.objects.filter(paciente_id=id).exists():
+        reserva = ReservaHora.objects.filter(paciente_id=id).order_by('-id')
+        return render(request, 'profile.html', {'reserva': reserva, })
+
+    else:
+        sweetify.info(request, 'No tienes horas reservadas aún', button='Aceptar', timer=3000, persistent='Ok', icon='info')
+        return render(request, 'profile.html',)
+
+
+#######################################################################################################################
+@login_required(login_url='login')
+def edit_profile(request, id):
+    user = User.objects.get(id=id)
+
+    if request.method == 'POST':
+        form = RegistroUserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Tu perfil ha sido actualizado exitosamente.')
+            return redirect('profile', id=user.id)
+        else:
+            sweetify.error(request, 'Error al actualizar el perfil. Por favor, verifica los datos ingresados.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
+    else:
+        form = RegistroUserForm(instance=user)
+
+    return render(request, 'edit_profile.html', {'form': form})
+
 
 #######################################################################################################################
 
-def edit_profile(request):
-    return render(request, 'edit_profile.html')
-
-#######################################################################################################################
-
-def delete_profile(request):
+@login_required(login_url='login')
+def delete_profile(request, id):
     user = request.user
     user.delete()
     messages.success(request, 'Tu cuenta ha sido eliminada exitosamente.')
@@ -143,46 +150,48 @@ def delete_profile(request):
 #@login_required(login_url='login')
 def reserva_hora(request):
 
-    form = PacienteModelForm()
-
     servicios = Servicio.objects.values('nombre').distinct()
 
 ##############_Paciente Nuevo_
-
     if request.method == 'POST' and 'paciente' in request.POST:
-
-        form = PacienteModelForm(request.POST)
-
-        if form.is_valid():
-            paciente = form.save(commit=False)
-            paciente.user = request.user
+        form_paciente = PacienteForm(request.POST)
+        if form_paciente.is_valid():
+            genero = form_paciente.cleaned_data.get('genero')
+            fecha_nacimiento = form_paciente.cleaned_data.get('fecha_nacimiento')
+            direccion = form_paciente.cleaned_data.get('direccion')
+            telefono_emergencia = form_paciente.cleaned_data.get('telefono_emergencia')
+            prevision = form_paciente.cleaned_data.get('prevision')
+            paciente = Paciente.objects.create(
+                user=request.user,
+                genero=genero,
+                fecha_nacimiento=fecha_nacimiento,
+                direccion=direccion,
+                telefono_emergencia=telefono_emergencia,
+                prevision=prevision
+            )
             paciente.save()
-
-            messages.success(request, 'Datos del paciente guardados exitosamente.')
-
-            servicios = Servicio.objects.values('nombre').distinct()
-
-            return render(request, 'reserva_hora/reserva_hora.html',{'paciente': paciente, 'servicios': servicios,})
-
+            print(paciente)
+            sweetify.success(request, 'Datos de paciente guardados exitosamente.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
+            return render(request, 'reserva_hora/reserva_hora.html', {'servicios': servicios,})
         else:
-            messages.error(request, 'Error al guardar los datos del paciente. Por favor, intente nuevamente.')
-            return render(request, 'reserva_hora/reserva_hora.html',{'form': form,})
+            sweetify.error(request, 'Error al guardar los datos del paciente. Por favor, verifica los datos ingresados.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
+            return render(request, 'reserva_hora/reserva_hora.html', {'form_paciente': form_paciente, 'servicios': servicios,})
 
 ##############_Servicio_
 
     elif request.method == 'POST' and 'servicio' in request.POST:
 
-            request.session['servicio'] = request.POST['servicio']
-            print(request.session['servicio'])
-            especialidades_servicio = PersonalSalud.objects.filter(servicio__nombre=request.session['servicio']).values('especialidad').distinct()
-            ls = list(especialidades_servicio)
-            print(ls)
-            request.session['especialidades_servicio'] = ls
-            print(
-                request.session['especialidades_servicio']
-            )
+        request.session['servicio'] = request.POST['servicio']
+        print(request.session['servicio'])
+        especialidades_servicio = PersonalSalud.objects.filter(servicio__nombre=request.session['servicio']).values('especialidad').distinct()
+        ls = list(especialidades_servicio)
+        print(ls)
+        request.session['especialidades_servicio'] = ls
+        print(
+            request.session['especialidades_servicio']
+        )
 
-            return render(request, 'reserva_hora/reserva_hora.html', {'especialidades': request.session['especialidades_servicio'],})
+        return render(request, 'reserva_hora/reserva_hora.html', {'especialidades': request.session['especialidades_servicio'],})
 
 ##############_Especialidad_
 
@@ -246,11 +255,11 @@ def reserva_hora(request):
         print(fecha_seleccionada)
 
         if fecha_seleccionada.day == 5 or fecha_seleccionada.day == 6:
-            messages.error(request, 'El centro clínico está cerrado los fines de semana. Por favor, seleccione un día hábil.')
+            sweetify.error(request, 'El centro clínico está cerrado los fines de semana. Por favor, seleccione un día hábil.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
             return render(request, 'reserva_hora/reserva_hora.html', {'error': 'El centro clínico está cerrado los fines de semana. Por favor, seleccione un día hábil.',})
 
         elif fecha_seleccionada < datetime.now().date():
-            messages.error(request, 'La fecha no puede ser en el pasado. Por favor, seleccione una fecha válida.')
+            sweetify.error(request, 'La fecha no puede ser en el pasado. Por favor, seleccione una fecha válida.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
             return render(request, 'reserva_hora/reserva_hora.html', {'error': 'La fecha no puede ser en el pasado. Por favor, seleccione una fecha válida.',})
 
         profesional = request.session['profesional']
@@ -274,30 +283,30 @@ def reserva_hora(request):
         hora_seleccionada = datetime.strptime(request.session['hora'], '%H:%M').time()
         print(hora_seleccionada)
 
-        horario_atencion = [time(hour=h) for h in range(8, 21) if h < 13 or h > 14]
-        print(horario_atencion)
+        #horario_atencion = [time(hour=h) for h in range(8, 21) if h < 13 or h > 14]
+        #print(horario_atencion)
 
-        horas_ocupadas = Agenda.objects.filter(fecha=request.session['fecha'], profesional_id=request.session['profesional']).values_list('hora', flat=True)
-        print(horas_ocupadas)
+        #horas_ocupadas = Agenda.objects.filter(fecha=request.session['fecha'], profesional_id=request.session['profesional']).values_list('hora', flat=True)
+        #print(horas_ocupadas)
 
         hora = time_format(hora_seleccionada, 'H:i')
         print(hora)
 
-        horas_disponibles = [hora for hora in horario_atencion if hora not in horas_ocupadas]
-        print(horas_disponibles)
+        #horas_disponibles = [hora for hora in horario_atencion if hora not in horas_ocupadas]
+        #print(horas_disponibles)
 
-        if hora_seleccionada not in horas_ocupadas and hora_seleccionada in horario_atencion:
+        #if hora_seleccionada not in horas_ocupadas and hora_seleccionada in horario_atencion:
 
-            agenda = Agenda.objects.create(
-                fecha=request.session['fecha'],
-                hora=hora_seleccionada,
-                profesional_id=request.session['profesional'],
-            )
-            agenda.save()
+        agenda = Agenda.objects.create(
+            fecha=request.session['fecha'],
+            hora=hora_seleccionada,
+            profesional_id=request.session['profesional'],
+        )
+        agenda.save()
 
-            convenios = Convenio.objects.all()
+        convenios = Convenio.objects.all()
 
-            return render(request, 'reserva_hora/reserva_hora.html', {'convenios': convenios})
+        return render(request, 'reserva_hora/reserva_hora.html', {'convenios': convenios})
 
 
 
@@ -317,7 +326,7 @@ def reserva_hora(request):
 
         total_descuento = int(subtotal * (descuento / 100))
         print(total_descuento)
-        total = subtotal - total_descuento
+        total = subtotal + iva - total_descuento
         print(total)
 
         def money_format(value):
@@ -339,9 +348,9 @@ def reserva_hora(request):
         token = resp["token"]
         url = resp["url"]
 
-        return render(request, 'reserva_hora/reserva_hora.html', {'total': total_frt, 'iva': iva, 'descuento': total_descuento, 'subtotal': subtotal, 'nombre': nombre, 'dcto': descuento, 'token': token, 'url': url,})
+        return render(request, 'reserva_hora/reserva_hora.html', {'total': total_frt, 'iva': iva, 'descuento': total_descuento, 'subtotal': subtotal, 'nombre': request.session.get('nombre_convenio'), 'dcto': descuento, 'token': token, 'url': url,})
 
-    return render(request, 'reserva_hora/reserva_hora.html', {'form': form, 'servicios': servicios})
+    return render(request, 'reserva_hora/reserva_hora.html', {'form': PacienteForm, 'servicios': servicios})
 
 #######################################################################################################################
 
@@ -362,13 +371,23 @@ def pago_exitoso(request):
 
     convenio = request.session['nombre_convenio']
 
-    Pago.objects.create(orden_compra=orden_compra, fecha=fecha_transaccion, monto=monto, metodo_pago=tipo_pago, is_pagado=True, convenio=convenio)
+    pagado = Pago.objects.create(orden_compra=orden_compra, fecha=fecha_transaccion, monto=monto, metodo_pago=tipo_pago, is_pagado=True, convenio=convenio)
+
+    if pagado is not None:
+        sweetify.success(request, 'Pago realizado exitosamente.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
+    else:
+        sweetify.error(request, 'Error en el pago, intente nuevamente.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
 
     pago = Pago.objects.get(orden_compra=orden_compra)
 
     profesional_hora = PersonalSalud.objects.filter(id = request.session['profesional']).values('nombre').distinct()
 
-    ReservaHora.objects.create(fecha_reserva=request.session['fecha'], hora_reserva=request.session['hora'], is_confirmada=False, is_asistencia=False, is_cancelada=False, paciente_id=request.user.paciente.id, pago=pago)
+    reserva_ok = ReservaHora.objects.create(fecha_reserva=request.session['fecha'], hora_reserva=request.session['hora'], is_confirmada=False, is_asistencia=False, is_cancelada=False, paciente_id=request.user.paciente.id, pago=pago)
+
+    if reserva_ok is not None:
+        sweetify.success(request, 'Reserva de hora realizada exitosamente.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
+    else:
+        sweetify.error(request, 'Error en la reserva de hora, intente nuevamente.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
 
     telefono = request.user.paciente.telefono
     fecha = datetime.strptime(request.session['fecha'], "%Y-%m-%d").date()

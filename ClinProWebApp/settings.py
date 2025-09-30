@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'social_django',
     'administracion',
     'django_password_eye',
+    'sweetify',
 ]
 
 MIDDLEWARE = [
@@ -81,7 +82,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ClinProWebApp.wsgi.application'
 
-
+SWEETIFY_SWEETALERT_LIBRARY = 'sweetalert2'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 

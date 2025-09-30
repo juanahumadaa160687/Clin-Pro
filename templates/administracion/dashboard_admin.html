@@ -1,12 +1,82 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <img src="https://pngimg.com/uploads/under_construction/under_construction_PNG42.png">
-    <h1>Under Construcction</h1>
-    <p>Estamos trabajando para traer esta sección pronto.</p>
-</body>
-</html>
+{% extends 'base_funcionarios.html' %}
+{% load static %}
+
+{% block title %}Dashboard Administración{% endblock %}
+
+{% block content %}
+
+    <div class="m-0 p-2" style="height: 90vh">
+        <div class="row m-3 p-1">
+            <div class="col d-flex justify-content-start align-items-end flex-row gap-2">
+                <img src="{% static 'img/logo.png' %}" alt="Clin Logo" width="40" height="40" class="d-inline-block align-text-bottom">
+                <h4 class="text-start" style="color: #16222a">Panel de Administración</h4>
+            </div>
+            <div class="col d-flex justify-content-end align-items-end flex-column">
+                <h5 class="text-end" style="color: #16222a">Bienvenido {{ request.user.nombre }}</h5>
+            </div>
+        </div>
+
+
+        <div class="row d-flex justify-content-center align-items-center flex-row px-2 mt-5">
+
+            <div class="col-3 p-3">
+                <div class="card mb-3" style="box-shadow: -9px 15px 34px -2px rgba(37,37,37,0.66);">
+                    <div class="card-body">
+                        <h5 class="text-start" style="color: #16222a">Menú</h5>
+                    </div>
+                </div>
+                <div class="card mb-3" style="box-shadow: -9px 15px 34px -2px rgba(37,37,37,0.66);">
+                    <div class="card-body">
+                        <h5 class="text-start" style="color: #16222a">Menú</h5>
+                    </div>
+                </div>
+                <div class="card mb-3" style="box-shadow: -9px 15px 34px -2px rgba(37,37,37,0.66);">
+                    <div class="card-body">
+                        <h5 class="text-start" style="color: #16222a">Menú</h5>
+                    </div>
+                </div>
+                <div class="card mb-3" style="box-shadow: -9px 15px 34px -2px rgba(37,37,37,0.66);">
+                    <div class="card-body">
+                        <h5 class="text-start" style="color: #16222a">Menú</h5>
+                    </div>
+                </div>
+                <div class="card mb-3" style="box-shadow: -9px 15px 34px -2px rgba(37,37,37,0.66);">
+                    <div class="card-body">
+                        <h5 class="text-start" style="color: #16222a">Menú</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-9 p-3">
+                <div class="row">
+                    <div class="d-flex justify-content-end align-items-end mt-2" style="">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="#" style="text-decoration: none; color: #16222a">General</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" style="text-decoration: none; color: #16222a">Link</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" style="text-decoration: none; color: #16222a">Link</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" aria-disabled="true" style="text-decoration: none; color: #16222a">Disabled</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="card" style="box-shadow: -9px 15px 34px -2px rgba(37,37,37,0.66);">
+                        <div class="card-body">
+                            <h5 class="text-start " style="color:">Contenido Principal</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}

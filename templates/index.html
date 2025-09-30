@@ -84,7 +84,7 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" style="color: #fff9f0" href="{% url 'profile/' id=request.user.pk %}">Area Usuarios</a>
+                        <a class="nav-link" style="color: #fff9f0" href="{% url 'profile' id=request.user.pk %}">Area Usuarios</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" style="color: #fff9f0" href="{% url 'logout' %}">Cerrar Sesión</a>
