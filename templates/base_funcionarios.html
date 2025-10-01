@@ -15,6 +15,12 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.0/css/dataTables.dataTables.css" />
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdn.datatables.net/2.3.0/js/dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.19/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.19/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.19/index.global.min.js"></script>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -23,29 +29,59 @@
     <title>
         ClinPro - {% block title %}{% endblock title %}
     </title>
+
 </head>
-<body class="p-0 m-0" style="height: 100vh;">
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg" style="background-color: #0D1321; box-shadow: -9px 15px 34px -2px rgba(37,37,37,0.66);">
-    <div class="container-fluid ps-3 pt-0 pb-0 pe-2 d-flex justify-content-center align-items-center">
-        <img src="{% static 'img/logo_blanco.png' %}" alt="Logo Clinica " width="50" height="50" class="d-inline-block align-text-top">
-        <a class="navbar-brand text-white ms-1" href="{% url 'index' %}">ClinPro </a>
-    </div>
-</nav>
-<!-- End Navbar -->
+<body class="p-0 m-0" style="height: 100vh; background-color: #0d1321;">
 
-<!-- Content -->
-{% block content %}
+
+
+
+
+<main class="container-fluid" style="min-height: calc(100vh - 60px); background-color: #0d1321; padding: 0;">
+
+<div class="row p-0 m-0">
+    <aside class="col-2 d-flex flex-column justify-content-between align-items-start" style="width: 250px; height: 100vh; position: fixed; top: 0; left: 0; background-color: rgba(33,	38,	52, 0.7); padding: 20px; z-index: 4;">
+        <div class="container-fluid d-flex flex-column align-items-center justify-content-center">
+            <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="50" height="50" class="d-inline-block align-text-bottom">
+            <p class="text-white mt-2">Bienvenido {{ request.user.nombre }}</p>
+        </div>
+        <nav class="nav nav-pills nav-justified flex-column mt-1" >
+            <a class="nav-link text-start mb-4" aria-current="page" href="#" style="text-decoration: none; color: #fff9f0 ">Dashboard</a>
+            <a class="nav-link text-start mb-4" href="#" style="text-decoration: none; color: #fff9f0 ">Servicios</a>
+            <a class="nav-link text-start mb-4" href="#" style="text-decoration: none; color: #fff9f0 ">Personal de Salud</a>
+            <a class="nav-link text-start mb-4" href="#" style="text-decoration: none; color: #fff9f0 ">Nuevo Funcionario</a>
+            <a class="nav-link text-start mb-4" href="#" style="text-decoration: none; color: #fff9f0 ">Reportes</a>
+            <a class="nav-link text-start mb-4" href="#" style="text-decoration: none; color: #fff9f0 ">Cerrar Sesión</a>
+        </nav>
+        <div class="container-fluid flex-column p-4 d-flex justify-content-end align-items-center">
+            <img src="{% static 'img/logo_blanco.png' %}" alt="Logo Clinica " width="50" height="50" class="d-inline-block align-text-bottom">
+            <a class="navbar-brand text-white ms-1" href="{% url 'index' %}">ClinPro </a>
+            <p class="text-white">Version 1.0 &copy; 2025</p>
+        </div>
+    </aside>
+    <section class="col-auto p-4" style="margin-left: 250px; width: calc(100% - 250px);">
+        {% block content %}
+
+        {% endblock %}
+    </section>
+</div>
+</main>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
 {% endblock %}
-<!-- End Content -->
 
-<!-- Footer -->
-<footer class="text-white d-flex flex-column justify-content-center flex-row align-items-center" style="background-color: #0D1321">
-    <div class="container-fluid text-center p-3 ">
-        <div class="text-center text-white d-flex justify-content-center" >
-           Clin Pro version 1.0.0 &copy; 2025
-        </div>
-    </div>
-</footer>
+
+{% load sweetify %}
+{% sweetify %}
+</body>
+</html>

@@ -73,9 +73,6 @@ post_save.connect(create_paciente, sender=User)
 
 class Convenio(models.Model):
 
-    CHOICES = (
-
-    )
 
     nombre = models.CharField(max_length=100, verbose_name='Nombre del Convenio', default='Sin Convenio')
     descuento = models.IntegerField(verbose_name='Descuento', default=0)

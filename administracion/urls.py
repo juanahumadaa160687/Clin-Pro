@@ -1,8 +1,9 @@
 from django.urls import path
+
+import administracion
 from .views import *
 
 urlpatterns = [
     path('dashboard/', dashboard_admin, name='dashboard'),
-    path('login/', login_personal, name='login_personal'),
-    path('registro/', registro, name='registro'),
+    path('dashboard_servicios/', dashboard_servicios, name='dashboard_servicios'),
 ]

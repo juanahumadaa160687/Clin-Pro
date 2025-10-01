@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 
 from .forms import LoginUserForm, RegistroUserForm, PacienteForm
-from .functions import enviarCorreo, sendWhatsapp, enviarconfirmacionregistro
+from .functions import sendWhatsapp, enviarconfirmacionregistro, conf_pago
 from .models import User, Convenio, Pago, ReservaHora, Paciente
 from transbank.webpay.webpay_plus.transaction import Transaction
 from datetime import datetime, time, timedelta
@@ -22,7 +22,10 @@ import sweetify
 
 #Landing Page
 def index(request):
-    return render(request, 'index.html')
+
+    #conf_pago('juan.pablo656@gmail.com', 'jua.ahumadaa@duocuc.cl', 'JP', '05/10/2025', '9:00', 'Dra', 'Elena Rojas', '50000', '2345', '123445', '85743409734' )
+
+    return render(request, 'reserva_hora/pago_exitoso.html')
 
 #######################################################################################################################
 
@@ -85,7 +88,7 @@ def registro(request):
     else:
         form = RegistroUserForm()
 
-    return render(request, 'register.html')
+    return render(request, 'register.html', {'form': form})
 
 #password reset page view
 #@allowed_users(allowed_roles=['Administrador', 'Paciente'])
@@ -399,7 +402,10 @@ def pago_exitoso(request):
 
     sendWhatsapp(telefono, fecha, hora_inicio, profesional_hora.values('nombre'))
 
-    enviarCorreo(remitente, destinatario, detalle_tarjeta, monto)
+    #confirmacion = conf_pago('juan.pablo656@gmail.com', 'direccion@colegiosanlorenzotarapaca.cl', 'JP', '05/10/2025', '9:00', 'Dra', 'Elena Rojas', '50000', '2345', '123445', '85743409734' )
+
+
+    #conf_pago(remitente, destinatario, request.user.nombre, request.session.get('fecha'), request.session.get('hora'), profesional_res.values(''), , str(monto), tipo_pago, orden_compra, codigo_aut )
 
     sendConfirmacion(telefono, fecha, hora_inicio).apply_async(
         args=[telefono, fecha, hora_inicio],

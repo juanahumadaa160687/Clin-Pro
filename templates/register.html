@@ -20,36 +20,72 @@
         {% endif %}
     {% endfor %}
 
-    <div class="w-100 d-flex justify-content-center align-items-center" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url({% static 'img/clin2.jpeg' %}); height: 100vh; background-size: cover; background-position: center;">
-        <div class="card p-2" style="border-radius: 20px; background-color: transparent; backdrop-filter: blur(10px); border: 1px solid #ccc; width: 30%; height: 90%;">
-            <div class="card-body d-flex justify-content-center align-items-center flex-column w-100">
-                <img src="{% static 'img/logo_white.png' %}" class="mb-4" alt="Card image cap" width="150" height="150">
-                <h2 class="card-title text-center mb-2 mt-3 text-white">Registro de Usuario</h2>
-                <br>
-                <form method="post" class="text-white w-100" action="{% url 'register' %}">
+
+    <div class="p-0 m-0 d-flex justify-content-center align-items-center flex-row" style="height: 100vh;">
+        <div class="card p-0 shadow d-flex justify-content-center align-items-center flex-row" style="width: 70%; border-radius: 20px; background-color: #f5f3e9">
+            <div class="card-body p-0">
+                <img src="{% static 'img/registro.jpeg' %}" class="" alt="Card image cap" width="400" height="650" style="border-radius: 20px 0 0 20px ;">
+
+            </div>
+            <div class="card-body pt-0 pb-0">
+                <h2 class="card-title" style="color: #3A6073;">Registro de Usuario</h2>
+
+                <form class="row g-2 text-black mt-5" method="POST" action="{% url 'registro' %}" style="width: 550px; height: 400px;">
                     {% csrf_token %}
-                    <div class="mb-3 row d-flex justify-content-center flex-column">
-                        <div class="col mb-3 control-group d-flex flex-column justify-content-start">
-                            {{ form.email.label }}
-                            {{ form.email }}
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ form.non_field_errors }}
                         </div>
-                        <div class="col mb-3 control-group d-flex flex-column justify-content-start">
-                            {{ form.password1.label }}
-                            {{ form.password1 }}
-                        </div>
-                        <div class="col mb-3 control-group d-flex flex-column justify-content-start">
-                            {{ form.password2.label }}
-                            {{ form.password2 }}
-                        </div>
+                    {% endif %}
+                    <div class="col-6 mb-3">
+                        {{ form.rut.label }}
+                        {{ form.rut }}
+                        {% if form.rut.errors %}
+                            <div class="text-danger" role="alert">{{ form.rut.errors }}</div>
+                        {% endif %}
                     </div>
-                    <div class="row mt-3">
-                        <div class="col d-flex flex-column justify-content-center align-items-center mt-3">
-                            <button type="submit" class="btn btn-primary" style="width: 90%; background-color: #48b1bf; border: 1px solid #48b1bf">Registrarse</button>
-                            <p class="text-white mt-2">¿Ya tienes cuenta? <a href="{% url 'login' %}" style="color: #48b1bf">Inicia Sesión</a></p>
-                        </div>
+                    <div class="col-6 mb-3">
+                        {{ form.nombre.label }}
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="text-danger" role="alert">{{ form.nombre.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-6 mb-3">
+                        {{ form.email.label }}
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger" role="alert">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-6 mb-3">
+                        {{ form.telefono.label }}
+                        {{ form.telefono }}
+                        {% if form.telefono.errors %}
+                            <div class="text-danger" role="alert">{{ form.telefono.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-6 mb-3">
+                        {{ form.password1.label }}
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <div class="text-danger" role="alert">{{ form.password1.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-6 mb-3">
+                        {{ form.password2.label }}
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <div class="text-danger" role="alert">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 d-grid gap-2 d-flex flex-column justify-content-center align-items-center w-100">
+                        <button type="submit" class="btn btn-primary" style="width: 388px; height: 48px; background-color: #3A6073; border: 1px solid #3A6073">Guardar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+
 {% endblock %}

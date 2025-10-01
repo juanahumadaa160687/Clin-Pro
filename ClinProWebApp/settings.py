@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'administracion',
     'django_password_eye',
     'sweetify',
+    'recepcion'
+
 ]
 
 MIDDLEWARE = [
@@ -186,3 +188,4 @@ CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 TIME_INPUT_FORMATS=['%H:%M', '%H:%M:%S']
 DATE_INPUT_FORMATS=['%d-%m-%Y', '%Y-%m-%d']
+

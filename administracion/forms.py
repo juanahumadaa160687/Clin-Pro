@@ -111,6 +111,9 @@ class ServicioForm(forms.Form):
         model = Servicio
         fields = ['nombre', 'personal']
 
+    def save(self, commit):
+        pass
+
 
 class ProcedimientoForm(forms.Form):
     procedimiento = forms.CharField(

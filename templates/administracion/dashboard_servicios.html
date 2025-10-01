@@ -1,0 +1,65 @@
+{% extends 'base_funcionarios.html' %}
+{% load static %}
+{% block title %} Dashboard Servicios {% endblock title %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="text-start text-white mb-4">Listado de Profesionales de Salud</h1>
+        <div class="card p-4" style="box-shadow: 10px 10px 15px #CCC; border-radius: 20px; background-color: rgba(33, 38, 52, 0.9);">
+            <table id="dataTable" class="table table-striped" style="width:100%; color: white;">
+                <thead>
+                    <tr>
+                        <th>RUT</th>
+                        <th>Nombre</th>
+                        <th>Título</th>
+                        <th>Especialidad</th>
+                        <th>Universidad</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        let table = new DataTable('#dataTable',{
+            data: [
+                {'id': '1', 'rut': '12.345.678-9', 'nombre': 'Juan Pérez', 'titulo': 'Médico', 'especialidad': 'Cardiología', 'universidad': 'Universidad de Chile', 'email': 'jperez@clinicare.cl', 'telefono': '+56912345678'},
+                {'id': '2', 'rut': '98.765.432-1', 'nombre': 'María González', 'titulo': 'Enfermera', 'especialidad': 'Pediatría', 'universidad': 'Pontificia Universidad Católica de Chile', 'email': 'mariag@clinicare.cl', 'telefono': '+56987654321'},
+                {'id': '3', 'rut': '11.223.344-5', 'nombre': 'Carlos Soto', 'titulo': 'Kinesiólogo', 'especialidad': 'Rehabilitación', 'universidad': 'Universidad de Concepción', 'email': 'csoto@clinicare.cl', 'telefono': '+56911223344'},
+                {'id': '4', 'rut': '22.334.455-6', 'nombre': 'Ana Ramírez', 'titulo': 'Nutricionista', 'especialidad': 'Nutrición Clínica', 'universidad': 'Universidad de Santiago de Chile', 'email': 'aramirez@clinicare.cl', 'telefono': '+56922334455'},
+                {'id': '5', 'rut': '33.445.566-7', 'nombre': 'Luis Fernández', 'titulo': 'Fonoaudiólogo', 'especialidad': 'Trastornos del Habla', 'universidad': 'Universidad Austral de Chile', 'email': 'lfernandez@clinicare.cl', 'telefono': '+56933445566'},
+                {'id': '6', 'rut': '44.556.677-8', 'nombre': 'Sofía Martínez', 'titulo': 'Psicóloga', 'especialidad': 'Salud Mental', 'universidad': 'Universidad de Valparaíso', 'email': 'smartinez@clinicare.cl', 'telefono': '+56944556677'},
+                {'id': '7', 'rut': '55.667.788-9', 'nombre': 'Diego López', 'titulo': 'Terapista Ocupacional', 'especialidad': 'Rehabilitación Funcional', 'universidad': 'Universidad de La Frontera', 'email': 'dlopez@clinicare.cl', 'telefono': '+56955667788'},
+                {'id': '8', 'rut': '66.778.899-0', 'nombre': 'Elena Rojas', 'titulo': 'Médico General', 'especialidad': 'Medicina Familiar', 'universidad': 'Universidad de Antofagasta', 'email': 'erojas@clinicare.cl', 'telefono': '+56966778899'},
+                {'id': '9', 'rut': '77.889.900-1', 'nombre': 'Javier Torres', 'titulo': 'Enfermero', 'especialidad': 'Urgencias', 'universidad': 'Universidad de Talca', 'email': 'jtorres@clinicare.cl', 'telefono': '+56977889900'},
+                {'id': '10', 'rut': '88.990.011-2', 'nombre': 'Camila Vega', 'titulo': 'Odontóloga', 'especialidad': 'Odontopediatría', 'universidad': 'Universidad de Los Andes', 'email': 'cvega@clinicare.cl', 'telefono': '+56988990011'},
+                {'id': '11', 'rut': '99.001.122-3', 'nombre': 'Fernando Silva', 'titulo': 'Kinesiólogo', 'especialidad': 'Deportiva', 'universidad': 'Universidad Mayor', 'email': 'fsilva@clinicare.cl', 'telefono': '+56999001122'},
+                {'id': '12', 'rut': '10.112.233-4', 'nombre': 'Valentina Cruz', 'titulo': 'Nutricionista', 'especialidad': 'Nutrición Infantil', 'universidad': 'Universidad Adolfo Ibáñez', 'email': 'vcruz@clinicare.cl', 'telefono': '+56910112233'},
+                {'id': '13', 'rut': '21.223.344-5', 'nombre': 'Ricardo Muñoz', 'titulo': 'Fonoaudiólogo', 'especialidad': 'Audiología', 'universidad': 'Universidad de La Serena', 'email': 'rmunoz@clinicare.cl', 'telefono': '+56921223344'},
+                {'id': '14', 'rut': '32.334.455-6', 'nombre': 'Isabel Herrera', 'titulo': 'Psicóloga', 'especialidad': 'Psicología Clínica', 'universidad': 'Universidad de Magallanes', 'email': 'iherrera@clinicare.cl', 'telefono': '+56932334455'},
+                {'id': '15', 'rut': '43.445.566-7', 'nombre': 'Andrés Castillo', 'titulo': 'Terapista Ocupacional', 'especialidad': 'Pediátrica', 'universidad': 'Universidad de Los Lagos', 'email': 'acastillo@clinicare.cl', 'telefono': '+56943445566'},
+                {'id': '16', 'rut': '54.556.677-8', 'nombre': 'Natalia Fuentes', 'titulo': 'Médica Pediatra', 'especialidad': 'Pediatría', 'universidad': 'Universidad de La República', 'email': 'nfuentes@clinicare.cl', 'telefono': '+56954556677'},
+                {'id': '17', 'rut': '65.667.788-9', 'nombre': 'Sebastián Rivas', 'titulo': 'Enfermero', 'especialidad': 'Cuidados Intensivos', 'universidad': 'Universidad de San Sebastián', 'email': 'srivas@clinicare.cl', 'telefono': '+56965667788'},
+                {'id': '18', 'rut': '76.778.899-0', 'nombre': 'Lorena Paredes', 'titulo': 'Odontóloga', 'especialidad': 'Ortodoncia', 'universidad': 'Universidad Central de Chile', 'email': 'lparedes@clinicare.cl', 'telefono': '+56976778899'},
+                {'id': '19', 'rut': '87.889.900-1', 'nombre': 'Gonzalo Medina', 'titulo': 'Kinesiólogo', 'especialidad': 'Neurológica', 'universidad': 'Universidad de Aysén', 'email': 'gmedina@clinicare.cl', 'telefono': '+56987889900'},
+                {'id': '20', 'rut': '98.990.011-2', 'nombre': 'Mónica Salazar', 'titulo': 'Nutricionista', 'especialidad': 'Nutrición Deportiva', 'universidad': 'Universidad de Tarapacá', 'email': 'msalazarqclinicare.cl', 'telefono': '+56998990011'},
+            ],
+            columns: [
+                { data: 'rut' },
+                { data: 'nombre' },
+                { data: 'titulo' },
+                { data: 'especialidad'},
+                { data: 'universidad' },
+                { data: 'email' },
+                { data: 'telefono' },
+            ],
+        });
+    </script>
+{% endblock %}

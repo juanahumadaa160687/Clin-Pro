@@ -30,57 +30,32 @@
 
 <body class="p-0 m-0" style="height: 100vh; position: relative">
 
-<style>
-
-    .btn-login {
-        width: 12%;
-        background-color: transparent;
-        color: #fff9f0;
-        border: 1px solid #fff9f0;
-        border-radius: 4px
-    }
-    .btn-registro {
-        background-color: #fff9f0;
-        color: black;
-        border: 1px solid #fff9f0;
-        border-radius: 4px;
-        width: 12%;
-    }
-
-    .btn-login:hover {
-        background-color: #fff9f0;
-        color: black;
-    }
-
-    .btn-registro:hover {
-        background-color: transparent;
-        color: #fff9f0;
-        border: 1px solid #fff9f0;
-    }
-</style>
-
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg d-flex justify-content-center" style="background-color: transparent; position: absolute; width: 100%; z-index: 10;">
-    <div class="container-fluid row pt-1 d-flex flex-column justify-content-center align-items-center">
-        <div class="col d-flex flex-column justify-content-center align-items-center">
-            <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="50" height="50">
+<nav class="navbar navbar-expand-lg " style="background-color: transparent; position: absolute; width: 100%; z-index: 10; left: 0; top: 0;">
+    <div class="container-fluid pt-2">
+        <div class="p-2">
+            <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="50" height="50" class="d-inline-block align-text-bottom">
             <a class="navbar-brand text-white ms-2" href="{% url 'index' %}">Clinicare</a>
         </div>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="col nav justify-content-center align-items-center w-100">
+            <ul class="nav justify-content-end w-100">
                 <li class="nav-item">
                     <a class="nav-link " style="color: #fff9f0" aria-current="page" href="{% url 'index' %}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" style="color: #fff9f0" aria-current="page" href="#">Nuestra Clínica</a>
+                    <a class="nav-link" style="color: #fff9f0" aria-current="page" href="#clinica">Nuestra Clínica</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" style="color: #fff9f0" href="{% url 'login_personal' %}">Área Funcionarios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color: #fff9f0" href="{% url 'reserva_hora' %}">Reserva tu Hora</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color: #fff9f0" href="{% url 'login' %}">Iniciar Sesión</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color: #fff9f0" href="{% url 'registro' %}">Registrarse</a>
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
@@ -100,16 +75,23 @@
 
     <!-- Hero -->
 
-    <div class="" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url({% static 'img/hero.jpeg' %}); height: 100vh; background-size: cover; background-position: center; color: white;">
+    <div class="" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.4)), url({% static 'img/hero.jpeg' %}); height: 100vh; background-size: cover; background-position: center; color: white;">
 
         <div class="d-flex flex-column justify-content-center align-items-start h-100 ps-5 ms-4">
-            <h1 class="" style="font-size: 4rem; font-family: 'Segoe UI',sans-serif; font-weight: bold; color: #fff9f0;">Tu salud es nuestra <br>prioridad.</h1>
-            <p class="fst-italic" style="font-size: 1rem; color: #fff9f0;">"Somos una clínica especializada en brindar atención médica de calidad, con un <br>equipo de profesionales comprometidos con el bienestar de nuestros pacientes."</p>
-            <a class="btn btn-primary pt-2 pb-2 mt-3 btn-reserva" href="{% url 'reserva_hora' %}" style="width: 12%; background-color: transparent; border: 1px solid #fff9f0; border-radius: 4px; color: #fff9f0">Reserva tu Hora</a>
+            <h1 class="" style="font-size: 4rem; font-family: 'Segoe UI',sans-serif; font-weight: bold; color: #f5f3e9;">Tu salud es nuestra <br>prioridad.</h1>
+            <p class="fst-italic" style="font-size: 1rem; color: #f5f3e9;">"Somos una clínica especializada en brindar atención médica de calidad, con un <br>equipo de profesionales comprometidos con el bienestar de nuestros pacientes."</p>
+            <a class="btn btn-primary pt-2 pb-2 mt-3 btn-reserva" href="{% url 'reserva_hora' %}" style="width: 12%; background-color: transparent; border: 1px solid #f5f3e9; border-radius: 4px; color: #f5f3e9">Reserva tu Hora</a>
         </div>
     </div>
 
     <!-- End Hero -->
+
+</div>
+
+<div id="clinica" class="p-3">
+    <div >
+        Soon
+    </div>
 
 </div>
 

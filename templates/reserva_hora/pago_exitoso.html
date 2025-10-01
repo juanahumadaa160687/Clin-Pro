@@ -1,31 +1,53 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %} Pago Exitoso {% endblock title %}
+
 {% block content %}
 
-    <div class="container mt-5">
-        <div class="card">
-            <div class="card-header"></div>
-            <div class="card-body row">
-                <div class="col">
-                    <h3 class="card-title">Pago Exitoso</h3>
-                    <p class="card-text">El pago número {{ orden_compra }} por ${{ monto }} se ha realizado con éxito.</p>
-                    <h4>Detalles de la transacción.</h4>
-                    <ul class="list-group list-group-flush">
-                        <li>Estatus de la transacción: {{ status }}</li>
-                        <li>Tarjeta terminada en: {{ detalle_tarjeta }}</li>
-                        <li>Fecha de la transacción: {{ fecha_transaccion }}</li>
-                        <li>Codigo de autorización: {{ codigo_auth }}</li>
-                        <li>Tipo de pago: {{ tipo_pago }}</li>
-                    </ul>
-                    <p>Recibirá un mensaje con un enlace para confirmar su hora.</p>
-                    <a class="btn btn-success" href="{% url 'index' %}">Volver</a>
+    <div class="container mt-5 mb-5">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Launch demo modal
+        </button>
+    </div>
+
+    <div class="modal fade" tabindex="-1" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header d-flex align-items-center flex-column gap-3">
+                    <img src="{% static 'img/checked_seccess.png' %}" alt="Logo" style="width: 50px; height: auto; margin-right: 10px;">
+                    <h5 class="modal-title"><strong>Pago Exitoso</strong></h5>
                 </div>
-                <div class="col">
-                    <img src="{% static 'img/checked_seccess.png' %}" alt="">
+                <div class="modal-body">
+                    <p class="text-center" style="font-weight: bold">Su pago ha sido procesado exitosamente.</p>
+                    <br>
+                    <p class="text-start" style="font-weight: bold">Detalle de la transacción:</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>A second item:</strong> </li>
+                        <li class="list-group-item"><strong>A third item:</strong> </li>
+                        <li class="list-group-item"><strong>A fourth item:</strong> </li>
+                        <li class="list-group-item"><strong>And a fifth one:</strong> </li>
+                    </ul>
+                </div>
+                <div class="modal-footer d-flex justify-content-center flex-column align-items-center">
+                    <p class="text-center text-muted"><small>Recibirá un correo con la confirmación del pago.</small></p>
+                    <a href="{% url 'index' %}" class="btn" style="background: #3A6073; color: white;">Ir al Inicio</a>
                 </div>
             </div>
         </div>
     </div>
     
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        const myModal = document.getElementById('myModal')
+        const myInput = document.getElementById('myInput')
+
+        myModal.addEventListener('shown.bs.modal', () => {
+            myInput.focus()
+        })
+    </script>
+
 {% endblock %}

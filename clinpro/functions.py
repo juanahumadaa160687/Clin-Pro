@@ -1,45 +1,56 @@
+from email.mime.image import MIMEImage
+
 import pywhatkit
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 import datetime
 from django.conf import settings
+from django.utils.html import strip_tags
 
-from administracion.models import PersonalSalud
 
+def conf_pago(remitente, destinatario, nombre, fecha_reserva, hora_reserva, pro_sufijo, pro_nombre, monto, m_pago, codigo_auth, orden ):
 
-# Enviar correo de confirmación de pago
-def enviarCorreo(remitentes, destinatario, detalle_tarjeta, monto):
-    asunto = "Confirmación de Pago"
-    remitente = remitentes.lower()
+    asunto = "Confirmación de Pago y Reserva de Hora"
+    remitente = remitente.lower()
     destinatarios = destinatario.lower()
 
-    html_content = render_to_string('reserva_hora/confirmacion_pago.html', {})
+    context = {
+        "receiver_name": nombre,
+        "fecha": datetime.datetime.now().strftime("%d/%m/%Y"),
+        "fecha_reserva": fecha_reserva,
+        "hora_reserva": hora_reserva,
+        "profesional_sufijo": pro_sufijo,
+        "profesional": pro_nombre,
+        "monto": monto,
+        "metodo_pago": m_pago,
+        "codigo_auth": codigo_auth,
+        "orden_compra": orden,
+    }
 
-    cuerpo = f"El pago realizado con la tarjeta terminada en {detalle_tarjeta}, por un monto de ${monto} fue realizado con éxito"
+    html_content = render_to_string('reserva_hora/confirmacion_pago.html', context)
+    text_content = strip_tags(html_content)
 
-    mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, [destinatarios])
+    msg = EmailMultiAlternatives(
+        asunto,
+        text_content,
+        remitente,
+        [destinatarios]
+    )
 
-    mensaje.attach_alternative(html_content, 'text/html')
+    msg.mixed_subtype='related'
+    msg.attach_alternative(html_content, "text/html")
 
-    mensaje.send()
+    image_path = settings.BASE_DIR / 'static' / 'img' / 'logo.png'
+    with open(image_path, 'rb') as img:
+        img = MIMEImage(img.read())
+        img.add_header('Content-ID', '<logo.png>')
+        img.add_header('Content-Disposition', 'inline', filename='logo.png')
+        msg.attach(img)
+
+    msg.send()
+
     print("Correo enviado correctamente")
 
-# Enviar correo de recuperación de contraseña
-def enviarCorreoRecuperacion(remitentes,  destinatario, codigo):
-    asunto = "Recuperación de Contraseña"
-    remitente = remitentes.lower()
-    destinatarios = destinatario.lower()
-
-    html_content = render_to_string('password_reset.html', {'codigo': codigo, 'domain': settings.DOMAIN})
-
-    cuerpo = f"Su código de recuperación es: {codigo}"
-
-    mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, [destinatarios])
-
-    mensaje.attach_alternative(html_content, 'text/html')
-
-    mensaje.send()
-    print("Correo enviado correctamente")
 
 def enviarconfirmacionregistro(remitentes, destinatario):
     asunto = "Confirmación de Registro"

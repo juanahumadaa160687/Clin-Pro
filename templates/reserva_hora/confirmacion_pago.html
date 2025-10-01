@@ -1,10 +1,49 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title></title>
 </head>
 <body>
+<div class="">
+    <div class="" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; flex-direction: column" >
+        <img src="cid:logo.png" alt="" width="100" height="100">
+        <h1 style="text-align: center">Confirmación de Pago</h1>
+    </div>
+    <div class="content">
+        <p>Sr(a). {{ receiver_name }}:</p>
 
+        <p>Con fecha <strong>{{ fecha }}</strong> le informamos que hemos recibido el pago de su reserva de hora médica.</p>
+        <p>El pago número <strong>{{ orden_compra }}</strong> por <strong>${{ monto }}</strong> se ha realizado con éxito.</p>
+
+        <h3>Detalles de la transacción:</h3>
+        <ul style="list-style: none;">
+            <li>Estatus de la transacción: {{ status }}</li>
+            <li>Tarjeta terminada en: {{ detalle_tarjeta }}</li>
+            <li>Fecha de la transacción: {{ fecha_transaccion }}</li>
+            <li>Codigo de autorización: {{ codigo_auth }}</li>
+            <li>Tarjeta número: {{ metodo_pago }}</li>
+        </ul>
+
+        <h3>Detalles de la reserva:</h3>
+        <ul style="list-style: none;">
+            <li>Fecha de la reserva: {{ fecha_reserva }}</li>
+            <li>Hora de la reserva: {{ hora_reserva }}</li>
+            <li></li>
+            <li>Profesional: {{ profesional_sufijo }} {{ profesional }}</li>
+        </ul>
+        <br>
+        <p>Gracias por su pago.</p>
+        <p>ATTE <br>Clinicare</p>
+    </div>
+    <br>
+    <div class="footer">
+
+
+        <p>Este es un correo automático, por favor no responder.</p>
+        <p>Si tiene alguna duda, por favor contáctenos a través de nuestro correo de soporte:
+            <a href="mailto:clinicare_clinica@clinicarecl" >soporte_clinica@clinicare.cl</a>
+    </div>
+</div>
 </body>
 </html>

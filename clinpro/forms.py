@@ -6,7 +6,7 @@ from django_password_eye.fields import PasswordEye
 from django_password_eye.widgets import PasswordEyeWidget
 
 class LoginUserForm(AuthenticationForm):
-    username = forms.EmailField(
+    email = forms.EmailField(
         label='Correo Electrónico',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo Electrónico', 'required': 'true'})
     )
