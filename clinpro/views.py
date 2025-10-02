@@ -4,6 +4,7 @@ from django.core import serializers
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils.dateformat import time_format
+from oscrypto import use_winlegacy
 
 from administracion.models import *
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -25,7 +26,7 @@ def index(request):
 
     #conf_pago('juan.pablo656@gmail.com', 'jua.ahumadaa@duocuc.cl', 'JP', '05/10/2025', '9:00', 'Dra', 'Elena Rojas', '50000', '2345', '123445', '85743409734' )
 
-    return render(request, 'reserva_hora/pago_exitoso.html')
+    return render(request, 'index.html')
 
 #######################################################################################################################
 
@@ -35,23 +36,25 @@ def login(request):
     if request.method == 'POST':
 
         form = LoginUserForm(request, data=request.POST)
-        if form.is_valid():
-            email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password')
-            remember_me = form.cleaned_data.get('remember_me')
 
-            user = authenticate(request, email=email, password=password)
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        remember_me = request.POST.get('remember_me') == 'on'
+        print(email, password, remember_me)
 
-            if user is not None:
-                auth_login(request, user)
+        user = authenticate(request, email=email, password=password)
 
-                if not remember_me:
-                    request.session.set_expiry(0)  # La sesión expira al cerrar el navegador
+        if user is not None:
 
-                return redirect('reserva_hora')
+            auth_login(request, user)
 
-            else:
-                sweetify.error(request, 'Usuario o contraseña incorrectos.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
+            if not remember_me:
+                request.session.set_expiry(0)  # La sesión expira al cerrar el navegador
+
+            return redirect('reserva_hora')
+
+        else:
+            sweetify.error(request, 'Usuario o contraseña incorrectos.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
 
     else:
         form = LoginUserForm()

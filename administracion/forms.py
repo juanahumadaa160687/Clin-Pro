@@ -60,7 +60,7 @@ class RegistroPersonalForm(UserCreationForm):
     )
     rol = forms.ChoiceField(
         label='Rol',
-        choices=[('personal_salud', 'Personal de Salud'), ('administrador', 'Administrador'), ('secretaria', 'Secretaria')],
+        choices=[('PersonalSalud', 'Personal de Salud'), ('Administrador', 'Administrador'), ('Secretaria', 'Secretaria')],
         widget=forms.Select(attrs={'class': 'form-select', 'required': 'true'})
     )
 
@@ -70,29 +70,34 @@ class RegistroPersonalForm(UserCreationForm):
 
 class PersonalSaludForm(ModelForm):
     sufijo = forms.CharField(
-        label='Sufijo',
+        label='Prefijo',
         max_length=4,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sufijo (e.g., Dr., Dra., Lic.)', 'required': 'true'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sufijo (e.g., Dr., Dra., Lic.)', 'required': 'true', 'id': 'sufijo', 'name': 'sufijo'})
     )
     titulo = forms.CharField(
         label='Título',
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título (e.g., Médico, Enfermero)', 'required': 'true'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título (e.g., Médico, Enfermero)', 'required': 'true', 'id': 'titulo', 'name': 'titulo'})
     )
     especialidad = forms.CharField(
         label='Especialidad',
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Especialidad (e.g., Cardiología, Pediatría)', 'required': 'true'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Especialidad (e.g., Cardiología, Pediatría)', 'required': 'true', 'id': 'especialidad', 'name': 'especialidad'})
     )
     universidad = forms.CharField(
         label='Universidad',
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Universidad (e.g., Universidad de Chile)', 'required': 'true'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Universidad (e.g., Universidad de Chile)', 'required': 'true', 'id': 'universidad', 'name': 'universidad'})
+    )
+    user = forms.ModelChoiceField(
+        label='Usuario',
+        queryset=User.objects.filter(personalsalud__isnull=True, administrador__isnull=True, secretaria__isnull=True),
+        widget=forms.Select(attrs={'class': 'form-select', 'required': 'true', 'id': 'user', 'name': 'user'})
     )
 
     class Meta:
         model = PersonalSalud
-        fields = ['sufijo', 'titulo', 'especialidad', 'universidad']
+        fields = ['sufijo', 'titulo', 'especialidad', 'universidad', 'user']
 
 
 class ServicioForm(forms.Form):
@@ -149,10 +154,10 @@ class AdministradorForm(forms.Form):
         fields = ['administrador']
 
 class SecretariaForm(forms.Form):
-    secretaria = forms.ModelMultipleChoiceField(
+    secretaria = forms.ModelChoiceField(
         label='Secretaria',
         queryset=User.objects.filter(secretaria__isnull=False),
-        widget=forms.SelectMultiple(attrs={'class': 'form-select', 'multiple': 'true'})
+        widget=forms.Select(attrs={'class': 'form-select', 'required': 'true',})
     )
 
     class Meta:

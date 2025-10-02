@@ -35,7 +35,7 @@ class PersonalSalud(models.Model):
     universidad = models.CharField(max_length=100)
 
     def __str__(self):
-        return f'{self.sufijo} {self.user.nombre} - {self.especialidad}'
+        return f'{self.sufijo} {self.user.nombre} - {self.titulo}'
 
     objects = models.Manager()
 

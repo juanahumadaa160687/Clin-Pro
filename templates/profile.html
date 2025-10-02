@@ -5,61 +5,21 @@
 
 {% block title %} Perfil de Usuario {% endblock title %}
 
+{% block seccion %}Bienvenido {{ request.user.nombre }}{% endblock seccion %}
+
 {% block content %}
 
-    {% for message in messages %}
-        {% if message.tags == 'success' %}
-            <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 30%;">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% elif message.tags == 'error' %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30%;">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% else %}
-            <div class="alert alert-info alert-dismissible fade show" role="alert" style="width: 30%;">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endif %}
-    {% endfor %}
-
-    <style>
-        #main {
-            -webkit-box-shadow: 0px 14px 15px 4px rgba(0,0,0,0.64);
-            box-shadow: 0px 14px 15px 4px rgba(0,0,0,0.64);
-        }
-    </style>
-
-    <section class="px-0 py-0" style="height: 100vh">
-
-        <div class="row d-flex flex-column w-100 m-0" id="main" style="background: linear-gradient(180deg, hsla(184, 68%, 44%, 1) 0%, hsla(0, 0%, 0%, 1) 100%);">
-            <div class="col p-4" >
-                <h3 style="color: #fff9f0; font-weight: normal; font-size: 2rem">Perfil de Usuario</h3>
-                <h1 style="color: #fff9f0; font-weight: bold; font-size: 4rem">Bienvenido {{ request.user.paciente.nombre }}</h1>
-                <div class="d-flex justify-content-end">
-                    <h5 style="color: #fff9f0;"><i class="fa-solid fa-envelope"></i> {{ request.user.email }}</h5>
-                </div>
-            </div>
-            <div class="col" >
-                <div class="row">
-                    <div class="col p-1 d-flex justify-content-center align-items-center"><h5 style="color: #fff9f0;"><i class="fa-solid fa-house-user"></i> {{ request.user.paciente.direccion }}</h5></div>
-                    <div class="col p-1 d-flex justify-content-center align-items-center"><h5 style="color: #fff9f0;"><i class="fa-solid fa-phone"></i> {{ request.user.paciente.telefono }}</h5></div>
-                    <div class="col p-1 d-flex justify-content-center align-items-center"><h5 style="color: #fff9f0;"><i class="fa-solid fa-hand-holding-medical"></i> {{ request.user.paciente.prevision }}</h5></div>
-                    <div class="col p-1 d-flex justify-content-end align-items-start gap-2">
-                        <a class="btn" href="{% url 'edit_profile' id=request.user.pk %}" style="color: #fff9f0; background-color: transparent; border: 1px solid #fff9f0" ><i class="fa-solid fa-pen-to-square"></i></a>
-                        <a class="btn" href="{% url 'delete_profile' id=request.user.pk %}" style="color: #fff9f0; background-color: transparent; border: 1px solid #fff9f0"><i class="fa-solid fa-trash"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <section class="px-0 py-0 m-3" style="height: 100vh; background-color: #f5f3e9;">
 
         <div class="row d-flex w-100 m-0 pt-4">
-            <div class="col p1">
-                <div class="card">
-                    <div class="card-header" style="background-color: #24B0BA"><h4 class="card-title" style="color: #fff9f0;">Historial de Horas</h4></div>
+
+        </div>
+
+
+        <div class="row d-flex w-100 m-0 pt-4">
+            <div class="col-9">
+                <div class="card" style="width: 100%; box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #f5f3e9">
+                    <div class="card-header" style="background-color: #3A6073"><h4 class="card-title" style="color: #fff9f0;">Historial de Horas</h4></div>
                     <div class="card-body">
                         <table class="display text-center"  id="historialTable">
                             <thead>
@@ -74,6 +34,36 @@
                     </div>
                 </div>
             </div>
+            <div class="col-3">
+                <div class="card" style="width: 100%; box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #f5f3e9">
+                    <div class="card-header" style="background-color: #3A6073"><h4 class="card-title" style="color: #fff9f0;">Informes de Laboratorio</h4></div>
+                    <div class="card-body">
+                        <table class="table"  id="">
+                            <thead>
+                            <tr>
+                                <th class="text-center" style="background-color: #f5f3e9">ID</th>
+                                <th class="text-center" style="background-color: #f5f3e9">Fecha</th>
+                                <th class="text-center" style="background-color: #f5f3e9">Orden</th>
+                                <th class="text-center" style="background-color: #f5f3e9">Archivo</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="text-center" style="background-color: #f5f3e9">1</td>
+                                <td class="text-center" style="background-color: #f5f3e9">2023-09-01</td>
+                                <td class="text-center" style="background-color: #f5f3e9">Orden 001</td>
+                                <td class="text-center" style="background-color: #f5f3e9"><a href="#">Descargar</a></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center" style="background-color: #f5f3e9">2</td>
+                                <td class="text-center" style="background-color: #f5f3e9">2023-09-15</td>
+                                <td class="text-center" style="background-color: #f5f3e9">Orden 002</td>
+                                <td class="text-center" style="background-color: #f5f3e9"><a href="#">Descargar</a></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </section>
@@ -83,12 +73,16 @@
         <script>
             let table = new DataTable('#historialTable',{
                 data: [
-                    {
-                        id: [1],
-                        fecha: ['01/04/2025'],
-                        orden: [12234],
-                        archivo: '<a href="{% url 'index' %}" target="_blank" style="color: black"><i class="fa-solid fa-download"></i></a>',
-                    },
+                    {'id': 1, 'fecha': '2023-09-01', 'orden': 'Orden 001', 'archivo': '<a href="#">Descargar</a>'},
+                    {'id': 2, 'fecha': '2023-09-15', 'orden': 'Orden 002', 'archivo': '<a href="#">Descargar</a>'},
+                    {'id': 3, 'fecha': '2023-10-05', 'orden': 'Orden 003', 'archivo': '<a href="#">Descargar</a>'},
+                    {'id': 4, 'fecha': '2023-10-20', 'orden': 'Orden 004', 'archivo': '<a href="#">Descargar</a>'},
+                    {'id': 5, 'fecha': '2023-11-10', 'orden': 'Orden 005', 'archivo': '<a href="#">Descargar</a>'},
+                    {'id': 6, 'fecha': '2023-11-25', 'orden': 'Orden 006', 'archivo': '<a href="#">Descargar</a>'},
+                    {'id': 7, 'fecha': '2023-12-05', 'orden': 'Orden 007', 'archivo': '<a href="#">Descargar</a>'},
+                    {'id': 8, 'fecha': '2023-12-20', 'orden': 'Orden 008', 'archivo': '<a href="#">Descargar</a>'},
+                    {'id': 9, 'fecha': '2024-01-10', 'orden': 'Orden 009', 'archivo': '<a href="#">Descargar</a>'},
+                    {'id': 10, 'fecha': '2024-01-25', 'orden': 'Orden 010', 'archivo': '<a href="#">Descargar</a>'},
                 ],
                 columns: [
                     { data: 'id' },

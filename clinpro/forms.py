@@ -22,7 +22,7 @@ class LoginUserForm(AuthenticationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'remember_me']
+        fields = ['email', 'password', 'remember_me']
 
 
 class RegistroUserForm(UserCreationForm):
@@ -82,7 +82,7 @@ class PacienteForm(forms.ModelForm):
 
     genero = forms.ChoiceField(
         choices=genero_choices,
-        widget=forms.RadioSelect(attrs={'class': 'form-check-input', 'required': 'true', 'type': 'radio', 'name': 'genero', 'id': 'genero'}),
+        widget=forms.Select(attrs={'class': 'form-select', 'required': 'true', 'id': 'genero', 'name': 'genero'}),
         label='Género'
     )
     direccion = forms.CharField(

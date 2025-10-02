@@ -25,6 +25,9 @@
     <title>
         Clinicare - {% block title %}{% endblock title %}
     </title>
+
+
+
 </head>
 <body class="p-0 m-0" style="height: 100vh; background-color: #f5f3e9">
 
@@ -32,7 +35,7 @@
 <nav class="navbar navbar-expand-lg" style="background: #3A6073;">
     <div class="container-fluid ps-3 pt-1 pb-1 pe-2">
         <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="50" height="50" class="d-inline-block align-text-bottom">
-        <a class="ps-2 navbar-brand text-white ms-1" href="{% url 'index' %}">Clinicare </a>
+        <a class="ps-2 navbar-brand text-white ms-1" href="#">{% block seccion %}{% endblock seccion %} </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>

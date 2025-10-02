@@ -4,49 +4,39 @@
 {% block title %} Reserva de Hora {% endblock title %}
 
 {% block content %}
-    <br>
-    {% for message in messages %}
-        {% if message.tags == 'success' %}
-            <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 30%;">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% elif message.tags == 'error' %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30%;">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endif %}
-    {% endfor %}
-
 
 <div class="row d-flex flex-row justify-content-center align-items-center my-2 mx-2" style="min-height: 90vh;">
     {% if request.user.paciente %}
-        <div class="col-4" style="height: 85vh; ">
-            <div class="card shadow-lg h-100">
-                <div class="card-header" style="background-color: #24B0BA; color: #fff9f0"><h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5></div>
+        <div class="col-4"  style="height: 85vh;">
+            <div class="card h-100" style="background-color: #f5f3e9; box-shadow: 10px 10px 15px #CCC;">
+                <div class="card-header" style="background-color: #3A6073; color: #fff9f0;">
+                    <h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5>
+                </div>
                 <div class="card-body p-4 mb-4">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item mb-1">
-                            <h4>Rut:</h4>
-                            <p class="text-end" style="font-size: 16pt">{{ request.user.paciente.rut }}
-                            </p>
+                        <li class="list-group-item mb-3 mt-3" style="background-color: #f5f3e9;">
+                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Rut: {{ request.user.rut }}</h4>
                         </li>
-                        <li class="list-group-item mt-1 mb-1">
-                            <h4>Nombre:</h4>
-                            <p class="text-end" style="font-size: 16pt">{{ request.user.paciente.nombre }}
+                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
+                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Nombre: {{ request.user.nombre }}</h4>
                         </li>
-                        <li class="list-group-item mb-1">
-                            <h4>Dirección:</h4>
-                            <p class="text-end" style="font-size: 16pt">{{ request.user.paciente.direccion }}
+                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
+                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Género: {{ request.user.paciente.genero }}</h4>
                         </li>
-                        <li class="list-group-item mb-1">
-                            <h4>Teléfono:</h4>
-                            <p class="text-end" style="font-size: 16pt">{{ request.user.paciente.telefono }}
+                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
+                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Fecha de Nacimiento: {{ request.user.paciente.fecha_nacimiento }}</h4>
                         </li>
-                        <li class="list-group-item mb-1">
-                            <h4>Previsión:</h4>
-                            <p class="text-end" style="font-size: 16pt">{{ request.user.paciente.prevision }}
+                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
+                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Dirección: {{ request.user.paciente.direccion }}</h4>
+                        </li>
+                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
+                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Teléfono: {{ request.user.telefono }}</h4>
+                        </li>
+                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
+                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Teléfono de Emergencia: {{ request.user.paciente.telefono_emergencia }}</h4>
+                        </li>
+                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
+                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Previsión: {{ request.user.paciente.prevision }}</h4>
                         </li>
                     </ul>
                 </div>
@@ -54,19 +44,19 @@
         </div>
     {% else %}
         <div class="col-4" style="height: 85vh; ">
-            <div class="card shadow-lg h-100">
-                <div class="card-header" style="background-color: #24B0BA; color: #fff9f0"><h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5></div>
+            <div class="card h-100" style="background-color: #f5f3e9; box-shadow: 10px 10px 15px #CCC;">
+                <div class="card-header" style="background-color: #3A6073; color: #fff9f0"><h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5></div>
                 <div class="card-body p-4 mb-4">
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-floating mt-4 mb-4">
-                            {{ form.rut }}
-                            <label for="nombre">Rut</label>
+                            {{ form.genero }}
+                            <label for="genero">Género</label>
                         </div>
                         <br>
                         <div class="form-floating mb-4">
-                            {{ form.nombre }}
-                            <label for="nombre">Nombre</label>
+                            {{ form.fecha_nacimiento }}
+                            <label for="fecha_nacimiento">Fecha Nacimiento</label>
                         </div>
                         <br>
                         <div class="form-floating mb-4">
@@ -75,8 +65,8 @@
                         </div>
                         <br>
                         <div class="form-floating mb-4">
-                            {{ form.telefono }}
-                            <label for="telefono">Teléfono</label>
+                            {{ form.telefono_emergencia }}
+                            <label for="telefono_emergencia">Teléfono de Emergencias</label>
                         </div>
                         <br>
                         <div class="form-floating mb-4">
@@ -85,7 +75,7 @@
                         </div>
 
                         <div class="d-flex justify-content-center align-items-center mt-1">
-                            <button type="submit" class="btn" style="background-color: #24B0BA; color: #fff9f0; width: 250px">Guardar</button>
+                            <button type="submit" class="btn" style="background-color: #3A6073; color: #fff9f0; width: 250px">Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -93,8 +83,8 @@
         </div>
     {% endif %}
     <div class="col-4" style="height: 85vh; ">
-        <div class="card card-info shadow-lg h-100">
-            <div class="card-header" style="background-color: #24B0BA; color: #fff9f0"> <h5 class="card-title"><i class="fa-solid fa-calendar-check"></i> Información de la Hora</h5></div>
+        <div class="card h-100" style="background-color: #f5f3e9; box-shadow: 10px 10px 15px #CCC;">
+            <div class="card-header" style="background-color: #3A6073; color: #fff9f0"> <h5 class="card-title"><i class="fa-solid fa-calendar-check"></i> Información de la Hora</h5></div>
 
             <div class="card-body p-4">
 
@@ -114,9 +104,9 @@
                             </select>
                             <label for="servicio">Servicio</label>
                             {% if request.user.paciente.rut %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #24B0BA; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
                             {% else %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #24B0BA; color: #fff9f0;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
                             {% endif %}
                         </div>
                     </form>
@@ -135,7 +125,7 @@
                                 {% endfor %}
                             </select>
                             <label for="especialidad">Especialidad</label>
-                            <button type="submit" class="btn btn-lg" style="background-color: #24B0BA; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </form>
                 </div>
@@ -153,7 +143,7 @@
                                 {% endfor %}
                             </select>
                             <label for="profesional">Profesional</label>
-                            <button type="submit" class="btn btn-lg" style="background-color: #24B0BA; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </form>
                 </div>
@@ -171,7 +161,7 @@
                                 {% endfor %}
                             </select>
                             <label for="profesional">Procedimientos</label>
-                            <button type="submit" class="btn btn-lg" style="background-color: #24B0BA; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </form>
                 </div>
@@ -184,7 +174,7 @@
                         <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
                             <input class="form-control" type="date" name="fecha" id="fecha" value="{{ request.session.fecha }}" min="{{ hoy }}">
                             <label for="fecha">Fecha de Atención</label>
-                            <button type="submit" class="btn btn-lg" style="background-color: #24B0BA; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </form>
                 </div>
@@ -202,7 +192,7 @@
                                 {% endfor %}
                             </select>
                             <label for="hora">Horas Disponibles</label>
-                            <button type="submit" class="btn btn-lg" style="background-color: #24B0BA; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </form>
                 </div>
@@ -212,8 +202,8 @@
     </div>
 
     <div class="col-4" style="height: 85vh;">
-        <div class="card card-info shadow-lg h-100">
-            <div class="card-header" style="background-color: #24B0BA; color: #fff9f0"><h5 class="card-title"><i class="fa-solid fa-money-check-dollar"></i> Pago</h5></div>
+        <div class="card h-100" style="background-color: #f5f3e9; box-shadow: 10px 10px 15px #CCC;">
+            <div class="card-header" style="background-color: #3A6073; color: #fff9f0"><h5 class="card-title"><i class="fa-solid fa-money-check-dollar"></i> Pago</h5></div>
             <div class="card-body p-4" >
 
                 <div>
@@ -227,7 +217,7 @@
                                     <option value="{{ convenio.id }}">{{ convenio.nombre }}</option>
                                 {% endfor %}
                             </select>
-                            <button type="submit" class="btn" style="background-color: #24B0BA; color: #fff9f0;">Ingresar</button>
+                            <button type="submit" class="btn" style="background-color: #3A6073; color: #fff9f0;">Ingresar</button>
                         </div>
                         <div id="adv" class="form-text">
                             Al seleccionar un convenio, deberá presentar un comprobante o documento de afiliación al momento de la atención.
@@ -253,7 +243,7 @@
                         <div class="d-flex justify-content-center align-items-center flex-row p-0">
                             <form method="post" action="{{ url }}">
                                 <input type="hidden" name="token_ws" value="{{ token }}" />
-                                <a class="btn" type="submit"><img src="{% static 'img/transbank.png' %}" alt="" width="150" height="50"></a>
+                                <a class="btn" type="submit"><img src="{% static 'img/webpay.png' %}" alt="" width="150" height="50"></a>
                             </form>
                         </div>
 
