@@ -45,24 +45,19 @@
                 <li class="nav-item">
                     <a class="nav-link" style="color: #fff9f0" aria-current="page" href="#clinica">Nuestra Clínica</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" style="color: #fff9f0" href="{% url 'login_personal' %}">Área Funcionarios</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" style="color: #fff9f0" href="{% url 'reserva_hora' %}">Reserva tu Hora</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" style="color: #fff9f0" href="{% url 'login' %}">Iniciar Sesión</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" style="color: #fff9f0" href="{% url 'registro' %}">Registrarse</a>
-                </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" style="color: #fff9f0" href="{% url 'profile' id=request.user.pk %}">Area Usuarios</a>
+                        <a class="nav-link" style="color: #fff9f0" href="{% url 'profile' request.user.id %}">{{ request.user.nombre }}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" style="color: #fff9f0" href="{% url 'logout' %}">Cerrar Sesión</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" style="color: #fff9f0" href="{% url 'login' %}">Iniciar Sesión</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" style="color: #fff9f0" href="{% url 'registro' %}">Registrarse</a>
                     </li>
                 {% endif %}
             </ul>

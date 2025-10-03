@@ -10,19 +10,14 @@ class LoginUserForm(AuthenticationForm):
         label='Correo Electrónico',
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo Electrónico', 'required': 'true'})
     )
-    password = PasswordEye(
+    password1 = PasswordEye(
         label='Contraseña',
         widget=PasswordEyeWidget(attrs={'class': 'form-control', 'placeholder': 'Contraseña', 'required': 'true'})
-    )
-    remember_me = forms.BooleanField(
-        label='Recuérdame',
-        required=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'remember_me']
+        fields = ['email', 'password1']
 
 
 class RegistroUserForm(UserCreationForm):
@@ -32,17 +27,17 @@ class RegistroUserForm(UserCreationForm):
     )
     password1 = PasswordEye(
         label='Contraseña',
-        widget=PasswordEyeWidget(attrs={'class': 'form-control', 'placeholder': 'Contraseña', 'required': 'true'})
+        widget=PasswordEyeWidget(attrs={'class': 'form-control', 'placeholder': 'Contraseña', 'required': 'true', }, independent=True)
     )
     password2 = PasswordEye(
         label='Confirmar Contraseña',
-        widget=PasswordEyeWidget(attrs={'class': 'form-control', 'placeholder': 'Confirmar Contraseña', 'required': 'true'})
+        widget=PasswordEyeWidget(attrs={'class': 'form-control', 'placeholder': 'Confirmar Contraseña', 'required': 'true'}, independent=True)
     )
     rut = forms.CharField(
         label='RUT',
         max_length=12,
         validators=[RegexValidator(r'^\d{7,8}-[0-9kK]$', message='El RUT debe tener el formato 12345678-9 o 1234567-8')],
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'RUT (e.g., 12345678-9)', 'required': 'true'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '1234567-0 o 12345678-K', 'required': 'true'})
     )
     nombre = forms.CharField(
         label='Nombre Completo',

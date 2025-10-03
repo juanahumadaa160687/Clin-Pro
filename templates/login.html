@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
 {% block title %} Inicio de Sesión {% endblock title %}
+
+{% block seccion %}Inicio de Sesión{% endblock seccion %}
 
 {% block content %}
 
@@ -25,15 +26,11 @@
                            </div>
                        </div>
                        <div class="mb-1 has-validation d-flex flex-column gap-2">
-                           {{ form.password.label }}
-                           {{ form.password }}
+                           {{ form.password1.label }}
+                           {{ form.password1 }}
                            <div class="invalid-feedback">
-                               {{ form.password.errors.as_text }}
+                               {{ form.password1errors.as_text }}
                            </div>
-                       </div>
-                       <div class="mb-2 form-check">
-                           {{ form.remember_me }}
-                           {{ form.remember_me.label }}
                        </div>
                        <div class="d-grid gap-2 d-flex flex-column justify-content-center align-items-center mt-3">
                            <button class="btn btn-danger" type="submit" name="login" id="login" style="width: 388px; height: 48px; padding: 12px 20px; background-color: #3A6073; border: 1px solid #3A6073">Iniciar Sesión</button>

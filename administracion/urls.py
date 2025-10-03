@@ -1,6 +1,4 @@
 from django.urls import path
-
-import administracion
 from .views import *
 
 urlpatterns = [
@@ -10,4 +8,5 @@ urlpatterns = [
     path('editar_pofsalud/<int:user_id>', editar_personal_salud, name='editar_personal_salud'),
     path('editar_usuario/<int:user_id>', editar_usuario, name='editar_usuario'),
     path('eliminar_personal/<int:user_id>', eliminar_usuario, name='eliminar_usuario'),
+    path('infome/', generar_pdf_view, name='informe'),
 ]

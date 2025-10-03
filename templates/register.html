@@ -5,27 +5,14 @@
 
 {% block title %} Registro de Usuario {% endblock title %}
 
-{% block content %}
-    {% for message in messages %}
-        {% if message.tags == 'success' %}
-            <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 30%; position: absolute; z-index: 1; left: 2%; margin-left: 10px; top: 10%;">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% elif message.tags == 'error' %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30%; position: absolute; z-index: 1; left: 2%; margin-left: 10px; top: 10%;">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endif %}
-    {% endfor %}
+{% block seccion %}Registro de Usuario{% endblock seccion %}
 
+{% block content %}
 
     <div class="p-0 m-0 d-flex justify-content-center align-items-center flex-row" style="height: 100vh;">
         <div class="card p-0 shadow d-flex justify-content-center align-items-center flex-row" style="width: 70%; border-radius: 20px; background-color: #f5f3e9">
             <div class="card-body p-0">
                 <img src="{% static 'img/registro.jpeg' %}" class="" alt="Card image cap" width="400" height="650" style="border-radius: 20px 0 0 20px ;">
-
             </div>
             <div class="card-body pt-0 pb-0">
                 <h2 class="card-title" style="color: #3A6073;">Registro de Usuario</h2>
@@ -86,6 +73,5 @@
             </div>
         </div>
     </div>
-
 
 {% endblock %}

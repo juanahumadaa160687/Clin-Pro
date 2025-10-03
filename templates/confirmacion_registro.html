@@ -1,10 +1,31 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title></title>
 </head>
 <body>
+<div class="">
+    <div class="" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; flex-direction: column" >
+        <img src="cid:logo.png" alt="" width="100" height="100">
+        <h1 style="text-align: center">Confirmación de Registro</h1>
+    </div>
+    <div class="content">
+        <p>Su registro ha sido exitoso.</p>
+        <p>Bienvenido(a) a Clinicare, {{ nombre }}!</p>
+        <p>Ahora puede iniciar sesión en nuestra plataforma utilizando su correo electrónico en el siguiente enlace: <a href="http://127.0.0.1:8000/login/">Iniciar Sesión</a></p>
+        <p>Estamos encantados de tenerlo(a) con nosotros y esperamos brindarle el mejor servicio posible.</p>
 
+        <p>Saludos cordiales,</p>
+        <p>El equipo de Clinicare</p>
+
+    </div>
+    <br>
+    <div class="footer">
+        <p>Este es un correo automático, por favor no responder.</p>
+        <p>Si tiene alguna duda, por favor contáctenos a través de nuestro correo de soporte:
+            <a href="mailto:clinicare_clinica@clinicarecl" >soporte_clinica@clinicare.cl</a>
+    </div>
+</div>
 </body>
 </html>

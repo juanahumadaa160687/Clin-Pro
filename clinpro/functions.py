@@ -52,22 +52,33 @@ def conf_pago(remitente, destinatario, nombre, fecha_reserva, hora_reserva, pro_
     print("Correo enviado correctamente")
 
 
-def enviarconfirmacionregistro(remitentes, destinatario):
+def confirmacionregistro(remitentes, destinatario, nombre):
     asunto = "Confirmación de Registro"
     remitente = remitentes.lower()
     destinatarios = destinatario.lower()
 
-    link_login = "http://127.0.0.1:8000/login/"
+    html_content = render_to_string('confirmacion_registro.html', {'nombre': nombre})
+    text_content = strip_tags(html_content)
 
-    html_content = render_to_string('confirmacion_registro.html', {})
+    msg = EmailMultiAlternatives(
+        asunto,
+        text_content,
+        remitente,
+        [destinatarios]
+    )
 
-    cuerpo = f"Su registro en Clínica Clinicare ha sido exitoso. Ahora puede acceder a su cuenta y comenzar a utilizar nuestros servicios. Haga clic en el siguiente enlace para iniciar sesión: {link_login}"
+    msg.mixed_subtype='related'
+    msg.attach_alternative(html_content, "text/html")
 
-    mensaje = EmailMultiAlternatives(asunto, cuerpo, remitente, [destinatarios])
+    image_path = settings.BASE_DIR / 'static' / 'img' / 'logo.png'
+    with open(image_path, 'rb') as img:
+        img = MIMEImage(img.read())
+        img.add_header('Content-ID', '<logo.png>')
+        img.add_header('Content-Disposition', 'inline', filename='logo.png')
+        msg.attach(img)
 
-    mensaje.attach_alternative(html_content, 'text/html')
+    msg.send()
 
-    mensaje.send()
     print("Correo enviado correctamente")
 
 # Enviar mensaje de WhatsApp

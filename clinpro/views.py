@@ -4,14 +4,14 @@ from django.core import serializers
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils.dateformat import time_format
-from oscrypto import use_winlegacy
 
+from administracion.forms import LoginPersonalForm
 from administracion.models import *
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 
 from .forms import LoginUserForm, RegistroUserForm, PacienteForm
-from .functions import sendWhatsapp, enviarconfirmacionregistro, conf_pago
+from .functions import sendWhatsapp, conf_pago, confirmacionregistro
 from .models import User, Convenio, Pago, ReservaHora, Paciente
 from transbank.webpay.webpay_plus.transaction import Transaction
 from datetime import datetime, time, timedelta
@@ -35,21 +35,35 @@ def login(request):
 
     if request.method == 'POST':
 
-        form = LoginUserForm(request, data=request.POST)
+        form = LoginUserForm()
 
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        remember_me = request.POST.get('remember_me') == 'on'
-        print(email, password, remember_me)
+        email = request.POST['email']
+        password = request.POST['password1']
 
         user = authenticate(request, email=email, password=password)
+        print(user)
 
         if user is not None:
 
-            auth_login(request, user)
+            rol = User.objects.get(email=email).rol
 
-            if not remember_me:
-                request.session.set_expiry(0)  # La sesión expira al cerrar el navegador
+            if rol == 'Administrador':
+                auth_login(request, user)
+                sweetify.success(request, 'Bienvenido Administrador.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
+                return redirect('dashboard')
+
+            elif rol == 'PersonalSalud':
+                auth_login(request, user)
+                sweetify.success(request, 'Bienvenido Funcionario.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
+                return redirect('dashboard_fichas')
+
+            elif rol == 'Secretaria':
+                auth_login(request, user)
+                sweetify.success(request, 'Bienvenida Secretaria.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
+                return redirect('dashboard_recep')
+
+
+            auth_login(request, user)
 
             return redirect('reserva_hora')
 
@@ -73,6 +87,7 @@ def registro(request):
             user.nombre = form.cleaned_data.get('nombre')
             user.telefono = form.cleaned_data.get('telefono')
             user.set_password(form.cleaned_data.get('password1'))
+            user.username = user.email.split('@')[0]  # Asignar username basado en el email
 
             user.save()
 
@@ -81,8 +96,9 @@ def registro(request):
 
             remitente = os.getenv('EMAIL_HOST_USER')
             destinatario = user.email
+            nombre = user.nombre
 
-            enviarconfirmacionregistro(remitente, destinatario)
+            confirmacionregistro(remitente, destinatario, nombre)
 
             sweetify.success(request, 'Registro exitoso. Ahora puedes iniciar sesión.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
             return redirect('login')
@@ -382,7 +398,9 @@ def pago_exitoso(request):
     if pagado is not None:
         sweetify.success(request, 'Pago realizado exitosamente.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
     else:
+        Agenda.objects.filter(fecha=request.session['fecha'], hora=request.session['hora'], profesional_id=request.session['profesional']).delete()
         sweetify.error(request, 'Error en el pago, intente nuevamente.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
+        return redirect('reserva_hora')
 
     pago = Pago.objects.get(orden_compra=orden_compra)
 
@@ -441,6 +459,3 @@ def no_autorizado(request):
     return render(request, 'no_autorizado.html')
 
 #######################################################################################################################
-
-def login_personal(request):
-    return render(request, 'login_personal.html')

@@ -13,7 +13,6 @@ urlpatterns = [
     path('delete_profile/<int:id>/', delete_profile, name='delete_profile'),
     path('reserva_hora/', reserva_hora, name='reserva_hora'),
     path('pago_exitoso/', pago_exitoso, name='pago_exitoso'),
-    path('login/funcionarios/', login_personal, name='login_personal'),
 
     path('password-reset/', ResetPasswordView.as_view(), name='password_reset'),
 

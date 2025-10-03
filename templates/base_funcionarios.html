@@ -39,13 +39,14 @@
     <aside class="col-2 d-flex flex-column justify-content-between align-items-start" style="width: 250px; height: 100vh; position: fixed; top: 0; left: 0; background-color: rgba(33,	38,	52, 0.7); padding: 20px; z-index: 4;">
         <div class="container-fluid d-flex flex-column align-items-center justify-content-center">
             <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="50" height="50" class="d-inline-block align-text-bottom">
-            <p class="text-white mt-2">Bienvenido {{ request.user.nombre }}</p>
+            <p class="navbar-brand text-white">Bienvenido</p>
+            <p class="navbar-brand text-white">{{ request.user.nombre }}</p>
         </div>
         <nav class="nav nav-pills nav-justified flex-column mt-1" >
             <a class="nav-link text-start mb-4" aria-current="page" href="{% url 'dashboard' %}" style="text-decoration: none; color: #fff9f0 ">Dashboard</a>
             <a class="nav-link text-start mb-4" href="{% url 'dashboard_servicios' %}" style="text-decoration: none; color: #fff9f0 ">Servicios</a>
             <a class="nav-link text-start mb-4" href="{% url 'dashboard_personal' %}" style="text-decoration: none; color: #fff9f0 ">Personal</a>
-            <a class="nav-link text-start mb-4" href="Informes" style="text-decoration: none; color: #fff9f0 ">Reportes</a>
+            <a class="nav-link text-start mb-4" href="{% url 'informe' %}" style="text-decoration: none; color: #fff9f0 ">Reportes</a>
             <a class="nav-link text-start mb-4" href="{% url 'logout' %}" style="text-decoration: none; color: #fff9f0 ">Cerrar Sesión</a>
         </nav>
         <div class="container-fluid flex-column p-4 d-flex justify-content-end align-items-center">

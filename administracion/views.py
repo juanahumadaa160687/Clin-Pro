@@ -1,11 +1,13 @@
 import datetime
-
+from io import BytesIO
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, Sum
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.template.loader import get_template
 from django.urls import reverse_lazy
 from clinpro.forms import UserCreationForm, RegistroUserForm
 from administracion.forms import LoginPersonalForm, RegistroPersonalForm, ServicioForm, ProcedimientoForm, \
@@ -15,40 +17,6 @@ from clinpro.models import User, Paciente, Convenio, Pago
 import sweetify
 from django.contrib.auth import login as auth_login, authenticate
 from xhtml2pdf import pisa
-
-def login_personal(request):
-
-    if request.method == 'POST':
-        login_form = LoginPersonalForm(request, data=request.POST)
-        if login_form.is_valid():
-
-            email = login_form.cleaned_data.get('email')
-            password = login_form.cleaned_data.get('password')
-            remember_me = login_form.cleaned_data.get('remember_me')
-
-            user = authenticate(username=email, password=password)
-
-            if user is not None:
-                auth_login(request, user)
-
-                if request.user.rol == 'administrador':
-                    return render(request, 'administracion/dashboard_admin.html')
-                elif request.user.rol == 'personal_salud':
-                    return render(request, 'personal_salud/dashboard_personal_salud.html')
-                elif request.user.rol == 'secretaria':
-                    return render(request, 'recepcion/dashboard_recep.html')
-
-                if not remember_me:
-                    request.session.set_expiry(0)  # La sesión expira al cerrar el navegador
-
-            else:
-                sweetify.error(request, 'Credenciales inválidas. Por favor, inténtelo de nuevo.', button='Aceptar')
-        else:
-            sweetify.error(request, 'Formulario inválido. Por favor, inténtelo de nuevo.', button='Aceptar')
-    else:
-        login_form = LoginPersonalForm()
-
-    return render(request, 'login_personal.html', {'login_form': login_form})
 
 
 def dashboard_admin(request):
@@ -335,7 +303,7 @@ def informe_admin(request):
     if request.method == 'POST':
         month = request.POST.get('month')
         if month:
-            return redirect('generar_pdf', month=month)
+            return redirect('generar_pdf')
         else:
             sweetify.error(request, 'Error al generar informe. Por favor, inténtelo de nuevo.', button='Aceptar')
             return render(request, 'administracion/informes_admin.html')
@@ -343,18 +311,17 @@ def informe_admin(request):
     return render(request, 'administracion/informes_admin.html')
 
 
-def generar_pdf_view(request, month):
+def generar_pdf_view(request):
 
     template_path = 'administracion/informe_template.html'
 
-    meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-    month_index = int(month) - 1
-    month_name = meses[month_index] if 0 <= month_index < len(meses) else 'Mes inválido'
-    # Obtener mes del reporte
-    mes_actual = month - 1 # Restar 1 porque los meses en Python van de 0 a 11
-    anio_actual = datetime.date.today().year
-    fecha_reporte = datetime.date(anio_actual, month, 1)
-    total_mes = Agenda.objects.filter(fecha_reserva__month=month).all()
-    total_ingresos_mes = Agenda.objects.filter(fecha_reserva__month=month).values('pago_id__monto').aggregate(total=Sum('pago_id__monto'))['total'] or 0
-    total_ingresos_anio = Agenda.objects.filter(fecha_reserva__year=anio_actual).values('pago_id__monto').aggregate(total=Sum('pago_id__monto'))['total'] or 0
-    total_categoria = Agenda.objects.filter(fecha_reserva__month=month).values('personal__especialidad').annotate(total=Sum('personal__especialidad'))['total'] or 0
+    context = {}
+
+    template = get_template(template_path)
+    html = template.render(context)
+
+    response = BytesIO()
+    pdf = pisa.CreatePDF(html, dest=response)
+    if not pdf.err:
+        return HttpResponse(response.getvalue(), content_type='application/pdf')
+    return HttpResponse('Error generating PDF <pre>' + html + '</pre>')

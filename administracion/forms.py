@@ -25,7 +25,7 @@ class LoginPersonalForm(AuthenticationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'remember_me']
+        fields = ['email', 'password', 'remember_me']
 
 
 class RegistroPersonalForm(UserCreationForm):
