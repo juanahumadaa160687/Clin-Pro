@@ -1,0 +1,38 @@
+{% extends 'base_recepcion.html' %}
+{% load static %}
+
+{% block title %}Recepción {{ request.user.secretaria.servicio }}{% endblock title %}
+
+{% block content %}
+
+    <div class="m-0 p-0">
+
+        <div class="m-0 p-0" >
+            <h1 class="text-start text-white">Recepción {{ request.user.secretaria.servicio }}</h1>
+        </div>
+
+        <div class="row d-flex flex-row justify-content-center mt-3 gap-2">
+
+            <div class="row d-flex flex-row justify-content-center mt-2 gap-2">
+                <div class="col card p-0" style="border-radius: 20px; border: 2px solid #3b3f4c">
+                    <div class="card-body d-flex justify-content-center align-items-center">
+                        <table class="display text-center" id="tablaFunc" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>RUT</th>
+                                    <th>Nombre</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Profesional</th>
+                                    <th>Confirmada</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

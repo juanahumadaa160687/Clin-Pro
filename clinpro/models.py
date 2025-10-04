@@ -4,7 +4,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-
 class User(AbstractUser):
     email = models.EmailField(verbose_name='email', max_length=100, unique=True)
     password1 = models.CharField(verbose_name='password', max_length=128, null=True, blank=True)
@@ -46,6 +45,7 @@ class Paciente(models.Model):
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Usuario', null=True, blank=True)
+    edad = models.IntegerField(verbose_name='Edad', blank=True, null=True)
     genero = models.CharField(verbose_name='Genero', max_length=128, null=True, blank=True)
     direccion = models.CharField(max_length=100, verbose_name='Direccion', blank=True, null=True)
     fecha_nacimiento = models.DateField(verbose_name='Fecha de Nacimiento', blank=True, null=True)
@@ -113,12 +113,12 @@ class ReservaHora(models.Model):
     fecha_reserva = models.DateField(verbose_name='Fecha de la Reserva')
     hora_reserva = models.TimeField(verbose_name='Hora de Inicio')
     is_confirmada = models.BooleanField(default=False, verbose_name='¿Está Confirmada?')
-    is_asistencia = models.BooleanField(default=False, verbose_name='¿Asistió?')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación')
 
-    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, verbose_name='Paciente')
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, verbose_name='Paciente', blank=True, null=True)
     pago = models.ForeignKey(Pago, on_delete=models.CASCADE, verbose_name='Pago', blank=True, null=True)
     profesional = models.ForeignKey('administracion.PersonalSalud', on_delete=models.CASCADE, verbose_name='Profesional', blank=True, null=True)
+    paciente_no_registrado = models.ForeignKey('administracion.PacienteNoRegistrado', on_delete=models.CASCADE, verbose_name='Paciente No Registrado', blank=True, null=True)
 
 
     def __str__(self):

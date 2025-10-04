@@ -1,0 +1,59 @@
+:root {
+    /** Base colors */
+    --clr-dark-a0: #000000;
+    --clr-light-a0: #ffffff;
+
+    /** Theme primary colors */
+    --clr-primary-a0: #4c7273;
+    --clr-primary-a10: #5f8181;
+    --clr-primary-a20: #729090;
+    --clr-primary-a30: #859f9f;
+    --clr-primary-a40: #99aeaf;
+    --clr-primary-a50: #adbebe;
+
+    /** Theme surface colors */
+    --clr-surface-a0: #041421;
+    --clr-surface-a10: #1e2936;
+    --clr-surface-a20: #36404c;
+    --clr-surface-a30: #505863;
+    --clr-surface-a40: #6b727b;
+    --clr-surface-a50: #868c94;
+
+    /** Theme tonal surface colors */
+    --clr-surface-tonal-a0: #0d1c28;
+    --clr-surface-tonal-a10: #24313c;
+    --clr-surface-tonal-a20: #3c4752;
+    --clr-surface-tonal-a30: #555f68;
+    --clr-surface-tonal-a40: #6f7780;
+    --clr-surface-tonal-a50: #8a9198;
+
+    /** Success colors */
+    --clr-success-a0: #22946e;
+    --clr-success-a10: #47d5a6;
+    --clr-success-a20: #9ae8ce;
+
+    /** Warning colors */
+    --clr-warning-a0: #a87a2a;
+    --clr-warning-a10: #d7ac61;
+    --clr-warning-a20: #ecd7b2;
+
+    /** Danger colors */
+    --clr-danger-a0: #9c2121;
+    --clr-danger-a10: #d94a4a;
+    --clr-danger-a20: #eb9e9e;
+
+    /** Info colors */
+    --clr-info-a0: #21498a;
+    --clr-info-a10: #4077d1;
+    --clr-info-a20: #92b2e5;
+
+}
+
+body{
+    background-color: var(--clr-surface-a0);
+    color: var(--clr-light-a0);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+

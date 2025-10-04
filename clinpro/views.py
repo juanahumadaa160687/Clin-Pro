@@ -24,7 +24,6 @@ import sweetify
 #Landing Page
 def index(request):
 
-    #conf_pago('juan.pablo656@gmail.com', 'jua.ahumadaa@duocuc.cl', 'JP', '05/10/2025', '9:00', 'Dra', 'Elena Rojas', '50000', '2345', '123445', '85743409734' )
 
     return render(request, 'index.html')
 

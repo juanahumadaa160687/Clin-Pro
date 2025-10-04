@@ -53,11 +53,11 @@
                         <a class="nav-link" style="color: #fff9f0" href="{% url 'logout' %}">Cerrar Sesión</a>
                     </li>
                 {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" style="color: #fff9f0" href="{% url 'login' %}">Iniciar Sesión</a>
+                    <li class="nav-item me-3">
+                        <a class="nav-link btn" style="color: white; background-color: transparent; border: 1px solid white;" href="{% url 'login' %}">Iniciar Sesión</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" style="color: #fff9f0" href="{% url 'registro' %}">Registrarse</a>
+                        <a class="nav-link btn" style="color: black; background-color: #fff9f0" href="{% url 'registro' %}">Registrarse</a>
                     </li>
                 {% endif %}
             </ul>
@@ -91,7 +91,7 @@
 </div>
 
 <!-- Footer -->
-<footer class="d-flex flex-column justify-content-center flex-row align-items-center" style="color: #fff9f0; background-color: #3A6073;">
+<footer class="d-flex flex-column justify-content-center flex-row align-items-center" style="color: #fff9f0; background-color: #002D62;">
     <div class="container d-flex justify-content-end flex-row align-items-center w-100 pt-2 pb-0" style="border-bottom: 1px solid #fff9f0;">
         <p class="me-4" style="color: #fff9f0"><i class="fas fa-home me-3" style="color: #fff9f0"></i>Av. Arturo Prat 1234, Iquique, Chile </p>
         <p class="me-4" style="color: #fff9f0"><i class="fas fa-phone me-3" style="color: #fff9f0"></i>+56 57 123 4567</p>

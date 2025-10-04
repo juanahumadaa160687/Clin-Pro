@@ -37,7 +37,7 @@ class RegistroUserForm(UserCreationForm):
         label='RUT',
         max_length=12,
         validators=[RegexValidator(r'^\d{7,8}-[0-9kK]$', message='El RUT debe tener el formato 12345678-9 o 1234567-8')],
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '1234567-0 o 12345678-K', 'required': 'true'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Rut sin puntos con guión', 'required': 'true'})
     )
     nombre = forms.CharField(
         label='Nombre Completo',

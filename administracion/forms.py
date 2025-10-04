@@ -69,10 +69,10 @@ class RegistroPersonalForm(UserCreationForm):
         fields = ['email', 'password1', 'password2', 'rut', 'nombre', 'telefono', 'rol']
 
 class PersonalSaludForm(ModelForm):
-    sufijo = forms.CharField(
+    prefijo = forms.CharField(
         label='Prefijo',
         max_length=4,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Sufijo (e.g., Dr., Dra., Lic.)', 'required': 'true', 'id': 'sufijo', 'name': 'sufijo'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Prefijo (e.g., Dr., Dra., Lic.)', 'required': 'true', 'id': 'prefijo', 'name': 'prefijo'})
     )
     titulo = forms.CharField(
         label='Título',
@@ -97,7 +97,7 @@ class PersonalSaludForm(ModelForm):
 
     class Meta:
         model = PersonalSalud
-        fields = ['sufijo', 'titulo', 'especialidad', 'universidad', 'user']
+        fields = ['prefijo', 'titulo', 'especialidad', 'universidad', 'user']
 
 
 class ServicioForm(forms.Form):

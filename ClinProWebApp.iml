@@ -25,6 +25,8 @@
     <orderEntry type="library" name="bootstrap-icons" level="application" />
     <orderEntry type="library" name="@fullcalendar/daygrid" level="application" />
     <orderEntry type="library" name="@fullcalendar/list" level="application" />
+    <orderEntry type="library" name="@fullcalendar/rrule" level="application" />
+    <orderEntry type="library" name="rrule" level="application" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />

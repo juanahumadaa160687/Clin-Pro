@@ -29,13 +29,13 @@ class Administrador(models.Model):
 
 class PersonalSalud(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    sufijo = models.CharField(max_length=4)
+    prefijo = models.CharField(max_length=7, verbose_name='Sufijo', default='Sr(a).', blank=True, null=True)
     titulo = models.CharField(max_length=100)
     especialidad = models.CharField(max_length=100, verbose_name='Especialidad', default='Sin Especialidad')
     universidad = models.CharField(max_length=100)
 
     def __str__(self):
-        return f'{self.sufijo} {self.user.nombre} - {self.titulo}'
+        return f'{self.prefijo} {self.user.nombre} - {self.titulo} - {self.especialidad}'
 
     objects = models.Manager()
 
@@ -51,7 +51,7 @@ class Servicio(models.Model):
     administracion = models.ForeignKey(Administrador, on_delete=CASCADE, verbose_name='Administración', blank=True, null=True)
 
     def __str__(self):
-        return self.nombre
+        return f'Administrado por: {self.administracion.user.nombre} - Servicio: {self.nombre}'
 
     objects = models.Manager()
 
@@ -88,3 +88,25 @@ class Agenda(models.Model):
     class Meta:
         verbose_name = 'Agenda'
         verbose_name_plural = 'Agendas'
+
+class PacienteNoRegistrado(models.Model):
+    rut = models.CharField(max_length=12, verbose_name='RUT', unique=True)
+    nombre = models.CharField(max_length=100, verbose_name='Nombre')
+    genero = models.CharField(max_length=100, verbose_name='Genero')
+    edad = models.IntegerField(verbose_name='Edad', blank=True, null=True),
+    email = models.EmailField(verbose_name='Email', unique=True, blank=True, null=True)
+    telefono = models.CharField(max_length=15, verbose_name='Teléfono', blank=True, null=True)
+    direccion = models.CharField(max_length=255, verbose_name='Dirección', blank=True, null=True)
+    fecha_nacimiento = models.DateField(verbose_name='Fecha de Nacimiento', blank=True, null=True)
+    prevision = models.CharField(max_length=100, verbose_name='Previsión', blank=True, null=True)
+    telefono_emergencia = models.CharField(max_length=15, verbose_name='Teléfono de Emergencia', blank=True, null=True)
+
+
+    def __str__(self):
+        return f'Paciente No Registrado: {self.nombre}'
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = 'Paciente No Registrado'
+        verbose_name_plural = 'Pacientes No Registrados'

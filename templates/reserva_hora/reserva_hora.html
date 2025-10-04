@@ -10,8 +10,8 @@
 <div class="row d-flex flex-row justify-content-center align-items-center my-2 mx-2" style="min-height: 90vh;">
     {% if request.user.paciente.genero %}
         <div class="col-4"  style="height: 85vh;">
-            <div class="card h-100" style="background-color: #f5f3e9; box-shadow: 10px 10px 15px #CCC;">
-                <div class="card-header" style="background-color: #3A6073; color: #fff9f0;">
+            <div class="card h-100" style="background-color: #F2F2F2; box-shadow: 10px 10px 15px #CCC; border: none">
+                <div class="card-header" style="background-color: #1D919C; color: #F2F2F2;">
                     <h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5>
                 </div>
                 <div class="card-body p-4 mb-4">
@@ -46,27 +46,28 @@
         </div>
     {% else %}
         <div class="col-4" style="height: 85vh; ">
-            <div class="card h-100" style="background-color: #f5f3e9; box-shadow: 10px 10px 15px #CCC;">
-                <div class="card-header" style="background-color: #3A6073; color: #fff9f0"><h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5></div>
-                <div class="card-body p-4 mb-4">
+            <div class="card h-100" style="background-color: #F2F2F2; box-shadow: 10px 10px 15px #CCC; border: none">
+                <div class="card-header" style="background-color: #1D919C; color: #F2F2F2;"><h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5></div>
+                <div class="card-body px-4 py-1 mb-4">
+                    <small class="text-muted">Ingrese sus datos para completar su perfil y continuar con la reserva de hora.</small>
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <div class="form-floating mt-4 mb-4">
+                        <div class="form-floating mt-4 mb-3">
                             {{ form.genero }}
                             <label for="genero">Género</label>
                         </div>
                         <br>
-                        <div class="form-floating mb-4">
+                        <div class="form-floating mb-3">
                             {{ form.fecha_nacimiento }}
                             <label for="fecha_nacimiento">Fecha Nacimiento</label>
                         </div>
                         <br>
-                        <div class="form-floating mb-4">
+                        <div class="form-floating mb-3">
                             {{ form.direccion }}
                             <label for="direccion">Dirección</label>
                         </div>
                         <br>
-                        <div class="form-floating mb-4">
+                        <div class="form-floating mb-3">
                             {{ form.telefono_emergencia }}
                             <label for="telefono_emergencia">Teléfono de Emergencias</label>
                         </div>
@@ -76,8 +77,8 @@
                             <label for="prevision">Previsión</label>
                         </div>
 
-                        <div class="d-flex justify-content-center align-items-center mt-1">
-                            <button type="submit" class="btn" name="paciente" id="paciente" style="background-color: #3A6073; color: #fff9f0; width: 250px">Guardar</button>
+                        <div class="d-flex justify-content-center align-items-center mt-2">
+                            <button type="submit" class="btn" name="paciente" id="paciente" style="background-color: #1D919C; color: #fff9f0; width: 250px">Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -85,8 +86,8 @@
         </div>
     {% endif %}
     <div class="col-4" style="height: 85vh; ">
-        <div class="card h-100" style="background-color: #f5f3e9; box-shadow: 10px 10px 15px #CCC;">
-            <div class="card-header" style="background-color: #3A6073; color: #fff9f0"> <h5 class="card-title"><i class="fa-solid fa-calendar-check"></i> Información de la Hora</h5></div>
+        <div class="card h-100" style="background-color: #F2F2F2; box-shadow: 10px 10px 15px #CCC; border: none">
+            <div class="card-header" style="background-color: #1D919C; color: #F2F2F2;"> <h5 class="card-title"><i class="fa-solid fa-calendar-check"></i> Información de la Hora</h5></div>
 
             <div class="card-body p-4">
 
@@ -106,9 +107,9 @@
                             </select>
                             <label for="servicio">Servicio</label>
                             {% if request.user.paciente.prevision %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="servicio" id="servicio"><i class="fa-solid fa-magnifying-glass"></i></button>
                             {% else %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
                             {% endif %}
                         </div>
                     </form>
@@ -127,7 +128,11 @@
                                 {% endfor %}
                             </select>
                             <label for="especialidad">Especialidad</label>
-                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        {% if request.session.servicio %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="especialidad" id="especialidad"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        {% else %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                        {% endif %}
                         </div>
                     </form>
                 </div>
@@ -145,7 +150,11 @@
                                 {% endfor %}
                             </select>
                             <label for="profesional">Profesional</label>
-                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% if request.session.especialidad %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="profesional" id="profesional"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% else %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% endif %}
                         </div>
                     </form>
                 </div>
@@ -163,7 +172,11 @@
                                 {% endfor %}
                             </select>
                             <label for="profesional">Procedimientos</label>
-                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% if request.session.profesional %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="procedimiento" id="procedimiento"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% else %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% endif %}
                         </div>
                     </form>
                 </div>
@@ -176,7 +189,11 @@
                         <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
                             <input class="form-control" type="date" name="fecha" id="fecha" value="{{ request.session.fecha }}" min="{{ hoy }}">
                             <label for="fecha">Fecha de Atención</label>
-                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% if request.session.procedimiento %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="procedimiento" id="procedimiento"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% else %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% endif %}
                         </div>
                     </form>
                 </div>
@@ -194,7 +211,11 @@
                                 {% endfor %}
                             </select>
                             <label for="hora">Horas Disponibles</label>
-                            <button type="submit" class="btn btn-lg" style="background-color: #3A6073; color: #fff9f0;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% if request.session.fecha %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% else %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                            {% endif %}
                         </div>
                     </form>
                 </div>
@@ -204,25 +225,25 @@
     </div>
 
     <div class="col-4" style="height: 85vh;">
-        <div class="card h-100" style="background-color: #f5f3e9; box-shadow: 10px 10px 15px #CCC;">
-            <div class="card-header" style="background-color: #3A6073; color: #fff9f0"><h5 class="card-title"><i class="fa-solid fa-money-check-dollar"></i> Pago</h5></div>
+        <div class="card h-100" style="background-color: #F2F2F2; box-shadow: 10px 10px 15px #CCC; border: none">
+            <div class="card-header" style="background-color: #1D919C; color: #F2F2F2;"><h5 class="card-title"><i class="fa-solid fa-money-check-dollar"></i> Pago</h5></div>
             <div class="card-body p-4" >
 
-                <div>
+                <div class="mb-5">
                     <form method="POST" enctype="multipart/form-data" class="">
                         {% csrf_token %}
-                        <div class="d-flex justify-content-center align-items-center flex-row gap-2 mt-4 mb-4">
+                        <div class="d-flex justify-content-center align-items-center flex-row gap-2 mt-4 mb-1">
                             <select class="form-control form-control-lg form-select" name="convenio" id="convenio">
                                 <option value="" disabled selected>Seleccione un convenio</option>
-                                <option value="Sin Convenio">Sin Convenio</option>
+                                <option value="0">Sin Convenio</option>
                                 {% for convenio in convenios %}
                                     <option value="{{ convenio.id }}">{{ convenio.nombre }}</option>
                                 {% endfor %}
                             </select>
-                            <button type="submit" class="btn" style="background-color: #3A6073; color: #fff9f0;">Ingresar</button>
+                            <button type="submit" class="btn" style="background-color: #1D919C; color: #F2F2F2;">Ingresar</button>
                         </div>
                         <div id="adv" class="form-text">
-                            Al seleccionar un convenio, deberá presentar un comprobante o documento de afiliación al momento de la atención.
+                            <small class="text-muted">Al seleccionar un convenio, deberá presentar un comprobante o documento de afiliación al momento de la atención.</small>
                         </div>
                     </form>
                 </div>
@@ -250,7 +271,7 @@
                         </div>
 
                         <div class="d-flex justify-content-center align-items-center flex-row p-0">
-                            <a href="#"> <img src="{% static 'img/transferencia.png' %}" width="150"> </a>
+                            <a href="#"> <img src="{% static 'img/transferencia.png' %}" width="150" alt=""> </a>
                         </div>
 
                     </div>

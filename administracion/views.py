@@ -23,7 +23,7 @@ def dashboard_admin(request):
 
     personal_tipo = PersonalSalud.objects.all().values('titulo').annotate(total=Count('titulo'))
     personal_esp = PersonalSalud.objects.all().values('especialidad').annotate(total=Count('especialidad'))
-    personal_rend = PersonalSalud.objects.all().values('sufijo', 'user__nombre' ,'titulo', 'procedimiento__personal_salud__procedimiento').annotate(total=Count('procedimiento__personal_salud__procedimiento'))
+    personal_rend = PersonalSalud.objects.all().values('prefijo', 'user__nombre' ,'titulo', 'procedimiento__personal_salud__procedimiento').annotate(total=Count('procedimiento__personal_salud__procedimiento'))
 
     convenios_vigentes = Convenio.objects.all().values('nombre', 'descuento')
 
@@ -31,7 +31,7 @@ def dashboard_admin(request):
     total_ingresos_mes = Pago.objects.filter(fecha__month=datetime.date.today().month).values('fecha__month', 'monto').aggregate(total=Sum('monto'))['total'] or 0
     total_ingresos_anio = Pago.objects.filter(fecha__year=datetime.date.today().year).values('fecha__year', 'monto').aggregate(total=Sum('monto'))['total'] or 0
 
-    personal_sal = PersonalSalud.objects.values('sufijo', 'user__nombre', 'especialidad', 'titulo', 'universidad', 'user__email', 'user__telefono', 'user__rut')
+    personal_sal = PersonalSalud.objects.values('prefijo', 'user__nombre', 'especialidad', 'titulo', 'universidad', 'user__email', 'user__telefono', 'user__rut')
     secretarias = User.objects.filter(rol='secretaria').values('nombre', 'email', 'telefono', 'rut')
     administradores = User.objects.filter(rol='administrador').values('nombre', 'email', 'telefono', 'rut')
 
@@ -150,7 +150,7 @@ def dashboard_personal(request):
         if per_salud_form.is_valid():
             personal_salud = per_salud_form.save(commit=False)
 
-            personal_salud.sufijo = per_salud_form.cleaned_data.get('sufijo')
+            personal_salud.prefijo = per_salud_form.cleaned_data.get('prefijo')
             personal_salud.titulo = per_salud_form.cleaned_data.get('titulo')
             personal_salud.especialidad = per_salud_form.cleaned_data.get('especialidad')
             personal_salud.universidad = per_salud_form.cleaned_data.get('universidad')
@@ -248,7 +248,7 @@ def editar_personal_salud(request, personal_id):
         return redirect('personal_dashboard')
 
     if request.method == 'POST' and 'personal_salud' in request.POST:
-        sufijo = request.POST.get('sufijo')
+        prefijo = request.POST.get('prefijo')
         titulo = request.POST.get('titulo')
         especialidad = request.POST.get('especialidad')
         universidad = request.POST.get('universidad')
@@ -256,10 +256,10 @@ def editar_personal_salud(request, personal_id):
 
         personal_salud = PersonalSalud.objects.get(pk=personal_id)
 
-        if sufijo:
-            personal_salud.sufijo = sufijo
+        if prefijo:
+            personal_salud.prefijo = prefijo
         else:
-            personal_salud.sufijo = personal_salud.sufijo
+            personal_salud.prefijo = personal_salud.prefijo
 
         if titulo:
             personal_salud.titulo = titulo
