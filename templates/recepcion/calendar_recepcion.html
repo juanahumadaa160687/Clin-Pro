@@ -4,25 +4,88 @@
 {% block title %} Dashboard Recepción {% endblock title %}
 
 {% block additional_headers %}
-    <!-- rrule lib -->
-    <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
-    <!-- fullcalendar bundle  "IMPORTANT"-->
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap5@6.1.19/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.19/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.19/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.19/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/list@6.1.19/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/multimonth@6.1.19/index.global.min.js"></script>
 
 
-    <script></script>
+    <script>
+
+        events = [];
+        {% for event in eventos %}
+            events.push({
+                title: '{{ event.title }}',
+                start: '{{ event.start }}',
+                end: '{{ event.end }}',
+            });
+        {% endfor %}
+        console.log(events);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                themeSystem: 'bootstrap5',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                },
+                buttonText: {
+                    today: 'Hoy',
+                    month: 'Mes',
+                    week: 'Semana',
+                    day: 'Día',
+                    list: 'Lista'
+                },
+                events: [...events],
+                navLinks: true,
+                selectable: true,
+                selectMirror: true,
+                dayMaxEvents: true,
+            });
+            calendar.render();
+        });
+    </script>
 
 {% endblock %}
 
 
 
 {% block content %}
+    <div class="m-0 p-0" >
+        <h1 class="text-start text-white">Dashboard Recepción</h1>
+        <div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="d-flex justify-content-start gap-3 mb-2">
+                    <div class="w-25">
+                        <label for="year" class="form-label text-white">Selecciona Servicio</label>
+                        <select name="servicio" id="servicio" class="form-select">
+                            <option selected disabled value="">Seleccione...</option>
+                            {% for y in servicios %}
+                                <option value="{{ y.nombre }}">{{ y.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="d-flex align-items-end">
+                        <button type="submit" class="btn btn-danger"><i class="fa-solid fa-filter"></i> Filtrar</button>
+                    </div>
+                </div>
+            </form>
 
-    <div class="m-0 p-0">
-        <div id='calendar'></div>
+        </div>
     </div>
 
-
+    <div class="m-0 p-3" style="background-color: white">
+        <div id='calendar'></div>
+    </div>
 {% endblock %}
 
 {% block scripts %}

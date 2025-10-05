@@ -48,17 +48,17 @@ def login(request):
 
             if rol == 'Administrador':
                 auth_login(request, user)
-                sweetify.success(request, 'Bienvenido Administrador.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
-                return redirect('dashboard')
+                sweetify.success(request, f'Bienvenido {user.nombre}.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
+                return redirect('dashboard_admin')
 
             elif rol == 'PersonalSalud':
                 auth_login(request, user)
-                sweetify.success(request, 'Bienvenido Funcionario.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
+                sweetify.success(request, f'Bienvenido {user.nombre}.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
                 return redirect('dashboard_fichas')
 
             elif rol == 'Secretaria':
                 auth_login(request, user)
-                sweetify.success(request, 'Bienvenida Secretaria.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
+                sweetify.success(request, f'Bienvenida {user.nombre}.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
                 return redirect('dashboard_recep')
 
 

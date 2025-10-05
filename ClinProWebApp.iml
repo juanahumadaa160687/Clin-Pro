@@ -27,6 +27,10 @@
     <orderEntry type="library" name="@fullcalendar/list" level="application" />
     <orderEntry type="library" name="@fullcalendar/rrule" level="application" />
     <orderEntry type="library" name="rrule" level="application" />
+    <orderEntry type="library" name="@fullcalendar/bootstrap5" level="application" />
+    <orderEntry type="library" name="@fullcalendar/core" level="application" />
+    <orderEntry type="library" name="@fullcalendar/multimonth" level="application" />
+    <orderEntry type="library" name="@fullcalendar/scrollgrid" level="application" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />

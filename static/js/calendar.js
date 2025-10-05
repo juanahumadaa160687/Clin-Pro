@@ -1,17 +1,8 @@
-import 'bootstrap';
-import { Calendar } from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import listPlugin from '@fullcalendar/list';
-import interactionPlugin from '@fullcalendar/interaction';
-import esLocale from '@fullcalendar/core/locales/es';
-import bootstrap5Plugin from '@fullcalendar/bootstrap5';
+import { Calendar } from '../js/core/index.global.min.js';
+import esLocale from '../js/core/locales-all.global.min.js';
+import bootstrap5Plugin from '../js/core/bootstrap5/index.global.min.js';
 
 FullCalendar.Calendar = Calendar;
-FullCalendar.dayGridPlugin = dayGridPlugin;
-FullCalendar.timeGridPlugin = timeGridPlugin;
-FullCalendar.listPlugin = listPlugin;
-FullCalendar.interactionPlugin = interactionPlugin;
 FullCalendar.esLocale = esLocale;
 FullCalendar.bootstrap5Plugin = bootstrap5Plugin;
 
@@ -43,10 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
             start: '2025-10-11T10:00:00',
             end: '2025-10-11T10:45:00',
             color: '#9ae8ce',
-            backgroundColor: 'white',
-            borderColor: 'white',
-            textColor: 'black',
-
         },]
     });
     calendar.render();

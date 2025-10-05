@@ -1,10 +1,33 @@
 {% extends 'base_funcionarios.html' %}
+{% load static %}
+{% load sweetify %}
+{% sweetify %}
+
 
 {% block title %}Dashboard Funcionarios{% endblock %}
 
-{% load static %}
-
 {% block content %}
+
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert" style="width: 30%;">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% elif message.tags == 'error' %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30%;">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% elif message.tags == 'warning' %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert" style="width: 30%;">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 
     <div class="m-0 p-0 d-flex justify-content-center align-items-center flex-column" style="min-height: 100vh; overflow-y: auto;">
 
@@ -24,7 +47,7 @@
                                 {{ form.non_field_errors }}
                             </div>
                         {% endif %}
-                        <form method="POST" enctype="multipart/form-data" class="row g-3 text-white" style="width: 90%;">
+                        <form method="POST" enctype="multipart/form-data" class="row g-3 text-white" name="registro" id="registro" style="width: 90%;">
                             {% csrf_token %}
                             <div class="col-4 form-group mb-1">
                                 {{ form.rut.label }}
@@ -55,7 +78,7 @@
                                 {{ form.rol }}
                             </div>
                             <div class="w-100 d-flex justify-content-center flex-column align-items-end mt-1">
-                                <button type="submit" class="btn" name="usuario" id="usuario" style="background-color: #28be8a; width: 20%; color: white">Registrar</button>
+                                <button type="submit" class="btn" name="registro" id="registro" style="background-color: #28be8a; width: 20%; color: white">Registrar</button>
                             </div>
                         </form>
                     </div>
@@ -78,8 +101,8 @@
                         <form method="POST" enctype="multipart/form-data" class="row g-3 text-white" style="width: 90%;">
                             {% csrf_token %}
                             <div class="col-3 form-group mb-2">
-                                {{ per_salud_form.sufijo.label }}
-                                {{ per_salud_form.sufijo }}
+                                {{ per_salud_form.prefijo.label }}
+                                {{ per_salud_form.prefijo }}
                             </div>
                             <div class="col-9 form-group mb-2">
                                 {{ per_salud_form.titulo.label }}
@@ -158,5 +181,6 @@
             </div>
         </div>
     </div>
+
 
 {% endblock %}

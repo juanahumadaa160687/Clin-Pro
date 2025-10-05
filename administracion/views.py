@@ -1,4 +1,5 @@
 import datetime
+from calendar import month
 from io import BytesIO
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import PasswordResetView
@@ -13,103 +14,54 @@ from clinpro.forms import UserCreationForm, RegistroUserForm
 from administracion.forms import LoginPersonalForm, RegistroPersonalForm, ServicioForm, ProcedimientoForm, \
     PersonalSaludForm, AdministradorForm, SecretariaForm
 from administracion.models import PersonalSalud, Servicio, Procedimiento, Agenda
-from clinpro.models import User, Paciente, Convenio, Pago
+from clinpro.models import User, Paciente, Convenio, Pago, ReservaHora
 import sweetify
 from django.contrib.auth import login as auth_login, authenticate
 from xhtml2pdf import pisa
+from django.contrib import messages
 
 
 def dashboard_admin(request):
 
-    personal_tipo = PersonalSalud.objects.all().values('titulo').annotate(total=Count('titulo'))
-    personal_esp = PersonalSalud.objects.all().values('especialidad').annotate(total=Count('especialidad'))
-    personal_rend = PersonalSalud.objects.all().values('prefijo', 'user__nombre' ,'titulo', 'procedimiento__personal_salud__procedimiento').annotate(total=Count('procedimiento__personal_salud__procedimiento'))
+    servicios = Servicio.objects.all().values('nombre').distinct()
 
-    convenios_vigentes = Convenio.objects.all().values('nombre', 'descuento')
-
-    total_pacientes_mes = Paciente.objects.filter(reservahora__fecha_reserva__month=datetime.date.today().month).values('user_id').annotate(total=Count('user_id'))
-    total_ingresos_mes = Pago.objects.filter(fecha__month=datetime.date.today().month).values('fecha__month', 'monto').aggregate(total=Sum('monto'))['total'] or 0
-    total_ingresos_anio = Pago.objects.filter(fecha__year=datetime.date.today().year).values('fecha__year', 'monto').aggregate(total=Sum('monto'))['total'] or 0
-
-    personal_sal = PersonalSalud.objects.values('prefijo', 'user__nombre', 'especialidad', 'titulo', 'universidad', 'user__email', 'user__telefono', 'user__rut')
-    secretarias = User.objects.filter(rol='secretaria').values('nombre', 'email', 'telefono', 'rut')
-    administradores = User.objects.filter(rol='administrador').values('nombre', 'email', 'telefono', 'rut')
-
-
+    servicio_form = ServicioForm()
 
     if request.method == 'POST' and 'servicio' in request.POST:
-        servicio_form = ServicioForm(request.POST)
 
-        if servicio_form.is_valid():
-            servicio = servicio_form.save(commit=False)
+        request.session['servicio'] = request.POST['servicio']
 
-            servicio.nombre = servicio_form.cleaned_data.get('servicio')
-            servicio.personal = servicio_form.cleaned_data.get('personal_salud')
-
-            servicio.save()
-            sweetify.success(request, f"Servicio Registrado con Éxito.", button='Aceptar')
-            return render(request, 'administracion/dashboard_admin.html')
-        else:
-            sweetify.error(request, 'Error al registrar servicio. Por favor, inténtelo de nuevo.', button='Aceptar')
-            return render(request, 'login_personal.html', {'servicio_form': servicio_form})
-
-    elif request.method == 'POST' and 'procedimiento' in request.POST:
-        procedimiento_form = ProcedimientoForm(request.POST)
-
-        if procedimiento_form.is_valid():
-            procedimiento = procedimiento_form.save(commit=False)
-
-            procedimiento.procedimiento = procedimiento_form.cleaned_data.get('procedimiento')
-            procedimiento.precio = procedimiento_form.cleaned_data.get('precio')
-            procedimiento.personal_salud = procedimiento_form.cleaned_data.get('personal_salud')
-
-            procedimiento.save()
-            sweetify.success(request, f"Procedimiento Registrado con Éxito.", button='Aceptar')
-            return render(request, 'administracion/dashboard_admin.html')
-        else:
-            sweetify.error(request, 'Error al registrar procedimiento. Por favor, inténtelo de nuevo.', button='Aceptar')
-            return render(request, 'login_personal.html', {'procedimiento_form': procedimiento_form})
+        services = Servicio.objects.filter(nombre=request.session['servicio']).values('nombre')
 
 
+        atencion_servicios = Servicio.objects.filter(personal__agenda__fecha__year=datetime.date.today().year).values('nombre').annotate(total=Count('personal__agenda__id'))
+
+
+        servicio_mes = Servicio.objects.values('personal__agenda__fecha__month').filter(nombre=request.session['servicio']).annotate(total=Count('personal__servicio__nombre')).order_by('personal__agenda__fecha__month')
+        print(servicio_mes)
+
+        data = []
+
+        meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+        for smes in servicio_mes:
+            if smes['personal__agenda__fecha__month'] is None:
+                pass
+            else:
+                month_name = meses[smes['personal__agenda__fecha__month'] -1]
+                data.append({'month': month_name, 'total': smes['total']})
+
+        servicio_mes = data
+
+
+        monto_mes = ReservaHora.objects.values('fecha_reserva__month').filter(profesional__servicio__nombre=request.session['servicio']).annotate(monto=Sum('pago__monto')).order_by('fecha_reserva__month')
+
+        personal_servicio = Servicio.objects.filter(personal__servicio__nombre=request.session['servicio']).values('personal__user_id', 'personal__user__rut', 'personal__prefijo', 'personal__user__nombre', 'personal__titulo', 'personal__user__email', 'personal__user__rol').distinct()
+        print(personal_servicio)
+
+        return render(request, 'administracion/dashboard_admin.html', {'atencion_servicios': atencion_servicios, 'servicio_form': servicio_form, 'servicio_mes': servicio_mes, 'monto_mes': monto_mes, 'personal_servicio': personal_servicio})
     else:
-        registro_personal = RegistroPersonalForm()
-        servicio_form = ServicioForm()
-        return render(request, 'administracion/dashboard_admin.html',
-                      {
-                            'registro_personal': registro_personal,
-                            'servicio_form': servicio_form,
-                            'personal_tipo': personal_tipo,
-                            'personal_esp': personal_esp,
-                            'personal_rend': personal_rend,
-                            'convenios_vigentes': convenios_vigentes,
-                            'total_pacientes_mes': total_pacientes_mes,
-                            'total_ingresos_mes': total_ingresos_mes,
-                            'total_ingresos_anio': total_ingresos_anio,
-                            'personal_sal': personal_sal,
-                            'secretarias': secretarias,
-                            'administradores': administradores,
-                      })
-
-
-def dashboard_servicios(request):
-
-    personal_clin = User.objects.all().values('nombre', 'email', 'telefono', 'rut', 'rol').exclude(rol='Paciente')
-
-
-    pac_servicios= Servicio.objects.all().values('personal__servicio__nombre', 'personal__reservahora__paciente_id').annotate(total=Count('personal__reservahora__paciente_id'))
-    rend_servicios= Servicio.objects.all().values('personal__servicio__nombre', 'personal__reservahora__pago_id__monto').aggregate(total=Sum('personal__reservahora__pago_id__monto'))['total'] or 0
-    rend_especialidad = Servicio.objects.all().values('personal__especialidad', 'personal__reservahora__pago_id__monto').aggregate(total=Sum('personal__reservahora__pago_id__monto'))['total'] or 0
-    #prof_servicio = Servicio.objects.all().values('personal__servicio__nombre', 'personal__user__nombre', 'personal__titulo', 'personal__especialidad', 'personal__universidad', 'personal__user__email', 'personal__user__telefono', 'personal__user__rut')
-
-
-
-    return render(request, 'administracion/dashboard_servicios.html',
-                  {
-                        'pac_servicios': pac_servicios,
-                        'rend_servicios': rend_servicios,
-                        'rend_especialidad': rend_especialidad,
-                        'personal_clin': personal_clin,
-                  })
+        return render(request, 'administracion/dashboard_admin.html', {'servicios': servicios, 'servicio_form': servicio_form})
 
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
     template_name = 'password_reset.html'
@@ -122,26 +74,35 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
 
 def dashboard_personal(request):
 
+    registro_personal = RegistroPersonalForm()
+    per_salud_form = PersonalSaludForm()
+    admin_form = AdministradorForm()
+    secre_form = SecretariaForm()
+
     if request.method == 'POST' and 'registro' in request.POST:
-        registro_personal = RegistroPersonalForm(request.POST)
+
+        registro_personal = RegistroPersonalForm()
 
         if registro_personal.is_valid():
-            user =registro_personal.save(commit=False)
 
+            user = registro_personal.save(commit=False)
             user.email = registro_personal.cleaned_data.get('email')
-            user.set_password(registro_personal.cleaned_data.get('password1'))
             user.nombre = registro_personal.cleaned_data.get('nombre')
             user.telefono = registro_personal.cleaned_data.get('telefono')
             user.rut = registro_personal.cleaned_data.get('rut')
             user.rol = registro_personal.cleaned_data.get('rol')
-
+            user.set_password(registro_personal.cleaned_data.get('password1'))
             user.save()
+            messages.success(request, f"Usuario {user.nombre} Registrado con Éxito.")
+            sweetify.success(request, f"Usuario {user.nombre} Registrado con Éxito.", button='Aceptar')
+            return render(request, 'administracion/personal_dashboard.html', {'form': registro_personal, 'per_salud_form': per_salud_form, 'admin_form': admin_form, 'secre_form': secre_form})
+        else:
+            messages.error(request, 'Error al registrar usuario. Por favor, inténtelo de nuevo.')
+            sweetify.error(request, 'Error al registrar usuario. Por favor, inténtelo de nuevo.', button='Aceptar')
 
-            group = Group.objects.get_or_create(name=user.rol)[0]
-            user.groups.add(group)
+        return render(request, 'administracion/personal_dashboard.html', {'form': registro_personal, 'per_salud_form': per_salud_form, 'admin_form': admin_form, 'secre_form': secre_form})
 
-            sweetify.success(request, f"Functionary Registrado con Éxito.", button='Aceptar')
-        return render(request, 'administracion/personal_dashboard.html', {'registro_personal': registro_personal})
+
 
     elif request.method == 'POST' and 'personal_salud' in request.POST:
 
@@ -158,10 +119,11 @@ def dashboard_personal(request):
 
             personal_salud.save()
             sweetify.success(request, f"Personal de Salud Registrado con Éxito.", button='Aceptar')
-            return render(request, 'administracion/personal_dashboard.html')
+            return render(request, 'administracion/personal_dashboard.html', {'per_salud_form': per_salud_form, 'form': registro_personal, 'admin_form': admin_form, 'secre_form': secre_form,
+                                                                              'success': 'Personal de Salud Registrado con Éxito.'})
         else:
             sweetify.error(request, 'Error al registrar personal de salud. Por favor, inténtelo de nuevo.', button='Aceptar')
-            return render(request, 'administracion/personal_dashboard.html', {'per_salud_form': per_salud_form})
+            return render(request, 'administracion/personal_dashboard.html', {'per_salud_form': per_salud_form, 'form': registro_personal, 'admin_form': admin_form, 'secre_form': secre_form})
 
     elif request.method == 'POST' and 'administrador' in request.POST:
         admin_form = AdministradorForm(request.POST)
@@ -171,10 +133,10 @@ def dashboard_personal(request):
             administrador.save()
 
             sweetify.success(request, f"Administrador Asignado con Éxito.", button='Aceptar')
-            return render(request, 'administracion/personal_dashboard.html')
+            return render(request, 'administracion/personal_dashboard.html', {'admin_form': admin_form, 'form': registro_personal, 'per_salud_form': per_salud_form, 'secre_form': secre_form})
         else:
             sweetify.error(request, 'Error al asignar administrador. Por favor, inténtelo de nuevo.', button='Aceptar')
-            return render(request, 'administracion/personal_dashboard.html', {'admin_form': admin_form})
+            return render(request, 'administracion/personal_dashboard.html', {'admin_form': admin_form, 'form': registro_personal, 'per_salud_form': per_salud_form, 'secre_form': secre_form})
 
     elif request.method == 'POST' and 'secretaria' in request.POST:
         secre_form = RegistroUserForm(request.POST)
@@ -184,10 +146,10 @@ def dashboard_personal(request):
             secretaria.save()
 
             sweetify.success(request, f"Secretaria Registrada con Éxito.", button='Aceptar')
-            return render(request, 'administracion/personal_dashboard.html')
+            return render(request, 'administracion/personal_dashboard.html', {'secre_form': secre_form, 'form': registro_personal, 'per_salud_form': per_salud_form, 'admin_form': admin_form})
         else:
             sweetify.error(request, 'Error al registrar secretaria. Por favor, inténtelo de nuevo.', button='Aceptar')
-            return render(request, 'administracion/personal_dashboard.html', {'secre_form': secre_form})
+            return render(request, 'administracion/personal_dashboard.html', {'secre_form': secre_form, 'form': registro_personal, 'per_salud_form': per_salud_form, 'admin_form': admin_form})
 
     else:
         registro_personal = RegistroPersonalForm()
@@ -298,24 +260,19 @@ def eliminar_usuario(request, user_id):
     return redirect('personal_dashboard')
 
 
-def informe_admin(request):
-
-    if request.method == 'POST':
-        month = request.POST.get('month')
-        if month:
-            return redirect('generar_pdf')
-        else:
-            sweetify.error(request, 'Error al generar informe. Por favor, inténtelo de nuevo.', button='Aceptar')
-            return render(request, 'administracion/informes_admin.html')
-
-    return render(request, 'administracion/informes_admin.html')
-
 
 def generar_pdf_view(request):
 
+    servicios = Servicio.objects.values('nombre').filter(personal__agenda__fecha__month=datetime.date.today().month).annotate(total=Count('personal__reservahora__id'))
+    print(servicios)
+
     template_path = 'administracion/informe_template.html'
 
-    context = {}
+    context = {
+        'month' : datetime.date.today().month,
+        'year' : datetime.date.today().year,
+        'servicios': servicios,
+    }
 
     template = get_template(template_path)
     html = template.render(context)

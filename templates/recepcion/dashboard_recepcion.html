@@ -1,14 +1,14 @@
 {% extends 'base_recepcion.html' %}
 {% load static %}
 
-{% block title %}Recepción {{ request.user.secretaria.servicio }}{% endblock title %}
+{% block title %}Recepción{% endblock title %}
 
 {% block content %}
 
     <div class="m-0 p-0">
 
         <div class="m-0 p-0" >
-            <h1 class="text-start text-white">Recepción {{ request.user.secretaria.servicio }}</h1>
+            <h1 class="text-start text-white">Recepción </h1>
         </div>
 
         <div class="row d-flex flex-row justify-content-center mt-3 gap-2">
@@ -19,13 +19,10 @@
                         <table class="display text-center" id="tablaFunc" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>RUT</th>
-                                    <th>Nombre</th>
-                                    <th>Fecha</th>
-                                    <th>Hora</th>
+                                    <th>Paciente</th>
                                     <th>Profesional</th>
+                                    <th>Hora</th>
                                     <th>Confirmada</th>
-                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                         </table>
@@ -35,4 +32,30 @@
         </div>
     </div>
 
+    {% block script %}
+
+        <script>
+            let table = new DataTable('#tablaFunc',{
+                data: [
+                    {% for cita in citas_dia %}
+                        {
+                            nombre: '{{ cita.paciente__user__nombre }}',
+                            profesional: '{{ cita.profesional__prefijo }} {{ cita.profesional__user__nombre }} ',
+                            hora: '{{ cita.hora_reserva }}',
+                            confirmada: '{% if cita.confirmada %}<span class="badge" style="background-color: rgb(42, 140, 74, 0.5); border: 2px solid rgb(42, 140, 74) ">Sí</span>{% else %}<span class="badge " style="background-color: rgb(255, 0, 0, 0.6); border: 2px solid rgb(255, 0, 0)">No</span>{% endif %}',
+                        },
+                    {% endfor %}
+                ],
+                columns: [
+                    { data: 'nombre' },
+                    { data: 'profesional' },
+                    { data: 'hora' },
+                    { data: 'confirmada' },
+                ],
+            });
+        </script>
+
+    {% endblock script %}
+
 {% endblock %}
+

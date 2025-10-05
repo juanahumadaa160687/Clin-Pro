@@ -91,7 +91,7 @@ class PersonalSaludForm(ModelForm):
     )
     user = forms.ModelChoiceField(
         label='Usuario',
-        queryset=User.objects.filter(personalsalud__isnull=True, administrador__isnull=True, secretaria__isnull=True),
+        queryset=User.objects.filter(personalsalud__isnull=True, rol='PersonalSalud'),
         widget=forms.Select(attrs={'class': 'form-select', 'required': 'true', 'id': 'user', 'name': 'user'})
     )
 
@@ -145,7 +145,7 @@ class ProcedimientoForm(forms.Form):
 class AdministradorForm(forms.Form):
     administrador = forms.ModelChoiceField(
         label='Administrador',
-        queryset=User.objects.filter(administrador__isnull=False),
+        queryset=User.objects.filter(rol='Administrador', administrador__isnull=True),
         widget=forms.Select(attrs={'class': 'form-select', 'required': 'true'})
     )
 
@@ -156,7 +156,7 @@ class AdministradorForm(forms.Form):
 class SecretariaForm(forms.Form):
     secretaria = forms.ModelChoiceField(
         label='Secretaria',
-        queryset=User.objects.filter(secretaria__isnull=False),
+        queryset=User.objects.filter(rol='Secretaria', secretaria__isnull=True),
         widget=forms.Select(attrs={'class': 'form-select', 'required': 'true',})
     )
 

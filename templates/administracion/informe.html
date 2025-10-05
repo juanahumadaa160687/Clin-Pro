@@ -3,7 +3,25 @@
 
 {% block content %}
 
-    <h1>SOY UN INFORME PDF</h1>
-
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Informe Mensual - {{ month }} {{ year }}</h1>
+        <table class="table-pdf">
+            <thead >
+                <tr>
+                    <th scope="col">Servicio</th>
+                    <th scope="col">Pacientes Atendidos</th>
+                    <th scope="col">Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for servicio in servicios %}
+                    <tr>
+                        <td>{{ servicio.nombre }}</td>
+                        <td>{{ servicio.total }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 {% endblock %}

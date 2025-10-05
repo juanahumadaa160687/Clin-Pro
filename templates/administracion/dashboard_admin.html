@@ -9,6 +9,33 @@
 
         <div class="m-0 p-0" >
             <h1 class="text-start text-white">Dashboard Administración</h1>
+            <div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-start gap-3 mb-2">
+                        <div class="w-25">
+                            <label for="year" class="form-label text-white">Selecciona Servicio</label>
+                            <select name="servicio" id="servicio" class="form-select">
+                            {% if request.session.servicio %}
+                                <option selected disabled value="{{ request.session.servicio }}">{{ request.session.servicio }}</option>
+                                {% for y in servicios %}
+                                    <option value="{{ y.nombre }}">{{ y.nombre }}</option>
+                                {% endfor %}
+                            {% else %}
+                                <option selected disabled value="">Seleccione...</option>
+                                {% for y in servicios %}
+                                    <option value="{{ y.nombre }}">{{ y.nombre }}</option>
+                                {% endfor %}
+                            {% endif %}
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-end">
+                            <button type="submit" class="btn btn-danger"><i class="fa-solid fa-filter"></i> Filtrar</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
         </div>
 
         <div class="row d-flex flex-row justify-content-center mt-3 gap-2">
@@ -38,18 +65,18 @@
                     </div>
                 </div>
             </div>
-            <div class="row d-flex flex-row justify-content-center mt-2 gap-2">
+            <div class="row d-flex flex-row justify-content-center mt-2 gap-2 w-100">
                 <div class="col card p-0" style="border-radius: 20px; border: 2px solid #3b3f4c">
                     <div class="card-body d-flex justify-content-center align-items-center">
-                        <table class="display" id="tablaFunc" style="width: 100%;">
+                        <table class="display" id="tablaFunc" >
                             <thead>
                             <tr>
+                                <th style="display: none;">ID</th>
                                 <th>RUT</th>
                                 <th>Nombre</th>
-                                <th>Teléfono</th>
                                 <th>Email</th>
+                                <th>Título</th>
                                 <th>Rol</th>
-                                <th>Servicio</th>
                                 <th>Acciones</th>
                             </tr>
                             </thead>
@@ -71,64 +98,52 @@
 
         let table = new DataTable('#tablaFunc',{
             data: [
-                {'rut': '12.345.678-9', 'nombre': 'Juan Pérez', 'telefono': '+56912345678', 'email': 'jperez@clinicare.cl', 'rol': 'Personal Salud', 'servicio': 'Medicina Adulto', 'acciones': ''},
-                {'rut': '98.765.432-1', 'nombre': 'María Gómez', 'telefono': '+56987654321', 'email': 'mgomez@clinicare.cl', 'rol': 'Secretaria', 'servicio': 'Odontología', 'acciones': ''},
-                {'rut': '11.223.344-5', 'nombre': 'Carlos Ruiz', 'telefono': '+56911223344', 'email': 'cruiz@clinicare.cl', 'rol': 'Personal Salud', 'servicio': 'Vacunación', 'acciones': ''},
-                {'rut': '22.334.455-6', 'nombre': 'Ana Torres', 'telefono': '+56922334455', 'email': 'storres@clinicare.cl', 'rol': 'Secretaria', 'servicio': 'Salud Mental', 'acciones': ''},
-                {'rut': '33.445.566-7', 'nombre': 'Luis Fernández', 'telefono': '+56933445566', 'email': 'lfernandez@clinicare.cl', 'rol': 'Personal Salud', 'servicio': 'Nutrición', 'acciones': ''},
-                {'rut': '44.556.677-8', 'nombre': 'Sofía Martínez', 'telefono': '+56944556677', 'email': 'smartinez@clinicare.cl', 'rol': 'Secretaria', 'servicio': 'Kinesiólogía', 'acciones': ''},
-                {'rut': '55.667.788-9', 'nombre': 'Diego López', 'telefono': '+56955667788', 'email': 'dlopez@clinicare.cl', 'rol': 'Personal Salud', 'servicio': 'Terapia Ocupacional', 'acciones': ''},
-                {'rut': '66.778.899-0', 'nombre': 'Elena Ramírez', 'telefono': '+56966778899', 'email': 'eramirez@clinicare.cl', 'rol': 'Secretaria', 'servicio': 'Fonoaudiología', 'acciones': ''},
-                {'rut': '77.889.900-1', 'nombre': 'Javier Sánchez', 'telefono': '+56977889900', 'email': 'jsanchez@clinicare.cl', 'rol': 'Personal Salud', 'servicio': 'Medicina Niño', 'acciones': ''},
-                {'rut': '88.990.011-2', 'nombre': 'Laura Díaz', 'telefono': '+56988990011', 'email': 'ldiaz@clinicare.cl', 'rol': 'Administrador', 'servicio': 'Odontología', 'acciones': ''},
-                {'rut': '99.001.122-3', 'nombre': 'Miguel Torres', 'telefono': '+56999001122', 'email': 'mtorres@clinicare.cl', 'rol': 'Personal Salud', 'servicio': 'Vacunación', 'acciones': ''},
-                {'rut': '10.112.233-4', 'nombre': 'Isabel Cruz', 'telefono': '+56910112233', 'email': 'icruz@clinicare.cl', 'rol': 'Administrador', 'servicio': 'Salud Mental', 'acciones': ''},
-                {'rut': '21.223.344-5', 'nombre': 'Fernando Morales', 'telefono': '+56921223344', 'email': 'fmorales@clinicare.cl', 'rol': 'Personal Salud', 'servicio': 'Nutrición', 'acciones': ''},
-                {'rut': '32.334.455-6', 'nombre': 'Carmen Vega', 'telefono': '+56932334455', 'email': 'cvega@clinicare.cl', 'rol': 'Administrador', 'servicio': 'Kinesiólogía', 'acciones': ''},
-                {'rut': '43.445.566-7', 'nombre': 'Andrés Herrera', 'telefono': '+56943445566', 'email': 'aherrera@clinicare.cl', 'rol': 'Personal Salud', 'servicio': 'Terapia Ocupacional', 'acciones': ''},
-                {'rut': '54.556.677-8', 'nombre': 'Patricia Soto', 'telefono': '+56954556677', 'email': 'psoto@clinicare.cl', 'rol': 'Administrador', 'servicio': 'Fonoaudiología', 'acciones': ''},
-                {'rut': '65.667.788-9', 'nombre': 'Ricardo Fuentes', 'telefono': '+56965667788', 'email': 'rfuentes@clinicare.cl', 'rol': 'Personal Salud', 'servicio': 'Medicina Adulto', 'acciones': ''},
-                {'rut': '76.778.899-0', 'nombre': 'Natalia Rojas', 'telefono': '+56976778899', 'email': 'nrojas@clinicare.cl', 'rol': 'Administrador', 'servicio': 'Medicina Adulto', 'acciones': ''},
-            ],
+                {% for personal in personal_servicio %}
+                {
+                    id: '{{ personal.personal__id }}',
+                    rut: '{{ personal.personal__user__rut }}',
+                    nombre: '{{ personal.personal__prefijo }} {{ personal.personal__user__nombre }}',
+                    email: '{{ personal.personal__user__email }}',
+                    titulo: '{{ personal.personal__titulo }}',
+                    rol: '{{ personal.personal__user__rol}}',
 
+                },
+                {% endfor %}
+            ],
             columns: [
+                { data: 'id', visible: false },
                 { data: 'rut' },
                 { data: 'nombre' },
-                { data: 'telefono' },
+                { data: 'titulo' },
                 { data: 'email' },
                 { data: 'rol' },
-                { data: 'servicio' },
-                { data: 'acciones', defaultContent: '<a href="#" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen-to-square"></i></a> <a href="#" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>' }
+
+                { data: 'acciones', defaultContent: '<a href="#" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen-to-square"></i></a> <a href="#" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>' },
             ],
         });
     </script>
 
     <script>
-        let table = new DataTable('#tablaFunc',{
-            data: [],
 
-            columns: [
-                { data: 'rut' },
-                { data: 'nombre' },
-                { data: 'telefono' },
-                { data: 'email' },
-                { data: 'rol' },
-                { data: 'servicio' }
-            ],
-        });
-    </script>
+        labels = []
 
+        {% for data in atencion_servicios %}
+            labels.push('{{ data.nombre }}');
+        {% endfor %}
 
-    <script>
 
         const ctx2 = document.getElementById('paciente_servicios');
         const serviciosChart = new Chart(ctx2, {
             type: 'pie',
             data: {
-                labels: ['Medicina Adulto', 'Medicina Niño', 'Odontología', 'Vacunación', 'Salud Mental', 'Nutrición', 'Kinesiólogía', 'Terapia Ocupacional', 'Fonoaudiología'],
+                labels: labels,
                 datasets: [{
                     label: 'Pacientes Atendidos por Servicio',
-                    data: [12324, 9321, 5321, 3210, 2134, 4321, 6543, 3210, 4321],
+                    data: [
+                        {% for data in atencion_servicios %}
+                            {{ data.total }},
+                        {% endfor %}
+                    ],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -174,14 +189,24 @@
 
     <script>
 
+        labels = []
+        {% for data in servicio_mes %}
+            labels.push('{{ data.month }}');
+        {% endfor %}
+
+        datos = []
+        {% for data in servicio_mes %}
+            datos.push('{{ data.total }}');
+        {% endfor %}
+
         const ctx = document.getElementById('ingresos');
         const ingresosChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                labels: [...labels],
                 datasets: [{
-                    label: 'Ingresos Mensuales por Servicios (en miles de CLP)',
-                    data: [1200, 1900, 3000, 5000, 2000, 3000, 4500, 6000, 7000, 8000, 9000, 10000],
+                    label: 'Pacientes Atendidos en Servicio',
+                    data: datos,
                     fill: true,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
@@ -222,14 +247,26 @@
 
     <script>
 
+        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+        labels = []
+        {% for data in monto_mes %}
+            labels.push(meses['{{ data.fecha_reserva__month }}'-1]);
+        {% endfor %}
+
+        datos = []
+        {% for data in monto_mes %}
+            datos.push('{{ data.monto }}');
+        {% endfor %}
+
         const ctx3 = document.getElementById('pacientes');
         const pacientesChart = new Chart(ctx3, {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                labels: [...labels],
                 datasets: [{
                     label: 'Pacientes Mensuales',
-                    data: [120, 190, 300, 500, 200, 300, 450, 600, 700, 800, 900, 1000],
+                    data: datos,
                     fill: true,
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
                     borderColor: 'rgba(255, 99, 132, 1)',
