@@ -8,109 +8,25 @@
 {% block content %}
 
 <div class="row d-flex flex-row justify-content-center align-items-center my-2 mx-2" style="min-height: 90vh;">
-    {% if request.user.paciente.genero %}
-        <div class="col-4"  style="height: 85vh;">
-            <div class="card h-100" style="background-color: #F2F2F2; box-shadow: 10px 10px 15px #CCC; border: none">
-                <div class="card-header" style="background-color: #1D919C; color: #F2F2F2;">
-                    <h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5>
-                </div>
-                <div class="card-body p-4 mb-4">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item mb-3 mt-3" style="background-color: #f5f3e9;">
-                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Rut: {{ request.user.rut }}</h4>
-                        </li>
-                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
-                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Nombre: {{ request.user.nombre }}</h4>
-                        </li>
-                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
-                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Género: {{ request.user.paciente.genero }}</h4>
-                        </li>
-                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
-                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Fecha de Nacimiento: {{ request.user.paciente.fecha_nacimiento }}</h4>
-                        </li>
-                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
-                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Dirección: {{ request.user.paciente.direccion }}</h4>
-                        </li>
-                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
-                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Teléfono: {{ request.user.telefono }}</h4>
-                        </li>
-                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
-                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Teléfono de Emergencia: {{ request.user.paciente.telefono_emergencia }}</h4>
-                        </li>
-                        <li class="list-group-item mb-3" style="background-color: #f5f3e9;">
-                            <h4 class="card-text" style="font-weight: normal; font-size: 16pt">Previsión: {{ request.user.paciente.prevision }}</h4>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    {% else %}
-        <div class="col-4" style="height: 85vh; ">
-            <div class="card h-100" style="background-color: #F2F2F2; box-shadow: 10px 10px 15px #CCC; border: none">
-                <div class="card-header" style="background-color: #1D919C; color: #F2F2F2;"><h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5></div>
-                <div class="card-body px-4 py-1 mb-4">
-                    <small class="text-muted">Ingrese sus datos para completar su perfil y continuar con la reserva de hora.</small>
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="form-floating mt-4 mb-3">
-                            {{ form.genero }}
-                            <label for="genero">Género</label>
-                        </div>
-                        <br>
-                        <div class="form-floating mb-3">
-                            {{ form.fecha_nacimiento }}
-                            <label for="fecha_nacimiento">Fecha Nacimiento</label>
-                        </div>
-                        <br>
-                        <div class="form-floating mb-3">
-                            {{ form.direccion }}
-                            <label for="direccion">Dirección</label>
-                        </div>
-                        <br>
-                        <div class="form-floating mb-3">
-                            {{ form.telefono_emergencia }}
-                            <label for="telefono_emergencia">Teléfono de Emergencias</label>
-                        </div>
-                        <br>
-                        <div class="form-floating mb-4">
-                            {{ form.prevision }}
-                            <label for="prevision">Previsión</label>
-                        </div>
 
-                        <div class="d-flex justify-content-center align-items-center mt-2">
-                            <button type="submit" class="btn" name="paciente" id="paciente" style="background-color: #1D919C; color: #fff9f0; width: 250px">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-    <div class="col-4" style="height: 85vh; ">
+    <div class="col-6" style="height: 85vh; ">
         <div class="card h-100" style="background-color: #F2F2F2; box-shadow: 10px 10px 15px #CCC; border: none">
-            <div class="card-header" style="background-color: #1D919C; color: #F2F2F2;"> <h5 class="card-title"><i class="fa-solid fa-calendar-check"></i> Información de la Hora</h5></div>
+            <div class="card-header" style="background-color: #1D919C; color: #F2F2F2;"> <h5 class="card-title"><i class="fa-solid fa-calendar-check"></i> Reserva</h5></div>
 
-            <div class="card-body p-4">
+            <div class="card-body px-5">
 
-                <div class="mt-4 mb-2">
+                <div class="mt-4 mb-1">
                     <form method="POST" enctype="multipart/form-data">
                         <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
                             {% csrf_token %}
                             <select class="form-select" name="servicio" id="servicio">
-                            {% if request.session.servicio %}
-                                <option value="{{ request.session.servicio }}" selected>{{ request.session.servicio }}</option>
-                            {% else %}
-                                <option value="" disabled selected>Seleccione un servicio</option>
-                            {% endif %}
+                                <option value="" selected>Seleccione un Servicio</option>
                                 {% for servicio in servicios %}
                                     <option value="{{ servicio.nombre }}">{{ servicio.nombre }}</option>
                                 {% endfor %}
                             </select>
                             <label for="servicio">Servicio</label>
-                            {% if request.user.paciente.prevision %}
                             <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="servicio" id="servicio"><i class="fa-solid fa-magnifying-glass"></i></button>
-                            {% else %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                            {% endif %}
                         </div>
                     </form>
                 </div>
@@ -128,11 +44,7 @@
                                 {% endfor %}
                             </select>
                             <label for="especialidad">Especialidad</label>
-                        {% if request.session.servicio %}
                             <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="especialidad" id="especialidad"><i class="fa-solid fa-magnifying-glass"></i></button>
-                        {% else %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                        {% endif %}
                         </div>
                     </form>
                 </div>
@@ -144,17 +56,13 @@
                         {% csrf_token %}
                         <div class=" form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
                             <select class="form-select" name="profesional" id="profesional" >
-                                <option value="" disabled selected>Seleccione un Profesional {{ request.session.nombre_pro }}</option>
+                                <option value="" disabled selected>Seleccione un Profesional</option>
                                 {% for profesional in profesionales %}
-                                    <option value="{{ profesional.id }}">{{ profesional.nombre }}</option>
+                                    <option value="{{ profesional.id }}">{{ profesional.user__nombre }}</option>
                                 {% endfor %}
                             </select>
                             <label for="profesional">Profesional</label>
-                            {% if request.session.especialidad %}
                             <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="profesional" id="profesional"><i class="fa-solid fa-magnifying-glass"></i></button>
-                            {% else %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                            {% endif %}
                         </div>
                     </form>
                 </div>
@@ -166,17 +74,13 @@
                         {% csrf_token %}
                         <div class=" form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
                             <select class="form-select" name="procedimiento" id="procedimiento" >
-                                <option value="" disabled selected>Seleccione el Procedimiento {{ request.session.procedimiento }}</option>
+                                <option value="" disabled selected>Seleccione el Procedimiento</option>
                                 {% for procedimiento in procedimientos %}
                                     <option value="{{ procedimiento.precio }}">{{ procedimiento.procedimiento }}</option>
                                 {% endfor %}
                             </select>
                             <label for="profesional">Procedimientos</label>
-                            {% if request.session.profesional %}
                             <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="procedimiento" id="procedimiento"><i class="fa-solid fa-magnifying-glass"></i></button>
-                            {% else %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                            {% endif %}
                         </div>
                     </form>
                 </div>
@@ -189,11 +93,7 @@
                         <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
                             <input class="form-control" type="date" name="fecha" id="fecha" value="{{ request.session.fecha }}" min="{{ hoy }}">
                             <label for="fecha">Fecha de Atención</label>
-                            {% if request.session.procedimiento %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="procedimiento" id="procedimiento"><i class="fa-solid fa-magnifying-glass"></i></button>
-                            {% else %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                            {% endif %}
+                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="fecha" id="fecha"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </form>
                 </div>
@@ -211,20 +111,15 @@
                                 {% endfor %}
                             </select>
                             <label for="hora">Horas Disponibles</label>
-                            {% if request.session.fecha %}
                             <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;"><i class="fa-solid fa-magnifying-glass"></i></button>
-                            {% else %}
-                            <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                            {% endif %}
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <div class="col-4" style="height: 85vh;">
+    <div class="col-6" style="height: 85vh;">
         <div class="card h-100" style="background-color: #F2F2F2; box-shadow: 10px 10px 15px #CCC; border: none">
             <div class="card-header" style="background-color: #1D919C; color: #F2F2F2;"><h5 class="card-title"><i class="fa-solid fa-money-check-dollar"></i> Pago</h5></div>
             <div class="card-body p-4" >
@@ -235,7 +130,6 @@
                         <div class="d-flex justify-content-center align-items-center flex-row gap-2 mt-4 mb-1">
                             <select class="form-control form-control-lg form-select" name="convenio" id="convenio">
                                 <option value="" disabled selected>Seleccione un convenio</option>
-                                <option value="0">Sin Convenio</option>
                                 {% for convenio in convenios %}
                                     <option value="{{ convenio.id }}">{{ convenio.nombre }}</option>
                                 {% endfor %}
@@ -256,24 +150,24 @@
                     <h3>Total a Pagar: {{ total }} </h3>
                 </div>
                 <hr>
-                <div class="mt-4">
+                <div class="mt-4 w-100">
                     <h5>
                         <small>Medio de Pago</small>
                     </h5>
                     <br>
-                    <div class="d-flex justify-content-center align-items-center flex-row gap-3 p-0 m-0 w-100">
+                    <div class="d-flex justify-content-start align-items-center flex-row gap-3 p-0 m-0 w-100">
 
-                        <div class="d-flex justify-content-center align-items-center flex-row p-0">
-                            <form method="post" action="{{ url }}">
-                                <input type="hidden" name="token_ws" value="{{ token }}" />
-                                <a class="btn" type="submit"><img src="{% static 'img/webpay.png' %}" alt="" width="150" height="50"></a>
-                            </form>
+                        <div class="d-flex justify-content-start align-items-center flex-column p-0 w-100">
+
+                            <div class="d-flex justify-content-around align-items-center flex-row p-0 m-0 w-100">
+                                <img src="{% static 'img/webpay.png' %}" alt="" width="150" height="50">
+                                <form method="post" action="{{ url }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="token_ws" value="{{ token }}" />
+                                    <input class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2; " type="submit" value="Ir a pagar" />
+                                </form>
+                            </div>
                         </div>
-
-                        <div class="d-flex justify-content-center align-items-center flex-row p-0">
-                            <a href="#"> <img src="{% static 'img/transferencia.png' %}" width="150" alt=""> </a>
-                        </div>
-
                     </div>
                 </div>
             </div>

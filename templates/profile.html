@@ -9,99 +9,50 @@
 
 {% block content %}
 
-    <section class="px-0 py-0 m-3" style="height: 100vh; background-color: #f5f3e9;">
+    <section class="px-0 py-0 m-0" style="height: 100vh;">
 
-        <div class="row d-flex w-100 m-0 pt-4">
-            <div class="col-9">
-                <div class="card" style="box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 30vh; overflow-y: auto; background-color: #f5f3e9">
-                    <div class="card-header" style="background-color: #3A6073"><h4 class="card-title" style="color: #fff9f0;">Datos de Usuario</h4></div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <p><strong>Nombre:</strong> {{ request.user.nombre }}</p>
+        <div class="row d-flex w-100 mt-4  p-0 justify-content-center align-items-start flex-row h-100">
+            <div class="col-3 d-flex align-items-center justify-content-center flex-column m-0">
+                <div class="card" style="box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #fff">
+                    <div class="card-header" style="background-color: #1D919C"><h4 class="card-title" style="color: #fff9f0;">Datos de Usuario</h4></div>
+                    <div class="card-body w-100">
+                        <div class="row d-flex align-items-center justify-content-center flex-column w-100">
+                            <div class="col d-flex align-items-start justify-content-start">
+                                <p class="text-start"><strong>Nombre:</strong> <small>{{ request.user.nombre }}</small></p>
                             </div>
-                            <div class="col">
-                                <p><strong>RUT:</strong> {{ request.user.rut }}</p>
+                            <div class="col d-flex align-items-start justify-content-start">
+                                <p class="text-start"><strong>RUT:</strong> <small>{{ request.user.rut }}</small></p>
                             </div>
-                            <div class="col">
-                                <p><strong>Email:</strong> {{ request.user.email }}</p>
+                            <div class="col d-flex align-items-start justify-content-start">
+                                <p class="text-start"><strong>Email:</strong> <small>{{ request.user.email }}</small></p>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <p><strong>Teléfono:</strong> {{ request.user.telefono }}</p>
-                            </div>
-                            <div class="col">
-                                <p><strong>Dirección:</strong> {{ request.user.paciente.direccion }}</p>
-                            </div>
-                            <div class="col">
-                                <p><strong>Fecha de Nacimiento:</strong> {{ request.user.paciente.fecha_nacimiento }}</p>
+                            <div class="col d-flex align-items-start justify-content-start">
+                                <p class="text-start"><strong>Teléfono:</strong> <small>{{ request.user.telefono }}</small></p>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <p><strong>Previsión:</strong> {{ request.user.paciente.prevision }}</p>
-                            </div>
+                        <br>
+                        <div class="row d-flex align-items-center justify-content-center flex-column gap-3 p-3">
+                            <a class="btn btn-primary"  href="{% url 'edit_profile' id=request.user.id %}"><i class="fa-solid fa-pen-to-square"></i> Editar Información</a>
+                            <a class="btn btn-secondary"  href="#"><i class="fa-solid fa-key"></i> Cambiar Contraseña</a>
+                            <a class="btn btn-danger"  href="{% url 'delete_profile' id=request.user.id %}"><i class="fa-solid fa-trash"></i> Eliminar Cuenta</a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-3">
-                <div class="card p-0" style="box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 30vh; overflow-y: auto; background-color: #f5f3e9">
-                    <div class="card-header" style="background-color: #3A6073"><h4 class="card-title" style="color: #fff9f0;">Modificar Usuario</h4></div>
-                    <div class="card-body d-flex flex-column gap-3">
-                        <a class="btn " style="background-color: #3A6073; color: white" href="{% url 'edit_profile' id=request.user.id %}"><i class="fa-solid fa-pen-to-square"></i> Editar Información</a>
-                        <a class="btn " style="background-color: #3A6073; color: white" href="#"><i class="fa-solid fa-key"></i> Cambiar Contraseña</a>
-                        <a class="btn btn-danger" href="{% url 'delete_profile' id=request.user.id %}"><i class="fa-solid fa-trash"></i> Eliminar Cuenta</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row d-flex w-100 m-0 pt-4">
             <div class="col-9">
-                <div class="card" style="width: 100%; box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #f5f3e9">
-                    <div class="card-header" style="background-color: #3A6073"><h4 class="card-title" style="color: #fff9f0;">Historial de Horas</h4></div>
+                <div class="card" style="width: 100%; box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #fff">
+                    <div class="card-header" style="background-color: #1D919C"><h4 class="card-title" style="color: #fff9f0;">Historial de Horas</h4></div>
                     <div class="card-body">
                         <table class="display text-center"  id="historialTable">
                             <thead>
                             <tr>
                                 <th class="text-center">ID</th>
-                                <th class="text-center">Fecha</th>
-                                <th class="text-center">Orden</th>
-                                <th class="text-center">Archivo</th>
+                                <th class="text-center">Fecha Reserva</th>
+                                <th class="text-center">Profesional</th>
+                                <th class="text-center">Servicio</th>
+                                <th class="text-center">Estado</th>
                             </tr>
                             </thead>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="card" style="width: 100%; box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #f5f3e9">
-                    <div class="card-header" style="background-color: #3A6073"><h4 class="card-title" style="color: #fff9f0;">Informes de Laboratorio</h4></div>
-                    <div class="card-body">
-                        <table class="table"  id="">
-                            <thead>
-                            <tr>
-                                <th class="text-center" style="background-color: #f5f3e9">ID</th>
-                                <th class="text-center" style="background-color: #f5f3e9">Fecha</th>
-                                <th class="text-center" style="background-color: #f5f3e9">Orden</th>
-                                <th class="text-center" style="background-color: #f5f3e9">Archivo</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td class="text-center" style="background-color: #f5f3e9">1</td>
-                                <td class="text-center" style="background-color: #f5f3e9">2023-09-01</td>
-                                <td class="text-center" style="background-color: #f5f3e9">Orden 001</td>
-                                <td class="text-center" style="background-color: #f5f3e9"><a href="#">Descargar</a></td>
-                            </tr>
-                            <tr>
-                                <td class="text-center" style="background-color: #f5f3e9">2</td>
-                                <td class="text-center" style="background-color: #f5f3e9">2023-09-15</td>
-                                <td class="text-center" style="background-color: #f5f3e9">Orden 002</td>
-                                <td class="text-center" style="background-color: #f5f3e9"><a href="#">Descargar</a></td>
-                            </tr>
                         </table>
                     </div>
                 </div>
@@ -114,24 +65,7 @@
 
         <script>
             let table = new DataTable('#historialTable',{
-                data: [
-                    {'id': 1, 'fecha': '2023-09-01', 'orden': 'Orden 001', 'archivo': '<a href="#">Descargar</a>'},
-                    {'id': 2, 'fecha': '2023-09-15', 'orden': 'Orden 002', 'archivo': '<a href="#">Descargar</a>'},
-                    {'id': 3, 'fecha': '2023-10-05', 'orden': 'Orden 003', 'archivo': '<a href="#">Descargar</a>'},
-                    {'id': 4, 'fecha': '2023-10-20', 'orden': 'Orden 004', 'archivo': '<a href="#">Descargar</a>'},
-                    {'id': 5, 'fecha': '2023-11-10', 'orden': 'Orden 005', 'archivo': '<a href="#">Descargar</a>'},
-                    {'id': 6, 'fecha': '2023-11-25', 'orden': 'Orden 006', 'archivo': '<a href="#">Descargar</a>'},
-                    {'id': 7, 'fecha': '2023-12-05', 'orden': 'Orden 007', 'archivo': '<a href="#">Descargar</a>'},
-                    {'id': 8, 'fecha': '2023-12-20', 'orden': 'Orden 008', 'archivo': '<a href="#">Descargar</a>'},
-                    {'id': 9, 'fecha': '2024-01-10', 'orden': 'Orden 009', 'archivo': '<a href="#">Descargar</a>'},
-                    {'id': 10, 'fecha': '2024-01-25', 'orden': 'Orden 010', 'archivo': '<a href="#">Descargar</a>'},
-                ],
-                columns: [
-                    { data: 'id' },
-                    { data: 'fecha' },
-                    { data: 'orden' },
-                    { data: 'archivo' },
-                ],
+
             });
         </script>
 

@@ -59,27 +59,42 @@
 
 
 {% block content %}
-    <div class="m-0 p-0" >
-        <h1 class="text-start text-white">Dashboard Recepción</h1>
-        <div>
-            <form method="POST">
+    <div class="w-100 mb-4">
+        <div class="d-flex justify-content-end">
+            <form action="{% url 'dashboard_recepcion' %}" method="POST" class="row row-cols-lg-auto g-0 align-items-center" name="servicio" id="servicio">
                 {% csrf_token %}
-                <div class="d-flex justify-content-start gap-3 mb-2">
-                    <div class="w-25">
-                        <label for="year" class="form-label text-white">Selecciona Servicio</label>
-                        <select name="servicio" id="servicio" class="form-select">
-                            <option selected disabled value="">Seleccione...</option>
-                            {% for y in servicios %}
-                                <option value="{{ y.nombre }}">{{ y.nombre }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="d-flex align-items-end">
-                        <button type="submit" class="btn btn-danger"><i class="fa-solid fa-filter"></i> Filtrar</button>
-                    </div>
+                <div class="col-12">
+                    <select class="form-select" name="servicio" id="servicio">
+                        <option value="" disabled selected>Seleccione un servicio</option>
+                        {% for servicio in servicios %}
+                            <option value="{{ servicio.nombre }}">{{ servicio.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary mt-2 mb-2" type="submit" name="servicio" id="servicio"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </form>
+        </div>
+        <div class="d-flex justify-content-end">
+            <form action="{% url 'dashboard_recepcion' %}" method="POST" class="row row-cols-lg-auto g-0 align-items-center" name="personal" id="personal">
+                {% csrf_token %}
+                <div class="col-12">
+                    <select class="form-select" name="personal" id="personal">
+                        <option value="" disabled selected>Seleccione un profesional</option>
+                        {% for personal in profesionales %}
+                            <option value="{{ personal.user.id }}">{{ personal.prefijo }} {{ personal.user.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary mt-2 mb-2" type="submit" name="personal" id="personal"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </form>
+        </div>
 
+        <div class="w-100 d-flex justify-content-start align-items-center flex-row">
+            <h1 class="text-start text-white">Dashboard Recepción</h1>
         </div>
     </div>
 
@@ -89,9 +104,6 @@
 {% endblock %}
 
 {% block scripts %}
-
-
-
 
 
 {% endblock %}

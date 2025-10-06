@@ -1,0 +1,115 @@
+{% extends 'base_funcionarios.html' %}
+{% load static %}
+
+{% block title %} Servicios {% endblock title %}
+
+{% block content %}
+    <div class="">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header"  style="background-color: rgba(33, 38, 52, 0.9);">
+                        <h4 class="card-title text-white">Procedimientos</h4>
+                    </div>
+                    <div class="card-body">
+                        <table id="tableProc" class="display">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Procedimiento</th>
+                                <th>Precio</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col">
+                <div class="card" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c">
+                    <div class="card-header">
+                        <h4 class="card-title text-white">Nuevo Procedimiento</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data" class="text-white">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {{ procedimiento_form.procedimiento.label }}
+                                {{ procedimiento_form.procedimiento }}
+                            </div>
+                            <div class="mb-3">
+                                {{ procedimiento_form.precio.label }}
+                                {{ procedimiento_form.precio }}
+                            </div>
+                            <div class="mb-3">
+                                {{ procedimiento_form.personal_salud.label }}
+                                {{ procedimiento_form.personal_salud }}
+                            </div>
+                            <div class="d-flex justify-content-end flex-column align-items-end w-100 mb-2">
+                                <button type="submit" class="btn" name="procedimiento" id="procedimiento" style="background-color: #28be8a; width: 20%; color: white">Registrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c">
+                    <div class="card-header">
+                        <h4 class="card-title text-white">Agregar Profesional al Procedimiento</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data" class="text-white">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <select class="form-select" name="agregar" id="agregar">
+                                    <option selected disabled value="">Seleccione Procedimiento...</option>
+                                    {% for procedimiento in procedimientos_disponibles %}
+                                        <option value="{{ procedimiento.id }}">{{ procedimiento.procedimiento }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                {{ procedimiento_form.personal_salud.label }}
+                                {{ procedimiento_form.personal_salud }}
+                            </div>
+                            <div class="d-flex justify-content-end flex-column align-items-end w-100 mb-2">
+                                <button type="submit" class="btn" name="agregar" id="agregar" style="background-color: #28be8a; width: 20%; color: white">Registrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+
+        let table = new DataTable('#tableProc',{
+            data: [
+                {% for procedimiento in procedimientos_disponibles %}
+                    {
+                        id: '{{ procedimiento.id }}',
+                        nombre: '{{ procedimiento.procedimiento }}',
+                        precio: '{{ procedimiento.precio }}',
+                    },
+                {% endfor %}
+            ],
+
+            columns: [
+                { data: 'id', visible: false },
+                { data: 'nombre'},
+                { data: 'precio' },
+                { data: 'acciones', defaultContent: '<a href="#" class="btn btn-sm btn-primary me-1" id="editar_serv" name="editar_serv"><i class="fa-solid fa-pen-to-square"></i></a> <a href="#" class="btn btn-sm btn-danger me-1" id="delete_serv" name="delete_serv"><i class="fa-solid fa-trash"></i></a>' },
+            ],
+        });
+    </script>
+
+{% endblock %}

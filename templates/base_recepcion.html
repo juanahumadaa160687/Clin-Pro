@@ -12,6 +12,9 @@
 
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link rel="shortcut icon" href="{% static 'img/logo_clinpro.png' %}" type="image/x-icon">
     <script src="https://kit.fontawesome.com/92c054d238.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.0/css/dataTables.dataTables.css" />
@@ -37,20 +40,22 @@
 
     <div class="row p-0 m-0">
         <aside class="col-2 d-flex flex-column justify-content-between align-items-start" style="width: 250px; height: 100vh; position: fixed; top: 0; left: 0; background-color: rgba(33,	38,	52, 0.7); padding: 20px; z-index: 4;">
-            <div class="container-fluid d-flex flex-column align-items-center justify-content-center pt-2">
+            <div class="container-fluid d-flex flex-row align-items-end justify-content-start pt-2">
                 <img src="{% static 'img/logo_white.png' %}" alt="Logo Clinica " width="50" height="50" class="d-inline-block align-text-bottom">
+                <a class="navbar-brand text-white ms-1" href="{% url 'index' %}" style="font-size: 16pt">Clinicare</a>
             </div>
             <nav class="nav nav-pills nav-justified flex-column mt-1" >
-                <a class="nav-link text-start mb-4" aria-current="page" href="{% url 'dashboard' %}" style="text-decoration: none; color: #fff9f0 ">Dashboard</a>
+                <a class="nav-link text-start mb-4" href="{% url 'dashboard_recepcion' %}" style="text-decoration: none; color: #fff9f0 ">Dashboard</a>
                 <a class="nav-link text-start mb-4" href="{% url 'reservas' %}" style="text-decoration: none; color: #fff9f0 ">Reservar Hora</a>
+                <a class="nav-link text-start mb-4" href="{% url 'modificar_reserva_view' %}" style="text-decoration: none; color: #fff9f0 ">Modificar Reservas</a>
                 <a class="nav-link text-start mb-4" href="{% url 'pagos' %}" style="text-decoration: none; color: #fff9f0 ">Pagos</a>
                 <a class="nav-link text-start mb-4" href="{% url 'logout' %}" style="text-decoration: none; color: #fff9f0 ">Cerrar Sesión</a>
             </nav>
 
             <div class="container-fluid flex-column p-4 d-flex justify-content-end align-items-center">
-                <img src="{% static 'img/logo_blanco.png' %}" alt="Logo Clinica " width="50" height="50" class="d-inline-block align-text-bottom">
+                <img src="{% static 'img/logo_blanco.png' %}" alt="Logo Clinica " width="60" height="60" class="d-inline-block align-text-bottom">
                 <a class="navbar-brand text-white ms-1" href="{% url 'index' %}">ClinPro </a>
-                <p class="text-white">Version 1.0 &copy; 2025</p>
+                <p class="text-white text-center">Version 1.0 <br> &copy; 2025</p>
             </div>
         </aside>
         <section class="col-auto p-4" style="margin-left: 250px; width: calc(100% - 250px);">

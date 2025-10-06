@@ -35,6 +35,31 @@
             <h1 class="text-start text-white">Dashboard Funcionarios</h1>
         </div>
 
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header"  style="background-color: rgba(33, 38, 52, 0.9);">
+                        <h4 class="card-title text-white">Editar Usuario</h4>
+                    </div>
+                    <div class="card-body">
+                        <table id="tableProc" class="display">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Título</th>
+                                <th>Especialidad</th>
+                                <th>Universidad</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row gap-2 w-100">
 
             <div class="col card mb-2 p-0" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c; width: 100%;">
@@ -108,74 +133,22 @@
                                 {{ per_salud_form.titulo.label }}
                                 {{ per_salud_form.titulo }}
                             </div>
-                            <div class="col-12 form-group mb-2">
+                            <div class="col-6 form-group mb-2">
                                 {{ per_salud_form.especialidad.label }}
                                 {{ per_salud_form.especialidad }}
                             </div>
-                            <div class="col-12 form-group mb-2">
+                            <div class="col-6 form-group mb-2">
                                 {{ per_salud_form.universidad.label }}
                                 {{ per_salud_form.universidad }}
                             </div>
-                            <div class="col-12 form-group mb-2">
+                            <div class="col-6 form-group mb-2">
                                 {{ per_salud_form.user.label }}
                                 {{ per_salud_form.user }}
                             </div>
-                            <div class="d-flex justify-content-center flex-column align-items-center w-100 mb-2">
-                                <button type="submit" class="btn" name="personal_salud" id="personal_salud" style="background-color: #28be8a; width: 60%; color: white">Registrar</button>
+                            <div class="d-flex justify-content-end flex-column align-items-end w-100 mb-2">
+                                <button type="submit" class="btn" name="personal_salud" id="personal_salud" style="background-color: #28be8a; width: 20%; color: white">Registrar</button>
                             </div>
                         </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-
-                <div class="row gap-3 d-flex justify-content-center flex-column align-items-center flex-column">
-
-                    <div class="col card" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c">
-                        <div class="card-body p-4 m-0">
-                            <h3 class="card-title text-white">Registro de Secretaria</h3>
-                            <div class="mt-4 d-flex justify-content-center flex-column align-items-center">
-                                {% if secre_form.non_field_errors %}
-                                    <div class="alert alert-danger" role="alert">
-                                        {{ secre_form.non_field_errors }}
-                                    </div>
-                                {% endif %}
-                                <form method="POST" enctype="multipart/form-data" class="text-white" style="width: 90%;">
-                                    {% csrf_token %}
-                                    <div class="col form-group mb-4">
-                                        {{ secre_form.secretaria.label }}
-                                        {{ secre_form.secretaria }}
-                                    </div>
-                                    <div class="d-flex justify-content-center flex-column align-items-center w-100 mt-3">
-                                        <button type="submit" class="btn" name="secretaria" id="secretaria" style="background-color: #28be8a; width: 60%; color: white">Registrar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col card" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c">
-                        <div class="col card-body p-4 mt-4">
-                            <h3 class="card-title text-white">Registro de Administrador</h3>
-                            <div class="mt-4 d-flex justify-content-center flex-column align-items-center">
-                                {% if admin_form.non_field_errors %}
-                                    <div class="alert alert-danger" role="alert">
-                                        {{ admin_form.non_field_errors }}
-                                    </div>
-                                {% endif %}
-                                <form method="POST" enctype="multipart/form-data" class="text-white" style="width: 90%;">
-                                    {% csrf_token %}
-                                    <div class="col form-group mb-4">
-                                        {{ admin_form.administrador.label }}
-                                        {{ admin_form.administrador }}
-                                    </div>
-                                    <div class="d-flex justify-content-center flex-column align-items-center w-100 mt-3">
-                                        <button type="submit" class="btn" name="administrador" id="administrador" style="background-color: #28be8a; width: 60%; color: white">Registrar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

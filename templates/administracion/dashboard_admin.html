@@ -14,7 +14,7 @@
                     {% csrf_token %}
                     <div class="d-flex justify-content-start gap-3 mb-2">
                         <div class="w-25">
-                            <label for="year" class="form-label text-white">Selecciona Servicio</label>
+                            <label for="servicio" class="form-label text-white">Selecciona Servicio</label>
                             <select name="servicio" id="servicio" class="form-select">
                             {% if request.session.servicio %}
                                 <option selected disabled value="{{ request.session.servicio }}">{{ request.session.servicio }}</option>
@@ -30,7 +30,7 @@
                             </select>
                         </div>
                         <div class="d-flex align-items-end">
-                            <button type="submit" class="btn btn-danger"><i class="fa-solid fa-filter"></i> Filtrar</button>
+                            <button type="submit" class="btn btn-primary" name="servicio" id="servicio"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </div>
                 </form>
@@ -75,8 +75,7 @@
                                 <th>RUT</th>
                                 <th>Nombre</th>
                                 <th>Email</th>
-                                <th>Título</th>
-                                <th>Rol</th>
+                                <th>Telefono</th>
                                 <th>Acciones</th>
                             </tr>
                             </thead>
@@ -100,13 +99,12 @@
             data: [
                 {% for personal in personal_servicio %}
                 {
-                    id: '{{ personal.personal__id }}',
+                    id: '{{ personal.personal__user_id }}',
                     rut: '{{ personal.personal__user__rut }}',
-                    nombre: '{{ personal.personal__prefijo }} {{ personal.personal__user__nombre }}',
+                    nombre: '{{ personal.personal__user__nombre }}',
                     email: '{{ personal.personal__user__email }}',
-                    titulo: '{{ personal.personal__titulo }}',
-                    rol: '{{ personal.personal__user__rol}}',
-
+                    telefono: '{{ personal.personal__user__telefono }}',
+                    acciones: '<a href="{% url 'editar_usuario' personal.personal__user_id %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen-to-square"></i></a> <a href="{% url 'eliminar_usuario' personal.personal__user_id %}" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>',
                 },
                 {% endfor %}
             ],
@@ -114,11 +112,11 @@
                 { data: 'id', visible: false },
                 { data: 'rut' },
                 { data: 'nombre' },
-                { data: 'titulo' },
                 { data: 'email' },
+                { data: 'telefono' },
                 { data: 'rol' },
 
-                { data: 'acciones', defaultContent: '<a href="#" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen-to-square"></i></a> <a href="#" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>' },
+                { data: 'acciones' },
             ],
         });
     </script>

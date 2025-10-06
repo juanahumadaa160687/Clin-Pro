@@ -1,4 +1,5 @@
 import os
+import random
 from django.contrib.auth.models import Group
 from django.core import serializers
 from django.shortcuts import render, redirect
@@ -10,11 +11,12 @@ from administracion.models import *
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 
-from .forms import LoginUserForm, RegistroUserForm, PacienteForm
+from .decorators import allowed_users
+from .forms import LoginUserForm, RegistroUserForm
 from .functions import sendWhatsapp, conf_pago, confirmacionregistro
-from .models import User, Convenio, Pago, ReservaHora, Paciente
+from .models import User, Convenio, Pago, ReservaHora
 from transbank.webpay.webpay_plus.transaction import Transaction
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, date
 from .task import sendConfirmacion
 from administracion.models import *
 import sweetify
@@ -49,7 +51,7 @@ def login(request):
             if rol == 'Administrador':
                 auth_login(request, user)
                 sweetify.success(request, f'Bienvenido {user.nombre}.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
-                return redirect('dashboard_admin')
+                return redirect('dashboard')
 
             elif rol == 'PersonalSalud':
                 auth_login(request, user)
@@ -59,7 +61,7 @@ def login(request):
             elif rol == 'Secretaria':
                 auth_login(request, user)
                 sweetify.success(request, f'Bienvenida {user.nombre}.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
-                return redirect('dashboard_recep')
+                return render(request, 'recepcion/calendar_recepcion.html', {'form': form,})
 
 
             auth_login(request, user)
@@ -87,6 +89,7 @@ def registro(request):
             user.telefono = form.cleaned_data.get('telefono')
             user.set_password(form.cleaned_data.get('password1'))
             user.username = user.email.split('@')[0]  # Asignar username basado en el email
+            user.rol = 'Paciente'
 
             user.save()
 
@@ -128,11 +131,12 @@ def password_reset_complete(request):
 # user profile page view
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['Paciente'])
 def profile(request, id):
 
-    if ReservaHora.objects.filter(paciente_id=id).exists():
-        reserva = ReservaHora.objects.filter(paciente_id=id).order_by('-id')
-        return render(request, 'profile.html', {'reserva': reserva, })
+    if ReservaHora.objects.filter(user_id=id).exists():
+        reserva = ReservaHora.objects.filter(user_id=id).order_by('-id')
+        return render(request, 'profile.html', {'reserva': reserva,})
 
     else:
         sweetify.info(request, 'No tienes horas reservadas aún', button='Aceptar', timer=3000, persistent='Ok', icon='info')
@@ -141,11 +145,12 @@ def profile(request, id):
 
 #######################################################################################################################
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['Paciente'])
 def edit_profile(request, id):
     user = User.objects.get(id=id)
 
     if request.method == 'POST':
-        form = RegistroUserForm(request.POST, instance=user)
+        form = RegistroUserForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Tu perfil ha sido actualizado exitosamente.')
@@ -153,7 +158,7 @@ def edit_profile(request, id):
         else:
             sweetify.error(request, 'Error al actualizar el perfil. Por favor, verifica los datos ingresados.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
     else:
-        form = RegistroUserForm(instance=user)
+        form = RegistroUserForm()
 
     return render(request, 'edit_profile.html', {'form': form})
 
@@ -161,6 +166,7 @@ def edit_profile(request, id):
 #######################################################################################################################
 
 @login_required(login_url='login')
+@allowed_users(allowed_roles=['Paciente'])
 def delete_profile(request, id):
     user = request.user
     user.delete()
@@ -168,42 +174,19 @@ def delete_profile(request, id):
     return redirect('index')
 
 
-#@login_required(login_url='login')
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['Paciente'])
 def reserva_hora(request):
 
     servicios = Servicio.objects.values('nombre').distinct()
 
-##############_Paciente Nuevo_
-    if request.method == 'POST' and 'paciente' in request.POST:
-        form_paciente = PacienteForm(request.POST)
-        if form_paciente.is_valid():
-            genero = form_paciente.cleaned_data.get('genero')
-            fecha_nacimiento = form_paciente.cleaned_data.get('fecha_nacimiento')
-            direccion = form_paciente.cleaned_data.get('direccion')
-            telefono_emergencia = form_paciente.cleaned_data.get('telefono_emergencia')
-            prevision = form_paciente.cleaned_data.get('prevision')
-            paciente = Paciente.objects.create(
-                user=request.user,
-                genero=genero,
-                fecha_nacimiento=fecha_nacimiento,
-                direccion=direccion,
-                telefono_emergencia=telefono_emergencia,
-                prevision=prevision
-            )
-            paciente.save()
-            print(paciente)
-            sweetify.success(request, 'Datos de paciente guardados exitosamente.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
-            return render(request, 'reserva_hora/reserva_hora.html', {'servicios': servicios,})
-        else:
-            sweetify.error(request, 'Error al guardar los datos del paciente. Por favor, verifica los datos ingresados.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
-            return render(request, 'reserva_hora/reserva_hora.html', {'form_paciente': form_paciente, 'servicios': servicios,})
-
 ##############_Servicio_
 
-    elif request.method == 'POST' and 'servicio' in request.POST:
+    if request.method == 'POST' and 'servicio' in request.POST:
 
-        request.session['servicio'] = request.POST['servicio']
+        request.session['servicio'] = request.POST.getlist('servicio')[0]
         print(request.session['servicio'])
+
         especialidades_servicio = PersonalSalud.objects.filter(servicio__nombre=request.session['servicio']).values('especialidad').distinct()
         ls = list(especialidades_servicio)
         print(ls)
@@ -218,10 +201,10 @@ def reserva_hora(request):
 
     elif request.method == 'POST' and 'especialidad' in request.POST:
 
-        request.session['especialidad'] = request.POST['especialidad']
+        request.session['especialidad'] = request.POST.getlist('especialidad')[0]
         print(request.session['especialidad'])
 
-        profesionales_especialidad = list(PersonalSalud.objects.filter(especialidad=request.session['especialidad']).values('id', 'nombre').distinct())
+        profesionales_especialidad = list(PersonalSalud.objects.filter(especialidad=request.session['especialidad']).values('id', 'user__nombre').distinct())
         print(profesionales_especialidad)
 
         return render(request, 'reserva_hora/reserva_hora.html', {'profesionales': profesionales_especialidad,})
@@ -230,10 +213,10 @@ def reserva_hora(request):
 
     elif request.method == 'POST' and 'profesional' in request.POST:
 
-        request.session['profesional'] = request.POST['profesional']
+        request.session['profesional'] = request.POST.getlist('profesional')[0]
         print(request.session['profesional'])
 
-        request.session['nombre_pro'] = PersonalSalud.objects.get(id=request.session['profesional']).nombre
+        request.session['nombre_pro'] = PersonalSalud.objects.get(id=request.session['profesional']).user.nombre
         print(request.session['nombre_pro'])
 
         id_pro = request.session['profesional']
@@ -249,7 +232,7 @@ def reserva_hora(request):
 
     elif request.method == 'POST' and 'procedimiento' in request.POST:
 
-        valor_procedimiento = request.POST['procedimiento']
+        valor_procedimiento = request.POST.getlist('procedimiento')[0]
         print(f"Valor procedimiento: {valor_procedimiento}")
 
         request.session['procedimiento'] = int(valor_procedimiento)
@@ -269,7 +252,7 @@ def reserva_hora(request):
 
     elif request.method == 'POST' and 'fecha' in request.POST:
 
-        request.session['fecha'] = request.POST['fecha']
+        request.session['fecha'] = request.POST.getlist('fecha')[0]
         print(request.session['fecha'])
 
         fecha_seleccionada = datetime.strptime(request.session['fecha'], '%Y-%m-%d').date()
@@ -302,7 +285,7 @@ def reserva_hora(request):
         request.session['hora'] = request.POST['hora']
         print(request.session['hora'])
         hora_seleccionada = datetime.strptime(request.session['hora'], '%H:%M').time()
-        print(hora_seleccionada)
+        #print(hora_seleccionada)
 
         #horario_atencion = [time(hour=h) for h in range(8, 21) if h < 13 or h > 14]
         #print(horario_atencion)
@@ -320,8 +303,8 @@ def reserva_hora(request):
 
         agenda = Agenda.objects.create(
             fecha=request.session['fecha'],
-            hora=hora_seleccionada,
             profesional_id=request.session['profesional'],
+            hora=hora_seleccionada
         )
         agenda.save()
 
@@ -358,7 +341,10 @@ def reserva_hora(request):
         total_descuento = money_format(total_descuento)
         total_frt = money_format(total)
 
-        buy_order = "ordenCompra12345"
+        orden_compra = random.randrange(1000000000, 9999999999)  # Generar un número aleatorio de 10 dígitos
+        print(orden_compra)
+
+        buy_order = str(orden_compra)
         session_id = "sesion12345"
         amount = total
         return_url = "http://127.0.0.1:8000/pago_exitoso/"
@@ -369,9 +355,9 @@ def reserva_hora(request):
         token = resp["token"]
         url = resp["url"]
 
-        return render(request, 'reserva_hora/reserva_hora.html', {'total': total_frt, 'iva': iva, 'descuento': total_descuento, 'subtotal': subtotal, 'nombre': request.session.get('nombre_convenio'), 'dcto': descuento, 'token': token, 'url': url,})
+        return render(request, 'reserva_hora/reserva_hora.html', {'total': total_frt, 'iva': iva, 'descuento': descuento, 'subtotal': subtotal, 'nombre': request.session.get('nombre_convenio'), 'dcto': descuento, 'token': token, 'url': url, 'total_descuento': total_descuento})
 
-    return render(request, 'reserva_hora/reserva_hora.html', {'form': PacienteForm, 'servicios': servicios})
+    return render(request, 'reserva_hora/reserva_hora.html', {'servicios': servicios})
 
 #######################################################################################################################
 
@@ -384,53 +370,45 @@ def pago_exitoso(request):
     monto = response['amount']
     status = response['status']
     orden_compra =response['buy_order']
-    id_sesion = response['session_id']
+    id_session = response['session_id']
     detalle_tarjeta = response['card_detail']
     fecha_transaccion = response['transaction_date']
     tipo_pago = response['payment_type_code']
     codigo_aut = response['authorization_code']
 
-    convenio = request.session['nombre_convenio']
+    convenio = Convenio.objects.get(id=request.session['convenio'])
+    print(convenio)
 
-    pagado = Pago.objects.create(orden_compra=orden_compra, fecha=fecha_transaccion, monto=monto, metodo_pago=tipo_pago, is_pagado=True, convenio=convenio)
+    pagado = Pago.objects.create(orden_compra=orden_compra, fecha=date.today(), monto=monto, metodo_pago=tipo_pago, is_pagado=True, convenio=convenio)
+    pago = Pago.objects.get(orden_compra=orden_compra)
 
     if pagado is not None:
+        reserva_ok = ReservaHora.objects.create(fecha_reserva=request.session['fecha'], hora_reserva=request.session['hora'], is_confirmada=False, pago=pago, user=request.user, profesional_id=request.session['profesional'])
+        reserva_ok.save()
         sweetify.success(request, 'Pago realizado exitosamente.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
     else:
         Agenda.objects.filter(fecha=request.session['fecha'], hora=request.session['hora'], profesional_id=request.session['profesional']).delete()
         sweetify.error(request, 'Error en el pago, intente nuevamente.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
         return redirect('reserva_hora')
 
-    pago = Pago.objects.get(orden_compra=orden_compra)
-
-    profesional_hora = PersonalSalud.objects.filter(id = request.session['profesional']).values('nombre').distinct()
-
-    reserva_ok = ReservaHora.objects.create(fecha_reserva=request.session['fecha'], hora_reserva=request.session['hora'], is_confirmada=False, is_asistencia=False, is_cancelada=False, paciente_id=request.user.paciente.id, pago=pago)
 
     if reserva_ok is not None:
         sweetify.success(request, 'Reserva de hora realizada exitosamente.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
     else:
         sweetify.error(request, 'Error en la reserva de hora, intente nuevamente.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
 
-    telefono = request.user.paciente.telefono
-    fecha = datetime.strptime(request.session['fecha'], "%Y-%m-%d").date()
-    hora_inicio = request.session['hora']
-    fecha_ejecucion = datetime.combine(fecha - timedelta(days=5), time(10, 0))
+    telefono = request.user.telefono
+    fecha_reserva = datetime.strptime(request.session['fecha'], "%Y-%m-%d").date()
+    hora_reserva = request.session['hora']
 
     remitente = os.getenv('EMAIL_HOST_USER')
-    destinatario = request.user.email
+    print(request.user.email)
 
-    sendWhatsapp(telefono, fecha, hora_inicio, profesional_hora.values('nombre'))
+    nombre_profesional = request.session['nombre_pro']
 
-    #confirmacion = conf_pago('juan.pablo656@gmail.com', 'direccion@colegiosanlorenzotarapaca.cl', 'JP', '05/10/2025', '9:00', 'Dra', 'Elena Rojas', '50000', '2345', '123445', '85743409734' )
+    conf_pago(remitente, request.user.email, request.user.nombre, request.session.get('fecha'), request.session.get('hora'), nombre_profesional, str(monto), tipo_pago, orden_compra, codigo_aut )
 
-
-    #conf_pago(remitente, destinatario, request.user.nombre, request.session.get('fecha'), request.session.get('hora'), profesional_res.values(''), , str(monto), tipo_pago, orden_compra, codigo_aut )
-
-    sendConfirmacion(telefono, fecha, hora_inicio).apply_async(
-        args=[telefono, fecha, hora_inicio],
-        eta=fecha_ejecucion
-    )
+    sendWhatsapp(telefono, fecha_reserva, hora_reserva, nombre_profesional)
 
     request.session.clear()
 
@@ -455,6 +433,7 @@ def logout(request):
 #######################################################################################################################
 
 def no_autorizado(request):
-    return render(request, 'no_autorizado.html')
+
+    return None
 
 #######################################################################################################################

@@ -13,7 +13,7 @@
 
         <div class="row p-0 m-0 d-flex justify-content-center flex-row align-items-center" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
 
-            <div class="col p-3" style="height: 450px; width: 750px; background-color: #E5E5E5;">
+            <div class="col p-3" style="height: 450px; width: 750px; background-color: white;">
                 <h2 class="text-start mt-3" style="color: #042630;">Registro de Usuario</h2>
 
                 <form class="row g-2 mt-3 p-2" method="POST" action="{% url 'registro' %}" style="color: #1D919C;">
@@ -23,25 +23,25 @@
                             {{ form.non_field_errors }}
                         </div>
                     {% endif %}
-                    <div class="col-6 mb-5 mt-1">
+                    <div class="col-6 mb-3 mt-1">
                         {{ form.rut }}
                         {% if form.rut.errors %}
                             <div class="text-danger" role="alert">{{ form.rut.errors }}</div>
                         {% endif %}
                     </div>
-                    <div class="col-6 mb-5 mt-1">
+                    <div class="col-6 mb-3 mt-1">
                         {{ form.nombre }}
                         {% if form.nombre.errors %}
                             <div class="text-danger" role="alert">{{ form.nombre.errors }}</div>
                         {% endif %}
                     </div>
-                    <div class="col-6 mb-5">
+                    <div class="col-6 mb-3">
                         {{ form.email }}
                         {% if form.email.errors %}
                             <div class="text-danger" role="alert">{{ form.email.errors }}</div>
                         {% endif %}
                     </div>
-                    <div class="col-6 mb-5">
+                    <div class="col-6 mb-3">
                         {{ form.telefono }}
                         {% if form.telefono.errors %}
                             <div class="text-danger" role="alert">{{ form.telefono.errors }}</div>

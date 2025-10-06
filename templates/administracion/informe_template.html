@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+    <title>Informe</title>
 
     <style>
         @page {
@@ -48,12 +48,79 @@
 
     </style>
 </head>
+
 <body>
+
 <div >
 
-    {% block content %}
+    <img src="http://127.0.0.1:8000/static/img/logo.png" alt="" style="width: 70px; height: auto; margin-bottom: 5px;">
 
-    {% endblock %}
+    <h1>{{ title }}</h1>
+    <h2>{{ month }} - {{ year }}</h2>
+
+    <table class="table-pdf">
+        <thead>
+            <tr>
+                <th class="th-table">Servicio</th>
+                <th class="th-table">Personal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for servicio in servicios %}
+            <tr>
+                <td class="td-table">{{ servicio.nombre }}</td>
+                <td class="td-table">{{ servicio.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <table class="table-pdf">
+        <thead>
+        <tr>
+            <th class="th-table">Procedimiento</th>
+            <th class="th-table">Personal</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for procedimiento in procedimientos %}
+            <tr>
+                <td class="td-table">{{ procedimiento.procedimiento }}</td>
+                <td class="td-table">{{ procedimiento.total }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <table class="table-pdf">
+        <thead>
+        <tr>
+            <th class="th-table">Rut</th>
+            <th class="th-table">Nombre</th>
+            <th class="th-table">Título</th>
+            <th class="th-table">Especialidad</th>
+            <th class="th-table">Universidad</th>
+            <th class="th-table">Email</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for personal in profesionales %}
+            <tr>
+                <td class="td-table">{{ personal.user__rut }}</td>
+                <td class="td-table">{{ personal.prefijo }} {{ personal.user__nombre }}</td>
+                <td class="td-table">{{ personal.titulo }}</td>
+                <td class="td-table">{{ personal.especialidad }}</td>
+                <td class="td-table">{{ personal.universidad }}</td>
+                <td class="td-table">{{ personal.user__email }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <div class="img-pdf">
+        <img src="http://127.0.0.1:8000/static/img/logo_clinpro.png" alt="" style="width: 70px; height: auto; margin-bottom: 5px;">
+        <p class="created_at"><small>Fecha creación: {{ fecha }}</small></p>
+    </div>
 </div>
 
 

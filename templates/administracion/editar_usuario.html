@@ -1,0 +1,82 @@
+{% extends 'base_funcionarios.html' %}
+{% load static %}
+
+{% block title %} Editar Usuario {% endblock title %}
+
+{% block content %}
+
+    <div class="">
+
+        <div class="row">
+            <div class="col">
+                <div class="card" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c">
+                    <div class="card-header">
+                        <h4 class="card-title text-white">Editar Usuario</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data" class="row g-3 text-white" name="registro" id="registro" style="width: 90%;">
+                            {% csrf_token %}
+                            <div class="col-4 form-group mb-1">
+                                {{ form.rut.label }}
+                                {{ form.rut }}
+                            </div>
+                            <div class="col-4 form-group mb-1">
+                                {{ form.nombre.label }}
+                                {{ form.nombre }}
+                            </div>
+                            <div class="col-4 form-group mb-1">
+                                {{ form.telefono.label }}
+                                {{ form.telefono }}
+                            </div>
+                            <div class="col-4 form-group mb-1">
+                                {{ form.email.label }}
+                                {{ form.email }}
+                            </div>
+                            <div class="w-100 d-flex justify-content-center flex-column align-items-end mt-1">
+                                <button type="submit" class="btn" name="editar_user" id="editar_user" style="background-color: #28be8a; width: 20%; color: white">Registrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c">
+                    <div class="card-header">
+                        <h4 class="card-title text-white">Editar Profesional de Salud</h4>
+                    </div>
+                    {% if per_salud_form.non_field_errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ per_salud_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <form method="POST" enctype="multipart/form-data" class="row g-3 text-white" style="width: 90%;">
+                            {% csrf_token %}
+                            <div class="col-9 form-group mb-2">
+                                {{ per_salud_form.titulo.label }}
+                                {{ per_salud_form.titulo }}
+                            </div>
+                            <div class="col-6 form-group mb-2">
+                                {{ per_salud_form.especialidad.label }}
+                                {{ per_salud_form.especialidad }}
+                            </div>
+                            <div class="col-6 form-group mb-2">
+                                {{ per_salud_form.universidad.label }}
+                                {{ per_salud_form.universidad }}
+                            </div>
+                            <div class="d-flex justify-content-end flex-column align-items-end w-100 mb-2">
+                                <button type="submit" class="btn" name="personal_salud" id="personal_salud" style="background-color: #28be8a; width: 20%; color: white">Registrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+
+{% endblock script %}

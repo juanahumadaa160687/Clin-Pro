@@ -8,7 +8,7 @@ from django.conf import settings
 from django.utils.html import strip_tags
 
 
-def conf_pago(remitente, destinatario, nombre, fecha_reserva, hora_reserva, pro_sufijo, pro_nombre, monto, m_pago, codigo_auth, orden ):
+def conf_pago(remitente, destinatario, nombre, fecha_reserva, hora_reserva, pro_nombre, monto, m_pago, codigo_auth, orden ):
 
     asunto = "Confirmación de Pago y Reserva de Hora"
     remitente = remitente.lower()
@@ -19,7 +19,6 @@ def conf_pago(remitente, destinatario, nombre, fecha_reserva, hora_reserva, pro_
         "fecha": datetime.datetime.now().strftime("%d/%m/%Y"),
         "fecha_reserva": fecha_reserva,
         "hora_reserva": hora_reserva,
-        "profesional_sufijo": pro_sufijo,
         "profesional": pro_nombre,
         "monto": monto,
         "metodo_pago": m_pago,
@@ -82,12 +81,14 @@ def confirmacionregistro(remitentes, destinatario, nombre):
     print("Correo enviado correctamente")
 
 # Enviar mensaje de WhatsApp
-def sendWhatsapp(telefono, fecha, hora_inicio, nombre):
+def sendWhatsapp(telefono, fecha, hora_reserva, nombre):
 
-    mensaje = f"Su hora médica para el día {fecha} a las {hora_inicio}, con el profesional {nombre} ha sido agendada correctamente"
+    mensaje = f"Su hora médica para el día {fecha} a las {hora_reserva}, con el profesional {nombre} ha sido agendada correctamente"
 
-    hora = datetime.time(10, 0).hora
+    hora = datetime.datetime.now().hour
 
-    minutos = datetime.time(10, 0).minute + 1
+    minutos = datetime.datetime.now().minute + 2
 
     pywhatkit.sendwhatmsg(telefono, mensaje, hora, minutos, 10, True, 2)
+
+    print("Mensaje de WhatsApp enviado correctamente")

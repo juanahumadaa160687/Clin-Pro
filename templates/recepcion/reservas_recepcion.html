@@ -1,1 +1,256 @@
 {% extends 'base_recepcion.html' %}
+{% load static %}
+
+{% block title %} Reservas {% endblock title %}
+
+{% block content %}
+
+    <div class="w-100 mb-4">
+        <div class="d-flex justify-content-end">
+            <form action="" method="POST" class="row row-cols-lg-auto g-0 align-items-center">
+                {% csrf_token %}
+                <div class="col-12">
+                    <input type="text" class="form-control" name="rut" id="rut" placeholder="Rut del paciente" required>
+                </div>
+                <div class="col-12">
+                    <button class="btn mt-2 mb-2" type="submit" name="rut" id="rut" style="background-color: #1D919C; border: 1px solid #1D919C;"><i class="fa-solid fa-magnifying-glass" style="color: white"></i></button>
+                </div>
+            </form>
+        </div>
+        <div class="w-100 d-flex justify-content-start align-items-center flex-row">
+            <h1 class="text-start text-white">Reserva Hora</h1>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-4 m-0" style="height: 85vh;">
+            <div class="card h-100" style="background-color: rgba(33,	38,	52, 0.7); border: 1px solid #3c4752; ">
+                <div class="card-header" style="background-color: #1e2936; color: #F2F2F2;"><h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5></div>
+                <div class="card-body px-4 py-1 mb-4" style="height: 75vh; overflow-y: auto;">
+                    <form method="POST" class="text-white" id="noregistro" name="noregistro">
+                        {% csrf_token %}
+                        <div class="form-floating mb-5">
+                            {{ form.rut }}
+                            <label for="rut">RUT</label>
+                        </div>
+                        <div class="form-floating mb-5">
+                            {{ form.nombre }}
+                            <label for="nombre">Nombre</label>
+                        </div>
+                        <div class="form-floating mb-5">
+                            {{ form.telefono }}
+                            <label for="telefono">Teléfono</label>
+                        </div>
+                        <div class="form-floating mb-5">
+                            {{ form.email }}
+                            <label for="email">Email</label>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button class="btn float-end" type="submit" name="noregistro" id="noregistro" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-4" style="height: 85vh; ">
+            <div class="card h-100" style="background-color: rgba(33,	38,	52, 0.7); border: 1px solid #3c4752;">
+                <div class="card-header" style="background-color: #1e2936; color: #F2F2F2;"> <h5 class="card-title"><i class="fa-solid fa-calendar-check"></i> Información de la Hora</h5></div>
+
+                <div class="card-body p-4">
+
+                    <div class="mt-4 mb-2">
+                        <form method="POST" enctype="multipart/form-data">
+                            <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
+                                {% csrf_token %}
+                                <select class="form-select" name="servicio" id="servicio">
+                                    {% if request.session.servicio %}
+                                        <option value="{{ request.session.servicio }}" selected>{{ request.session.servicio }}</option>
+                                    {% else %}
+                                        <option value="" disabled selected>Seleccione un servicio</option>
+                                    {% endif %}
+                                    {% for servicio in servicios %}
+                                        <option value="{{ servicio.nombre }}">{{ servicio.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="servicio">Servicio</label>
+                                {% if request.user.paciente.prevision %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" name="servicio" id="servicio"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+
+                    <br>
+
+                    <div class="mb-2">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
+                                <select class="form-select" name="especialidad" id="especialidad">
+                                    <option value="" disabled selected>Seleccione una especialidad</option>
+                                    {% for especialidad in request.session.especialidades_servicio %}
+                                        <option value="{{ especialidad.especialidad }}">{{ especialidad.especialidad }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="especialidad">Especialidad</label>
+                                {% if request.session.servicio %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="especialidad" id="especialidad"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+
+                    <br>
+
+                    <div class="mb-2">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class=" form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
+                                <select class="form-select" name="profesional" id="profesional" >
+                                    <option value="" disabled selected>Seleccione un Profesional {{ request.session.nombre_pro }}</option>
+                                    {% for profesional in profesionales %}
+                                        <option value="{{ profesional.id }}">{{ profesional.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="profesional">Profesional</label>
+                                {% if request.session.especialidad %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" name="profesional" id="profesional"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+
+                    <br>
+
+                    <div class="mb-2">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class=" form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
+                                <select class="form-select" name="procedimiento" id="procedimiento" >
+                                    <option value="" disabled selected>Seleccione el Procedimiento {{ request.session.procedimiento }}</option>
+                                    {% for procedimiento in procedimientos %}
+                                        <option value="{{ procedimiento.precio }}">{{ procedimiento.procedimiento }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="profesional">Procedimientos</label>
+                                {% if request.session.profesional %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" name="procedimiento" id="procedimiento"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+
+                    <br>
+
+                    <div class="mb-2">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
+                                <input class="form-control" type="date" name="fecha" id="fecha" value="{{ request.session.fecha }}" min="{{ hoy }}">
+                                <label for="fecha">Fecha de Atención</label>
+                                {% if request.session.procedimiento %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" name="procedimiento" id="procedimiento"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+
+                    <br>
+
+                    <div class="mb-2">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
+                                <select class="form-control form-select" name="hora" id="hora">
+                                    <option value="" disabled selected>Seleccione una hora</option>
+                                    {% for hora in horas_disponibles %}
+                                        <option value="{{ hora }}">{{ hora }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="hora">Horas Disponibles</label>
+                                {% if request.session.fecha %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4" style="height: 85vh;">
+            <div class="card h-100" style="background-color: rgba(33,	38,	52, 0.7); border: 1px solid #3c4752;">
+                <div class="card-header" style="background-color: #1e2936; color: #F2F2F2;"><h5 class="card-title"><i class="fa-solid fa-money-check-dollar"></i> Pago</h5></div>
+                <div class="card-body p-4" style="height: 60vh; overflow-y: auto;">
+
+                    <div class="mb-5">
+                        <form method="POST" enctype="multipart/form-data" class="text-white">
+                            {% csrf_token %}
+                            <div class="d-flex justify-content-center align-items-center flex-row gap-2 mt-4 mb-1">
+                                <select class="form-control form-control-lg form-select" name="convenio" id="convenio">
+                                    <option value="" disabled selected>Seleccione un convenio</option>
+                                    <option value="0">Sin Convenio</option>
+                                    {% for convenio in convenios %}
+                                        <option value="{{ convenio.id }}">{{ convenio.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;">Ingresar</button>
+                            </div>
+                            <div id="adv" class="form-text">
+                                <small class=" text-white">Al seleccionar un convenio, deberá presentar un comprobante o documento de afiliación al momento de la atención.</small>
+                            </div>
+                        </form>
+                    </div>
+                    <hr style="border: 1px solid white;">
+                    <div class="mt-4 mb-4">
+                        <p class="text-white">Subtotal: {{ subtotal }}</p>
+                        <p class="text-white">IVA: {{ iva }}</p>
+                        <p class="text-white">Convenio {{ nombre }} {{ descuento }}%: {{ total_descuento }}</p>
+                        <br>
+                        <h3 class="text-white">Total a Pagar: {{ total }} </h3>
+                    </div>
+                    <hr>
+                    <div class="mt-4">
+                        <h5 class="text-white">
+                            <small>Medio de Pago</small>
+                        </h5>
+                        <br>
+                        <div class="d-flex justify-content-center align-items-center flex-column gap-3 p-0 m-0 w-100">
+
+                            <div class="d-flex justify-content-center align-items-center flex-row p-0">
+                                <form method="post" action="{{ url }}">
+                                    <input type="hidden" name="token_ws" value="{{ token }}" />
+                                    <a class="btn" type="submit"><img src="{% static 'img/webpay.png' %}" alt="" width="150" height="50"></a>
+                                </form>
+                            </div>
+
+                            <div class="d-flex justify-content-center align-items-center flex-row p-0">
+                                <a href="#"> <img src="{% static 'img/transferencia.png' %}" width="150" alt=""> </a>
+                            </div>
+
+                            <div class="d-flex justify-content-center align-items-center flex-row p-0">
+                                <a href="#" style="text-decoration: none; color: white; font-weight: bold"> <img src="{% static 'img/efectivo.svg' %}" width="50" alt=""> Efectivo </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

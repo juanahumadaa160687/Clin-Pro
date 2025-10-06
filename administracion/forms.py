@@ -60,7 +60,7 @@ class RegistroPersonalForm(UserCreationForm):
     )
     rol = forms.ChoiceField(
         label='Rol',
-        choices=[('PersonalSalud', 'Personal de Salud'), ('Administrador', 'Administrador'), ('Secretaria', 'Secretaria')],
+        choices=[('Personal Salud', 'Personal de Salud'), ('Administrador', 'Administrador'), ('Secretaria', 'Secretaria')],
         widget=forms.Select(attrs={'class': 'form-select', 'required': 'true'})
     )
 
@@ -91,7 +91,7 @@ class PersonalSaludForm(ModelForm):
     )
     user = forms.ModelChoiceField(
         label='Usuario',
-        queryset=User.objects.filter(personalsalud__isnull=True, rol='PersonalSalud'),
+        queryset=User.objects.filter(personalsalud__isnull=True, rol='Personal Salud'),
         widget=forms.Select(attrs={'class': 'form-select', 'required': 'true', 'id': 'user', 'name': 'user'})
     )
 
@@ -140,26 +140,3 @@ class ProcedimientoForm(forms.Form):
     class Meta:
         model = Procedimiento
         fields = ['procedimiento', 'precio', 'personal_salud']
-
-
-class AdministradorForm(forms.Form):
-    administrador = forms.ModelChoiceField(
-        label='Administrador',
-        queryset=User.objects.filter(rol='Administrador', administrador__isnull=True),
-        widget=forms.Select(attrs={'class': 'form-select', 'required': 'true'})
-    )
-
-    class Meta:
-        model = Servicio
-        fields = ['administrador']
-
-class SecretariaForm(forms.Form):
-    secretaria = forms.ModelChoiceField(
-        label='Secretaria',
-        queryset=User.objects.filter(rol='Secretaria', secretaria__isnull=True),
-        widget=forms.Select(attrs={'class': 'form-select', 'required': 'true',})
-    )
-
-    class Meta:
-        model = Servicio
-        fields = ['recepcion']
