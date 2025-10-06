@@ -18,6 +18,7 @@
                                 <th>ID</th>
                                 <th>Procedimiento</th>
                                 <th>Precio</th>
+                                <th>Profesionales</th>
                                 <th>Acciones</th>
                             </tr>
                             </thead>
@@ -99,6 +100,7 @@
                         id: '{{ procedimiento.id }}',
                         nombre: '{{ procedimiento.procedimiento }}',
                         precio: '{{ procedimiento.precio }}',
+                        profesionales: '{{ procedimiento.total }}'
                     },
                 {% endfor %}
             ],
@@ -107,6 +109,7 @@
                 { data: 'id', visible: false },
                 { data: 'nombre'},
                 { data: 'precio' },
+                { data: 'profesionales' },
                 { data: 'acciones', defaultContent: '<a href="#" class="btn btn-sm btn-primary me-1" id="editar_serv" name="editar_serv"><i class="fa-solid fa-pen-to-square"></i></a> <a href="#" class="btn btn-sm btn-danger me-1" id="delete_serv" name="delete_serv"><i class="fa-solid fa-trash"></i></a>' },
             ],
         });

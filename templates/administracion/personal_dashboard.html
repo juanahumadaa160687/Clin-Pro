@@ -35,36 +35,11 @@
             <h1 class="text-start text-white">Dashboard Funcionarios</h1>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header"  style="background-color: rgba(33, 38, 52, 0.9);">
-                        <h4 class="card-title text-white">Editar Usuario</h4>
-                    </div>
-                    <div class="card-body">
-                        <table id="tableProc" class="display">
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Título</th>
-                                <th>Especialidad</th>
-                                <th>Universidad</th>
-                                <th>Acciones</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="row gap-2 w-100">
 
             <div class="col card mb-2 p-0" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c; width: 100%;">
 
-                <div class="card-body p-3">
+                <div class="card-body p-4 m-0">
                     <h3 class="card-title text-white">Registro de Usuarios</h3>
                     <div class="d-flex justify-content-center flex-column align-items-center">
                         {% if form.non_field_errors %}
@@ -111,7 +86,7 @@
             </div>
         </div>
 
-        <div class="row gap-2 w-100 h-100 mb-3">
+        <div class="row gap-2 w-100 h-100 mb-3 mt-3">
 
             <div class="col card" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c">
 
@@ -155,5 +130,33 @@
         </div>
     </div>
 
-
 {% endblock %}
+
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.3.0/js/dataTables.js"></script>
+
+    <script>
+
+        let table = new DataTable('#tableProc',{
+            data: [
+                {% for personal in personal_servicio %}
+                    {
+                        id: '{{ personal.personal__user_id }}',
+                        titulo: '{{ personal.personal__user__rut }}',
+                        especialidad: '{{ personal.personal__user__nombre }}',
+                        universidad: '{{ personal.personal__user__email }}',
+                        acciones: '<a href="#" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen-to-square"></i></a> <a href="#" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>',
+                    },
+                {% endfor %}
+            ],
+            columns: [
+                { data: 'id', visible: false },
+                { data: 'titulo' },
+                { data: 'especialidad' },
+                { data: 'universidad' },
+                { data: 'acciones' },
+            ],
+        });
+    </script>
+{% endblock script %}

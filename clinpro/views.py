@@ -61,7 +61,7 @@ def login(request):
             elif rol == 'Secretaria':
                 auth_login(request, user)
                 sweetify.success(request, f'Bienvenida {user.nombre}.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
-                return render(request, 'recepcion/calendar_recepcion.html', {'form': form,})
+                return redirect('dashboard_recepcion')
 
 
             auth_login(request, user)
@@ -258,7 +258,7 @@ def reserva_hora(request):
         fecha_seleccionada = datetime.strptime(request.session['fecha'], '%Y-%m-%d').date()
         print(fecha_seleccionada)
 
-        if fecha_seleccionada.day == 5 or fecha_seleccionada.day == 6:
+        if fecha_seleccionada.weekday() == 5 or fecha_seleccionada.weekday() == 6:
             sweetify.error(request, 'El centro clínico está cerrado los fines de semana. Por favor, seleccione un día hábil.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
             return render(request, 'reserva_hora/reserva_hora.html', {'error': 'El centro clínico está cerrado los fines de semana. Por favor, seleccione un día hábil.',})
 
@@ -322,6 +322,9 @@ def reserva_hora(request):
         print(descuento)
         print(type(descuento))
 
+        if descuento is None or request.session['convenio'] is None:
+            Agenda.objects.filter(fecha=request.session['fecha'], hora=request.session['hora'], profesional_id=request.session['profesional']).delete()
+
         subtotal = request.session['subtotal']
         iva = request.session['iva']
         print(subtotal)
@@ -376,16 +379,21 @@ def pago_exitoso(request):
     tipo_pago = response['payment_type_code']
     codigo_aut = response['authorization_code']
 
+    print(status)
+    print(codigo_aut)
+    print(detalle_tarjeta)
+    print(tipo_pago)
+
     convenio = Convenio.objects.get(id=request.session['convenio'])
     print(convenio)
 
-    pagado = Pago.objects.create(orden_compra=orden_compra, fecha=date.today(), monto=monto, metodo_pago=tipo_pago, is_pagado=True, convenio=convenio)
-    pago = Pago.objects.get(orden_compra=orden_compra)
-
-    if pagado is not None:
+    if status == 'AUTHORIZED':
+        pagado = Pago.objects.create(orden_compra=orden_compra, fecha=date.today(), monto=monto, metodo_pago=tipo_pago, is_pagado=True, convenio=convenio)
+        pago = Pago.objects.get(orden_compra=orden_compra)
         reserva_ok = ReservaHora.objects.create(fecha_reserva=request.session['fecha'], hora_reserva=request.session['hora'], is_confirmada=False, pago=pago, user=request.user, profesional_id=request.session['profesional'])
         reserva_ok.save()
         sweetify.success(request, 'Pago realizado exitosamente.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
+
     else:
         Agenda.objects.filter(fecha=request.session['fecha'], hora=request.session['hora'], profesional_id=request.session['profesional']).delete()
         sweetify.error(request, 'Error en el pago, intente nuevamente.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
@@ -434,6 +442,8 @@ def logout(request):
 
 def no_autorizado(request):
 
-    return None
+    sweetify.warning(request, 'No estás autorizado a entrar a esta sección', button='Aceptar')
+
+    return render(request, 'no_autorizado.html',)
 
 #######################################################################################################################

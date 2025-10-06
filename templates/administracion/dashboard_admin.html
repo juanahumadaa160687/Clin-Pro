@@ -66,14 +66,16 @@
                 </div>
             </div>
             <div class="row d-flex flex-row justify-content-center mt-2 gap-2 w-100">
-                <div class="col card p-0" style="border-radius: 20px; border: 2px solid #3b3f4c">
-                    <div class="card-body d-flex justify-content-center align-items-center">
-                        <table class="display" id="tablaFunc" >
+                <div class="col card p-0" style="border-radius: 20px; border: 2px solid #3b3f4c; width: 100%">
+                    <div class="card-body d-flex justify-content-center align-items-center w-100">
+                        <table class="display" id="tablaFunc" style="width: 100%;">
                             <thead>
                             <tr>
                                 <th style="display: none;">ID</th>
                                 <th>RUT</th>
                                 <th>Nombre</th>
+                                <th>Título</th>
+                                <th>Especialidad</th>
                                 <th>Email</th>
                                 <th>Telefono</th>
                                 <th>Acciones</th>
@@ -99,12 +101,14 @@
             data: [
                 {% for personal in personal_servicio %}
                 {
-                    id: '{{ personal.personal__user_id }}',
-                    rut: '{{ personal.personal__user__rut }}',
-                    nombre: '{{ personal.personal__user__nombre }}',
-                    email: '{{ personal.personal__user__email }}',
-                    telefono: '{{ personal.personal__user__telefono }}',
-                    acciones: '<a href="{% url 'editar_usuario' personal.personal__user_id %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen-to-square"></i></a> <a href="{% url 'eliminar_usuario' personal.personal__user_id %}" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>',
+                    id: '{{ personal.user_id }}',
+                    rut: '{{ personal.user__rut }}',
+                    nombre: '{{ personal.prefijo }} {{ personal.user__nombre }}',
+                    titulo: '{{ personal.titulo }}',
+                    especialidad: '{{ personal.especialidad }}',
+                    email: '{{ personal.user__email }}',
+                    telefono: '{{ personal.user__telefono }}',
+                    acciones: '<a href="#" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen-to-square"></i></a> <a href="#" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>',
                 },
                 {% endfor %}
             ],
@@ -112,10 +116,10 @@
                 { data: 'id', visible: false },
                 { data: 'rut' },
                 { data: 'nombre' },
+                { data: 'titulo' },
+                { data: 'especialidad' },
                 { data: 'email' },
                 { data: 'telefono' },
-                { data: 'rol' },
-
                 { data: 'acciones' },
             ],
         });
@@ -221,7 +225,7 @@
                     },
                     title: {
                         display: true,
-                        text: 'Ingresos Mensuales',
+                        text: 'Pacientes Atendidos en el Servicio por mes',
                         color: '#fff',
                     },
                 },
@@ -263,8 +267,8 @@
             data: {
                 labels: [...labels],
                 datasets: [{
-                    label: 'Pacientes Mensuales',
-                    data: datos,
+                    label: 'Ingresos Mensuales',
+                    data: [...datos],
                     fill: true,
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
                     borderColor: 'rgba(255, 99, 132, 1)',
@@ -281,7 +285,7 @@
                     },
                     title: {
                         display: true,
-                        text: 'Pacientes Mensuales',
+                        text: 'Ingresos Mensuales por mes',
                         color: '#fff',
                     },
                 },

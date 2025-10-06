@@ -92,3 +92,6 @@ def sendWhatsapp(telefono, fecha, hora_reserva, nombre):
     pywhatkit.sendwhatmsg(telefono, mensaje, hora, minutos, 10, True, 2)
 
     print("Mensaje de WhatsApp enviado correctamente")
+
+def money_format(value):
+    return "${:,.0f}".format(value).replace(",", ".")

@@ -10,10 +10,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from django.urls import reverse_lazy
-from pyhanko.generated.w3c import Object
+from pyasn1_modules.rfc2985 import dateOfBirth
 
+from clinpro.functions import money_format
 from clinpro.decorators import allowed_users
-from clinpro.forms import UserCreationForm, RegistroUserForm
 from administracion.forms import LoginPersonalForm, RegistroPersonalForm, ServicioForm, ProcedimientoForm, \
     PersonalSaludForm
 from administracion.models import PersonalSalud, Servicio, Procedimiento, Agenda
@@ -21,7 +21,7 @@ from clinpro.models import User, Convenio, Pago, ReservaHora
 import sweetify
 from django.contrib.auth import login as auth_login, authenticate
 from xhtml2pdf import pisa
-from django.contrib import messages
+
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['Administrador'])
@@ -34,7 +34,7 @@ def dashboard_admin(request):
 
     if request.method == 'POST' and 'servicio' in request.POST:
 
-        request.session['servicio'] = request.POST['servicio']
+        request.session['servicio'] = request.POST.getlist('servicio')[0]
         print(request.session['servicio'])
 
         services = Servicio.objects.filter(nombre=request.session['servicio']).values('nombre')
@@ -58,16 +58,17 @@ def dashboard_admin(request):
                 month_name = meses[smes['personal__agenda__fecha__month'] -1]
                 data.append({'month': month_name, 'total': smes['total']})
 
-        servicio_mes = data
-        print(servicio_mes)
+        servicio_mes1 = data
+        print(servicio_mes1)
 
 
         monto_mes = ReservaHora.objects.values('fecha_reserva__month').filter(profesional__servicio__nombre=request.session['servicio']).annotate(monto=Sum('pago__monto')).order_by('fecha_reserva__month')
-        print(monto_mes)
 
-        personal_servicio = Servicio.objects.values('personal__user_id', 'personal__user__rut', 'personal__user__nombre', 'personal__user__email', 'personal__user__telefono').filter(personal__servicio__nombre=services)
 
-        return render(request, 'administracion/dashboard_admin.html', {'atencion_servicios': atencion_servicios, 'servicio_form': servicio_form, 'servicio_mes': servicio_mes, 'monto_mes': monto_mes, 'personal_servicio': personal_servicio})
+        personal_servicio = PersonalSalud.objects.filter(servicio__nombre=request.session['servicio']).values('user_id', 'user__rut', 'user__nombre', 'user__email', 'user__telefono', 'titulo', 'prefijo', 'especialidad').distinct()
+        print(personal_servicio)
+
+        return render(request, 'administracion/dashboard_admin.html', {'atencion_servicios': atencion_servicios, 'servicio_form': servicio_form, 'servicio_mes': servicio_mes1, 'monto_mes': monto_mes, 'personal_servicio': personal_servicio})
     else:
         return render(request, 'administracion/dashboard_admin.html', {'servicios': servicios, 'servicio_form': servicio_form})
 
@@ -306,25 +307,54 @@ def servicios_view(request):
 @allowed_users(allowed_roles=['Administrador'])
 def procedimientos_view(request):
 
-    procedimientos_disponibles = Procedimiento.objects.all().values('id', 'procedimiento', 'precio')
+    procedimientos_disponibles = Procedimiento.objects.all().values('id', 'procedimiento', 'precio').annotate(total=Count('personal_salud__user_id'))
+
+    data=[]
+
+    for procedimiento in procedimientos_disponibles:
+        precio_formato = money_format(procedimiento['precio'])
+        var = {
+            'id': procedimiento['id'],
+            'procedimiento': procedimiento['procedimiento'],
+            'precio': precio_formato,
+        }
+
+        data.append(var)
+
+    procedimientos_disponibles=data
+    print(procedimientos_disponibles)
+
+
+
     print(procedimientos_disponibles)
     procedimiento_form = ProcedimientoForm()
 
     if request.method == 'POST' and 'procedimiento' in request.POST:
 
         procedimiento = request.POST.getlist('procedimiento')[0]
+        print(procedimiento)
         precio = request.POST.getlist('precio')[0]
+        print(precio)
         personal_salud = request.POST.getlist('personal_salud')
+        print(personal_salud)
 
         if Procedimiento.objects.filter(procedimiento=procedimiento).exists():
             sweetify.error(request, 'El nombre del procedimiento ya está registrado. Por favor, inténtelo de nuevo.', button='Aceptar')
-            return render(request, 'administracion/servicios.html', {'procedimiento_form': procedimiento_form, 'procedimientos_disponibles': procedimientos_disponibles})
+            return render(request, 'administracion/procedimientos.html', {'procedimiento_form': procedimiento_form, 'procedimientos_disponibles': procedimientos_disponibles})
 
-        procedimiento = Procedimiento.objects.create(procedimiento=procedimiento, precio=precio)
-        procedimiento.personal_salud.set(personal_salud)
-        procedimiento.save()
         sweetify.success(request, f"Procedimiento {procedimiento} Registrado con Éxito.", button='Aceptar')
-        return redirect('servicios')
+        return redirect('procedimientos')
+
+    elif request.method == 'POST' and 'agregar' in request.POST:
+        procedimiento = request.POST.getlist('agregar')[0]
+        personal_salud = request.POST.getlist('personal_salud')
+
+        procedure = Procedimiento.objects.get(pk=procedimiento)
+        procedure.personal_salud.set(personal_salud)
+        procedure.save()
+
+        sweetify.success(request, 'Procedimiento asociado al profesional con éxito', button='Aceptar')
+        return redirect('procedimientos')
 
     return render(request, 'administracion/procedimientos.html', {'procedimientos_disponibles': procedimientos_disponibles, 'procedimiento_form': procedimiento_form})
 

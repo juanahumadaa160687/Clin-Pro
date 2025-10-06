@@ -21,7 +21,7 @@ def calendar_view(request):
     servicios = Servicio.objects.all()
     print(servicios)
 
-    profesionales = PersonalSalud.objects.filter(titulo='Médico').all()
+    profesionales = PersonalSalud.objects.all()
     print(profesionales)
 
     if request.method == "POST" and 'servicio' in request.POST:
