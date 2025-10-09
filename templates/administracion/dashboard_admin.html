@@ -8,21 +8,20 @@
     <div class="m-0 p-0">
 
         <div class="m-0 p-0" >
-            <h1 class="text-start text-white">Dashboard Administración</h1>
+            <h1 class="text-start" style="font-weight: bold; color: #4b4d39">Dashboard Administración</h1>
             <div>
                 <form method="POST">
                     {% csrf_token %}
-                    <div class="d-flex justify-content-start gap-3 mb-2">
+                    <div class="d-flex justify-content-end mb-2">
                         <div class="w-25">
-                            <label for="servicio" class="form-label text-white">Selecciona Servicio</label>
-                            <select name="servicio" id="servicio" class="form-select">
+                            <select name="servicio" id="servicio" class="form-select" style="border-radius: 5px 0 0 5px; border: 1px solid #4b4d39;">
                             {% if request.session.servicio %}
                                 <option selected disabled value="{{ request.session.servicio }}">{{ request.session.servicio }}</option>
                                 {% for y in servicios %}
                                     <option value="{{ y.nombre }}">{{ y.nombre }}</option>
                                 {% endfor %}
                             {% else %}
-                                <option selected disabled value="">Seleccione...</option>
+                                <option selected disabled value="">Selecciona el Servicio</option>
                                 {% for y in servicios %}
                                     <option value="{{ y.nombre }}">{{ y.nombre }}</option>
                                 {% endfor %}
@@ -30,17 +29,17 @@
                             </select>
                         </div>
                         <div class="d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary" name="servicio" id="servicio"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <button type="submit" class="btn" name="servicio" id="servicio" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #f1f7f6; border-radius: 0 5px 5px 0;"><i class="fa-solid fa-magnifying-glass"></i></button>
                         </div>
                     </div>
                 </form>
 
             </div>
         </div>
-
+{% if atencion_servicios %}
         <div class="row d-flex flex-row justify-content-center mt-3 gap-2">
 
-            <div class="col card" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c">
+            <div class="col card" style="border-radius: 20px; background-color: #fefbf6; border: 1px solid #4b4d39;">
                 <div class="card-body d-flex justify-content-center align-items-center">
                     <div class="chart-container w-100" style="position: relative; padding: 10px;">
                         <canvas id="paciente_servicios"></canvas>
@@ -50,14 +49,14 @@
 
             <div class="col flex-column p-0">
 
-                <div class="col card mb-1" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c">
+                <div class="col card mb-1" style="border-radius: 20px; background-color: #fefbf6; border: 1px solid #4b4d39;">
                     <div class="col card-body d-flex justify-content-center align-items-center">
                         <div class="chart-container w-100" style="position: relative; padding: 10px;">
                             <canvas id="ingresos"></canvas>
                         </div>
                     </div>
                 </div>
-                <div class="col card" style="background-color: rgba(33, 38, 52, 0.9); border-radius: 20px; border: 2px solid #3b3f4c">
+                <div class="col card" style="border-radius: 20px; background-color: #fefbf6; border: 1px solid #4b4d39;">
                     <div class="col card-body d-flex justify-content-center align-items-center">
                         <div class="chart-container w-100" style="position: relative; padding: 10px;">
                             <canvas id="pacientes"></canvas>
@@ -65,21 +64,21 @@
                     </div>
                 </div>
             </div>
-            <div class="row d-flex flex-row justify-content-center mt-2 gap-2 w-100">
-                <div class="col card p-0" style="border-radius: 20px; border: 2px solid #3b3f4c; width: 100%">
-                    <div class="card-body d-flex justify-content-center align-items-center w-100">
+            <div class="row d-flex flex-row justify-content-center mt-2 w-100 p-0">
+                <div class="col card p-0" style="border-radius: 20px; width: 100%; background-color: #fefbf6; border: 1px solid #4b4d39;">
+                    <div class="card-body d-flex justify-content-center align-items-center w-100 p-0">
                         <table class="display" id="tablaFunc" style="width: 100%;">
                             <thead>
-                            <tr>
-                                <th style="display: none;">ID</th>
-                                <th>RUT</th>
-                                <th>Nombre</th>
-                                <th>Título</th>
-                                <th>Especialidad</th>
-                                <th>Email</th>
-                                <th>Telefono</th>
-                                <th>Acciones</th>
-                            </tr>
+                                <tr>
+                                    <th style="display: none;">ID</th>
+                                    <th>RUT</th>
+                                    <th>Nombre</th>
+                                    <th>Título</th>
+                                    <th>Especialidad</th>
+                                    <th>Email</th>
+                                    <th>Telefono</th>
+                                    <th>Acciones</th>
+                                </tr>
                             </thead>
                         </table>
                     </div>
@@ -87,6 +86,8 @@
             </div>
         </div>
     </div>
+
+{% endif %}
 
 {% endblock %}
 
@@ -176,13 +177,13 @@
                 plugins: {
                     legend: {
                         position: 'right', labels: {
-                            color: '#fff' // Cambia el color del texto de la leyenda a blanco
+                            color: '#4b4d39' // Cambia el color del texto de la leyenda a blanco
                         }
                     },
                     title: {
                         display: true,
                         text: 'Pacientes Atendidos por Servicio',
-                        color: '#fff',
+                        color: '#4b4d39',
                     }
                 }
             }
@@ -211,7 +212,7 @@
                     data: datos,
                     fill: true,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderColor: '#4b4d39',
                     borderWidth: 1
                 }]
             },
@@ -220,25 +221,25 @@
                 plugins: {
                     legend: {
                         position: 'top', labels: {
-                            color: '#fff' // Cambia el color del texto de la leyenda a blanco
+                            color: '#4b4d39' // Cambia el color del texto de la leyenda a blanco
                         }
                     },
                     title: {
                         display: true,
                         text: 'Pacientes Atendidos en el Servicio por mes',
-                        color: '#fff',
+                        color: '#4b4d39',
                     },
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            color: '#fff' // Cambia el color de los números del eje Y a blanco
+                            color: '#4b4d39' // Cambia el color de los números del eje Y a blanco
                         }
                     },
                     x: {
                         ticks: {
-                            color: '#fff' // Cambia el color de los números del eje X a blanco
+                            color: '#4b4d39' // Cambia el color de los números del eje X a blanco
                         }
                     }
                 }
@@ -270,8 +271,8 @@
                     label: 'Ingresos Mensuales',
                     data: [...datos],
                     fill: true,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.4)',
+                    borderColor: '#4b4d39',
                     borderWidth: 1
                 }]
             },
@@ -280,25 +281,25 @@
                 plugins: {
                     legend: {
                         position: 'top', labels: {
-                            color: '#fff' // Cambia el color del texto de la leyenda a blanco
+                            color: '#4b4d39' // Cambia el color del texto de la leyenda a blanco
                         }
                     },
                     title: {
                         display: true,
                         text: 'Ingresos Mensuales por mes',
-                        color: '#fff',
+                        color: '#4b4d39',
                     },
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            color: '#fff' // Cambia el color de los números del eje Y a blanco
+                            color: '#4b4d39' // Cambia el color de los números del eje Y a blanco
                         }
                     },
                     x: {
                         ticks: {
-                            color: '#fff' // Cambia el color de los números del eje X a blanco
+                            color: '#4b4d39' // Cambia el color de los números del eje X a blanco
                         }
                     }
                 }

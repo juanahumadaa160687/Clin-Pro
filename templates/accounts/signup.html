@@ -16,7 +16,7 @@
             <div class="col p-3" style="height: 450px; width: 750px; background-color: white;">
                 <h2 class="text-start mt-3" style="color: #042630;">Registro de Usuario</h2>
 
-                <form class="row g-2 mt-3 p-2" method="POST" action="{% url 'registro' %}" style="color: #1D919C;">
+                <form class="row g-2 mt-3 p-2" method="POST" action="{% url 'signup' %}" style="color: #1D919C;">
                     {% csrf_token %}
                     {% if form.non_field_errors %}
                         <div class="alert alert-danger" role="alert">
@@ -30,9 +30,15 @@
                         {% endif %}
                     </div>
                     <div class="col-6 mb-3 mt-1">
-                        {{ form.nombre }}
-                        {% if form.nombre.errors %}
-                            <div class="text-danger" role="alert">{{ form.nombre.errors }}</div>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <div class="text-danger" role="alert">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-6 mb-3 mt-1">
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <div class="text-danger" role="alert">{{ form.last_name.errors }}</div>
                         {% endif %}
                     </div>
                     <div class="col-6 mb-3">
@@ -59,7 +65,7 @@
                             <div class="text-danger" role="alert">{{ form.password2.errors }}</div>
                         {% endif %}
                     </div>
-                    <div class="col-12 d-grid gap-2 d-flex flex-column justify-content-center align-items-center ">
+                    <div class="col-6 d-grid gap-2 d-flex flex-column justify-content-center align-items-center ">
                         <button type="submit" class="btn btn-primary" style="width: 388px; height: 48px; padding: 12px 20px; background-color: #1D919C; border: 1px solid #1D919C; color: #fff">Guardar</button>
                     </div>
                 </form>

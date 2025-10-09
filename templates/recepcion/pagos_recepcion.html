@@ -5,46 +5,42 @@
 
 
 {% block content %}
+
     <div class="w-100 mb-4">
-        <div class="d-flex justify-content-end">
-            <form action="" method="POST" class="row row-cols-lg-auto g-0 align-items-center">
-                {% csrf_token %}
-                <div class="col-12">
-                    <select class="form-select" name="servicio" id="servicio">
-                        <option value="" disabled selected>Seleccione un servicio</option>
-                        {% for servicio in servicios %}
-                            <option value="{{ servicio.nombre }}">{{ servicio.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-12">
-                    <button class="btn mt-2 mb-2" type="submit" name="servicio" id="servicio" style="background-color: #1D919C; border: 1px solid #1D919C;"><i class="fa-solid fa-magnifying-glass" style="color: white"></i></button>
-                </div>
-            </form>
-        </div>
         <div class="w-100 d-flex justify-content-start align-items-center flex-row">
-            <h1 class="text-start text-white">Pagos</h1>
+            <h1 class="text-start" style="color: #4b4d39;">Pagos</h1>
         </div>
     </div>
 
-    <div class="card">
-      <div class="card-body">
-          <table class="display" id="pagoTable">
-              <thead>
-              <tr>
-                  <th>ID</th>
-                  <th>Paciente</th>
-                  <th>Profesional</th>
-                  <th>Forma de Pago</th>
-                  <th>Monto</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-              </tr>
-              </thead>
-              <tbody>
-              </tbody>
-          </table>
-      </div>
+    <div class="card" style="background-color: #fefbf6; border: 1px solid #4b4d39;">
+        <div class="card-body">
+            <ul class="group-list group-list-flush">
+                {% for pac in paciente_no_reg %}
+                    <li class="group-list-item" style="color: #4b4d39;">{{ pac.rut }}</li>
+                    <li class="group-list-item" style="color: #4b4d39;">{{ pac.nombre }}</li>
+                    <li class="group-list-item" style="color: #4b4d39;">{{ pac.telefono }}</li>
+                    <li class="group-list-item" style="color: #4b4d39;">{{ pac.email }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="card-body">
+            <table class="display" id="pagoTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Paciente</th>
+                    <th>Forma de Pago</th>
+                    <th>Monto</th>
+                    <th>Estado</th>
+                    <th>Convenio</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock content %}
 
@@ -55,27 +51,27 @@
             data: [
                 {% for pago in pagos %}
                     {
-                        id: '{{ personal.personal__id }}',
-                        paciente: '{{ personal.personal__user__rut }}',
-                        profesional: '{{ personal.personal__prefijo }} {{ personal.personal__user__nombre }}',
-                        forma_pago: '{{ personal.personal__user__username }}',
-                        monto: '{{ personal.personal__user__rol}}',
-                        estado: '{{ personal.personal__estado }}',
+                        id: '{{ pago.id }}',
+                        paciente: '{{ pago.user__nombre }}',
+                        forma_pago: '{{ pago.forma_pago }}',
+                        monto: '{{ pago.monto }}',
+                        is_pagado: '{% if pago.is_pagado %} <span class="badge bg-success">Pagado</span> {% else %} <span class="badge bg-danger">No Pagado</span> {% endif %}',
+                        convenio: '{{ pago.convenio__nombre }}',
                         acciones: '<a href="{% url "validar_pago" personal.personal__id %}" class="btn btn-sm btn-primary me-1" id="validar" name="validar">Validar</a>',
                     },
                 {% endfor %}
             ],
-
             columns: [
                 { data: 'id', visible: false },
                 { data: 'paciente' },
-                { data: 'profesional' },
                 { data: 'forma_pago' },
                 { data: 'monto' },
-                { data: 'estado' },
+                { data: 'is_pagado' },
+                { data: 'convenio' },
                 { data: 'acciones' },
             ],
-
         });
     </script>
+
+
 {% endblock script %}

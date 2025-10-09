@@ -1,0 +1,51 @@
+{% extends 'base_funcionarios.html' %}
+
+{% block title %}Registrar 2FA{% endblock %}
+
+{% block content %}
+
+    <div class="w-100 mb-4">
+        <div class="w-100 d-flex justify-content-center align-items-end flex-row w-100">
+            <div class="d-flex justify-content-between align-items-center flex-row w-100">
+                <h1 class="text-start" style="font-weight: bold; color: #4b4d39">Registro 2FA</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if not user.mfa_enabled %}
+            <div class="col m-0" style="height: 85vh;">
+                <div class="card h-100" style="background-color: #fefbf6; border: 1px solid #4b4d39;">
+                    <div class="card-header" style="background-color: #fefbf6;"><h5 class="card-title" style="font-weight: bold; color: #4b4d39"><i class="fa-solid fa-user"></i> Activación de 2FA con App de Autenticación</h5></div>
+                    <div class="card-body px-4 py-1 mb-4" style="height: 75vh; overflow-y: auto;">
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'verify_mfa' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="token" class="form-label" style="font-weight: bold; color: #4b4d39;">Código de la App de Autenticación</label>
+                                <input type="text" class="form-control" id="token" name="token" placeholder="Ingrese el código de la app" required style="border: 1px solid #4b4d39;">
+                            </div>
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit" class="btn" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #f1f7f6; border-radius: 5px;">Verificar y Activar 2FA</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col m-0" style="height: 85vh;">
+                <div class="card h-100" style="background-color: #fefbf6; border: 1px solid #4b4d39;">
+                    <div class="card-header" style="background-color: #fefbf6;"><h5 class="card-title" style="font-weight: bold; color: #4b4d39"><i class="fa-solid fa-user"></i> Desactivar 2FA</h5></div>
+                    <div class="card-body px-4 py-1 mb-4" style="height: 75vh; overflow-y: auto;">
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'desactivar_mfa' %}">
+                            {% csrf_token %}
+                            <p style="color: #4b4d39;">El usuario ya tiene 2FA activado. Si desea desactivar 2FA, haga clic en el botón de abajo.</p>
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit" class="btn" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #f1f7f6; border-radius: 5px;">Desactivar 2FA</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

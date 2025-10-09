@@ -9,12 +9,12 @@
 
 {% block content %}
 
-    <section class="px-0 py-0 m-0" style="height: 100vh;">
+    <section class="px-0 py-0 m-0" style="height: 80vh; background-color: #fefbf6;">
 
-        <div class="row d-flex w-100 mt-4  p-0 justify-content-center align-items-start flex-row h-100">
+        <div class="row d-flex w-100 p-5 justify-content-center align-items-start flex-row h-100">
             <div class="col-3 d-flex align-items-center justify-content-center flex-column m-0">
-                <div class="card" style="box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #fff">
-                    <div class="card-header" style="background-color: #1D919C"><h4 class="card-title" style="color: #fff9f0;">Datos de Usuario</h4></div>
+                <div class="card" style="box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #fefbf6;">
+                    <div class="card-header" ><h4 class="card-title" style="color: #1D919C">Datos de Usuario</h4></div>
                     <div class="card-body w-100">
                         <div class="row d-flex align-items-center justify-content-center flex-column w-100">
                             <div class="col d-flex align-items-start justify-content-start">
@@ -33,21 +33,23 @@
                         <br>
                         <div class="row d-flex align-items-center justify-content-center flex-column gap-3 p-3">
                             <a class="btn btn-primary"  href="{% url 'edit_profile' id=request.user.id %}"><i class="fa-solid fa-pen-to-square"></i> Editar Información</a>
-                            <a class="btn btn-secondary"  href="#"><i class="fa-solid fa-key"></i> Cambiar Contraseña</a>
+                            <a class="btn btn-secondary"  href="{% url 'change_password' %}"><i class="fa-solid fa-key"></i> Cambiar Contraseña</a>
                             <a class="btn btn-danger"  href="{% url 'delete_profile' id=request.user.id %}"><i class="fa-solid fa-trash"></i> Eliminar Cuenta</a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-9">
-                <div class="card" style="width: 100%; box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #fff">
-                    <div class="card-header" style="background-color: #1D919C"><h4 class="card-title" style="color: #fff9f0;">Historial de Horas</h4></div>
+                <div class="card" style="width: 100%; box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #fefbf6;">
+                    <div class="card-header"><h4 class="card-title" style="color: #1D919C">Historial de Horas</h4></div>
                     <div class="card-body">
                         <table class="display text-center"  id="historialTable">
                             <thead>
                             <tr>
                                 <th class="text-center">ID</th>
+                                <th class="text-center">Nro Pago</th>
                                 <th class="text-center">Fecha Reserva</th>
+                                <th class="text-center">Hora Reserva</th>
                                 <th class="text-center">Profesional</th>
                                 <th class="text-center">Servicio</th>
                                 <th class="text-center">Estado</th>
@@ -65,7 +67,27 @@
 
         <script>
             let table = new DataTable('#historialTable',{
-
+                data: [
+                    {% for reserva in reservas %}
+                        {
+                            id: '{{ reserva.id }}',
+                            pago: '{{ reserva.pago__orden_compra }}',
+                            fecha_reserva: '{{ reserva.fecha_reserva|date:"d/m/Y" }}',
+                            hora_reserva: '{{ reserva.hora_reserva }}',
+                            profesional: '{{ reserva.profesional__prefijo }} {{ reserva.profesional__user__nombre }}',
+                            servicio: '{{ reserva.profesional__servicio__nombre }}',
+                            is_confirmada: '{% if reserva.is_confirmada %}<span class="badge bg-success">Confirmada</span>{% else %}<span class="badge bg-warning text-dark">Pendiente</span>{% endif %}',},
+                    {% endfor %}
+                ],
+                columns: [
+                    { data: 'id', visible: false },
+                    { data: 'pago' },
+                    { data: 'fecha_reserva' },
+                    { data: 'hora_reserva' },
+                    { data: 'profesional' },
+                    { data: 'servicio' },
+                    { data: 'is_confirmada' },
+                ],
             });
         </script>
 

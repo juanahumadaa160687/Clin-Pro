@@ -7,27 +7,6 @@ from django_password_eye.fields import PasswordEye
 from django_password_eye.widgets import PasswordEyeWidget
 from django import forms
 
-class LoginPersonalForm(AuthenticationForm):
-    email = forms.EmailField(
-        label='Correo Electrónico',
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Correo Electrónico', 'required': 'true'})
-    )
-    password = PasswordEye(
-        label='Contraseña',
-        widget=PasswordEyeWidget(attrs={'class': 'form-control', 'placeholder': 'Contraseña', 'required': 'true'})
-    )
-
-    remember_me = forms.BooleanField(
-        label='Recuérdame',
-        required=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
-    )
-
-    class Meta:
-        model = User
-        fields = ['email', 'password', 'remember_me']
-
-
 class RegistroPersonalForm(UserCreationForm):
     email = forms.EmailField(
         label='Correo Electrónico',
@@ -100,43 +79,32 @@ class PersonalSaludForm(ModelForm):
         fields = ['prefijo', 'titulo', 'especialidad', 'universidad', 'user']
 
 
-class ServicioForm(forms.Form):
-    nombre = forms.CharField(
-        label='Nombre del Servicio',
-        max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del Servicio', 'required': 'true'})
-    )
-    personal = forms.ModelMultipleChoiceField(
-        label='Personal de Salud',
-        queryset=PersonalSalud.objects.all(),
-        widget=forms.SelectMultiple(attrs={'class': 'form-select', 'multiple': 'true'})
-    )
-
+class ServicioForm(forms.ModelForm):
     class Meta:
         model = Servicio
         fields = ['nombre', 'personal']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del Servicio', 'required': 'true'}),
+            'personal': forms.SelectMultiple(attrs={'class': 'form-select', 'multiple': 'true', 'use_required_attribute': 'true'}),
+        }
+        labels = {
+            'nombre': 'Nombre del Servicio',
+            'personal': 'Personal de Servicio',
+        }
 
-    def save(self, commit):
-        pass
 
 
-class ProcedimientoForm(forms.Form):
-    procedimiento = forms.CharField(
-        label='Nombre del Procedimiento',
-        max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del Procedimiento', 'required': 'true'})
-    )
-    precio = forms.IntegerField(
-        label='Precio',
-        min_value=0,
-        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Precio', 'required': 'true'})
-    )
-    personal_salud = forms.ModelMultipleChoiceField(
-        label='Personal de Salud',
-        queryset=PersonalSalud.objects.all(),
-        widget=forms.SelectMultiple(attrs={'class': 'form-select', 'multiple': 'true'})
-    )
-
+class ProcedimientoForm(forms.ModelForm):
     class Meta:
         model = Procedimiento
         fields = ['procedimiento', 'precio', 'personal_salud']
+        widgets = {
+            'procedimiento': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del Procedimiento', 'required': 'true'}),
+            'precio': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Precio en CLP', 'required': 'true', 'min': 0, 'step': 0.01}),
+            'personal_salud': forms.SelectMultiple(attrs={'class': 'form-select', 'multiple': 'true', 'use_required_attribute': 'true'}),
+        }
+        labels = {
+            'procedimiento': 'Nombre del Procedimiento',
+            'precio': 'Precio (CLP)',
+            'personal_salud': 'Personal de Salud que realiza el Procedimiento',
+        }

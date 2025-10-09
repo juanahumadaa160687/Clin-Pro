@@ -12,7 +12,7 @@ class PacienteNoRegistradoForm(forms.Form):
     rut = forms.CharField(
         label='RUT',
         max_length=12,
-        validators=[RegexValidator(r'^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$', message='Ingrese un RUT válido (formato: XX.XXX.XXX-X)')],
+        validators=[RegexValidator(r'^\d{7,8}-[0-9kK]$', message='El RUT debe tener el formato 12345678-9 o 1234567-8')],
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el RUT'})
     )
     telefono = forms.CharField(
@@ -24,7 +24,7 @@ class PacienteNoRegistradoForm(forms.Form):
     email = forms.EmailField(
         label='Correo Electrónico',
         max_length=100,
-        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el correo electrónico'})
+        widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el correo electrónico','required': False, 'value': 'No Presenta'})
     )
 
     class Meta:

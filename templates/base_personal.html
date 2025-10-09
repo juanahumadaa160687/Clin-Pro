@@ -32,25 +32,25 @@
         ClinPro - {% block title %}{% endblock title %}
     </title>
 
-<style>
-    /* Estilos personalizados para la barra lateral */
-    aside .nav-link {
-        text-decoration: none;
-        font-size: 14pt;
-        color: #4b4d39;
-        transition: background-color 0.3s, color 0.3s;
-    }
+    <style>
+        /* Estilos personalizados para la barra lateral */
+        aside .nav-link {
+            text-decoration: none;
+            font-size: 14pt;
+            color: #4b4d39;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-    aside .nav-link:hover {
-        text-decoration: none;
-        color: #2e0d14;
-    }
+        aside .nav-link:hover {
+            text-decoration: none;
+            color: #2e0d14;
+        }
 
-    .card-body::-webkit-scrollbar {
-        display: none;
-    }
+        .card-body::-webkit-scrollbar {
+            display: none;
+        }
 
-</style>
+    </style>
 
 </head>
 
@@ -64,10 +64,10 @@
                 <img src="{% static 'img/logo_oliva.png' %}" alt="Logo Clinica " width="50" height="50" class="d-inline-block align-text-bottom">
                 <a class="navbar-brand ms-1" href="{% url 'index' %}" style="font-size: 16pt; color: #4b4d39;">Clinicare</a>
             </div>
+
             <nav class="nav nav-justified flex-column mt-1" >
-                <a class="nav-link text-start mb-4" href="{% url 'dashboard_recepcion' %}" ><i class="fa-solid fa-calendar-days"></i> Dashboard</a>
-                <a class="nav-link text-start mb-4" href="{% url 'reservas' %}" ><i class="fa-solid fa-clock"></i> Reservar Hora</a>
-                <a class="nav-link text-start mb-4" href="{% url 'pagos' %}" ><i class="fa-solid fa-money-check-dollar"></i> Pagos</a>
+                <a class="nav-link text-start mb-4" href="{% url 'dashboard_recepcion' %}" ><i class="fa-solid fa-user-doctor"></i> Ficha Clínica</a>
+                <a class="nav-link text-start mb-4" href="{% url 'reservas' %}" ><i class="fa-solid fa-x-ray"></i> Exámenes</a>
                 <a class="nav-link text-start mb-4" href="{% url 'logout' %}" ><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a>
             </nav>
 

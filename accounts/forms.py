@@ -5,6 +5,7 @@ from .models import *
 from django_password_eye.fields import PasswordEye
 from django_password_eye.widgets import PasswordEyeWidget
 
+
 class LoginUserForm(AuthenticationForm):
     email = forms.EmailField(
         label='Correo Electrónico',
@@ -18,6 +19,7 @@ class LoginUserForm(AuthenticationForm):
     class Meta:
         model = User
         fields = ['email', 'password1']
+
 
 
 class RegistroUserForm(UserCreationForm):
@@ -54,5 +56,3 @@ class RegistroUserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['email', 'password1', 'password2', 'rut', 'nombre', 'telefono']
-
-

@@ -3,6 +3,25 @@
 
 {% block title %} Reservas {% endblock title %}
 
+{% block additional_headers %}
+
+    <style>
+        .input-group-addon {
+            right: 0;
+            padding-right: 30px;
+            padding-top: 10px;
+            max-width: 40px;
+            background-color: #4b4d39;
+            border: #4b4d39;
+        }
+        a:not([href]):not([class]), a:not([href]):not([class]):hover {
+            color: #fefbf6;
+            text-decoration: none;
+        }
+    </style>
+
+{% endblock additional_headers %}
+
 {% block content %}
 
     <div class="w-100 mb-4">
@@ -10,52 +29,65 @@
             <form action="" method="POST" class="row row-cols-lg-auto g-0 align-items-center">
                 {% csrf_token %}
                 <div class="col-12">
-                    <input type="text" class="form-control" name="rut" id="rut" placeholder="Rut del paciente" required>
+                    <input type="text" class="form-control" list="rutOptions" name="search" id="search" placeholder="Rut del paciente" required style="border-radius: 5px 0 0 5px; border: 1px solid #4b4d39;">
+                    <datalist id="rutOptions">
+                        {% for rut in ruts %}
+                            <option value="{{ rut.rut }}"></option>
+                        {% endfor %}
+                    </datalist>
                 </div>
                 <div class="col-12">
-                    <button class="btn mt-2 mb-2" type="submit" name="rut" id="rut" style="background-color: #1D919C; border: 1px solid #1D919C;"><i class="fa-solid fa-magnifying-glass" style="color: white"></i></button>
+                    <button class="btn mt-2 mb-2" type="submit" name="search" id="search" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #f1f7f6; border-radius: 0 5px 5px 0;"><i class="fa-solid fa-magnifying-glass" style="color: #f1f7f6"></i></button>
                 </div>
             </form>
         </div>
-        <div class="w-100 d-flex justify-content-start align-items-center flex-row">
-            <h1 class="text-start text-white">Reserva Hora</h1>
+        <div class="w-100 d-flex justify-content-center align-items-end flex-row w-100">
+            <div class="d-flex justify-content-between align-items-center flex-row w-100">
+                <h1 class="text-start" style="font-weight: bold; color: #4b4d39">Reserva Hora</h1>
+            </div>
+            <div class="d-flex justify-content-end align-items-end flex-row w-100 gap-2">
+                <p class="text-end" style="color: #4b4d39">{{ paciente.nombre }}</p>
+                <p class="text-end" style="color: #4b4d39"> {{ paciente.rut }}</p>
+            </div>
         </div>
     </div>
 
     <div class="row">
-
-        <div class="col-4 m-0" style="height: 85vh;">
-            <div class="card h-100" style="background-color: rgba(33,	38,	52, 0.7); border: 1px solid #3c4752; ">
-                <div class="card-header" style="background-color: #1e2936; color: #F2F2F2;"><h5 class="card-title"><i class="fa-solid fa-user"></i> Información del Paciente</h5></div>
+    {% if paciente is None %}
+        <div class="col m-0" style="height: 85vh;">
+            <div class="card h-100" style="background-color: #fefbf6; border: 1px solid #4b4d39;">
+                <div class="card-header" style="background-color: #fefbf6;"><h5 class="card-title" style="font-weight: bold; color: #4b4d39"><i class="fa-solid fa-user"></i> Información del Paciente</h5></div>
                 <div class="card-body px-4 py-1 mb-4" style="height: 75vh; overflow-y: auto;">
-                    <form method="POST" class="text-white" id="noregistro" name="noregistro">
+                    <form method="POST" class="text-white mt-5" id="noregistro" name="noregistro">
                         {% csrf_token %}
                         <div class="form-floating mb-5">
-                            {{ form.rut }}
+                            <input type="text" class="form-control" id="rut" name="rut" placeholder="Rut" required autofocus style="border: 1px solid #4b4d39;">
                             <label for="rut">RUT</label>
                         </div>
                         <div class="form-floating mb-5">
-                            {{ form.nombre }}
+                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre" required autofocus style="border: 1px solid #4b4d39;">
                             <label for="nombre">Nombre</label>
                         </div>
                         <div class="form-floating mb-5">
-                            {{ form.telefono }}
+                            <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Telefono" autofocus style="border: 1px solid #4b4d39;">
                             <label for="telefono">Teléfono</label>
                         </div>
                         <div class="form-floating mb-5">
-                            {{ form.email }}
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Email" autofocus style="border: 1px solid #4b4d39;">
                             <label for="email">Email</label>
                         </div>
-                        <div class="d-flex justify-content-end gap-2">
-                            <button class="btn float-end" type="submit" name="noregistro" id="noregistro" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;">Guardar</button>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn" type="submit" name="noregistro" id="noregistro" style="width: 60%; background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;">Guardar</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <div class="col-4" style="height: 85vh; ">
-            <div class="card h-100" style="background-color: rgba(33,	38,	52, 0.7); border: 1px solid #3c4752;">
-                <div class="card-header" style="background-color: #1e2936; color: #F2F2F2;"> <h5 class="card-title"><i class="fa-solid fa-calendar-check"></i> Información de la Hora</h5></div>
+   {% endif %}
+
+        <div class="col" style="height: 85vh; ">
+            <div class="card h-100" style="background-color: #fefbf6; border: 1px solid #4b4d39;">
+                <div class="card-header" style="background-color: #fefbf6;"><h5 class="card-title" style="font-weight: bold; color: #4b4d39;"><i class="fa-solid fa-calendar-check"></i> Información de la Hora</h5></div>
 
                 <div class="card-body p-4">
 
@@ -64,21 +96,13 @@
                             <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
                                 {% csrf_token %}
                                 <select class="form-select" name="servicio" id="servicio">
-                                    {% if request.session.servicio %}
-                                        <option value="{{ request.session.servicio }}" selected>{{ request.session.servicio }}</option>
-                                    {% else %}
-                                        <option value="" disabled selected>Seleccione un servicio</option>
-                                    {% endif %}
+                                    <option value="" disabled selected>Seleccione un servicio</option>
                                     {% for servicio in servicios %}
                                         <option value="{{ servicio.nombre }}">{{ servicio.nombre }}</option>
                                     {% endfor %}
                                 </select>
                                 <label for="servicio">Servicio</label>
-                                {% if request.user.paciente.prevision %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" name="servicio" id="servicio"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% else %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% endif %}
+                                <button type="submit" class="btn btn-lg" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;" name="servicio" id="servicio"><i class="fa-solid fa-magnifying-glass"></i></button>
                             </div>
                         </form>
                     </div>
@@ -96,11 +120,7 @@
                                     {% endfor %}
                                 </select>
                                 <label for="especialidad">Especialidad</label>
-                                {% if request.session.servicio %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; color: #F2F2F2;" name="especialidad" id="especialidad"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% else %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% endif %}
+                                <button type="submit" class="btn btn-lg" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;" name="especialidad" id="especialidad"><i class="fa-solid fa-magnifying-glass"></i></button>
                             </div>
                         </form>
                     </div>
@@ -118,11 +138,7 @@
                                     {% endfor %}
                                 </select>
                                 <label for="profesional">Profesional</label>
-                                {% if request.session.especialidad %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" name="profesional" id="profesional"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% else %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% endif %}
+                                <button type="submit" class="btn btn-lg" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;" name="profesional" id="profesional"><i class="fa-solid fa-magnifying-glass"></i></button>
                             </div>
                         </form>
                     </div>
@@ -140,11 +156,7 @@
                                     {% endfor %}
                                 </select>
                                 <label for="profesional">Procedimientos</label>
-                                {% if request.session.profesional %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" name="procedimiento" id="procedimiento"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% else %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% endif %}
+                                <button type="submit" class="btn btn-lg" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;" name="procedimiento" id="procedimiento"><i class="fa-solid fa-magnifying-glass"></i></button>
                             </div>
                         </form>
                     </div>
@@ -157,11 +169,7 @@
                             <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-row">
                                 <input class="form-control" type="date" name="fecha" id="fecha" value="{{ request.session.fecha }}" min="{{ hoy }}">
                                 <label for="fecha">Fecha de Atención</label>
-                                {% if request.session.procedimiento %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" name="procedimiento" id="procedimiento"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% else %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% endif %}
+                                <button type="submit" class="btn btn-lg" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;" name="procedimiento" id="procedimiento"><i class="fa-solid fa-magnifying-glass"></i></button>
                             </div>
                         </form>
                     </div>
@@ -179,22 +187,17 @@
                                     {% endfor %}
                                 </select>
                                 <label for="hora">Horas Disponibles</label>
-                                {% if request.session.fecha %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% else %}
-                                    <button type="submit" class="btn btn-lg" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
-                                {% endif %}
+                                <button type="submit" class="btn btn-lg" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;"><i class="fa-solid fa-magnifying-glass"></i></button>
                             </div>
                         </form>
                     </div>
-
                 </div>
             </div>
         </div>
 
-        <div class="col-4" style="height: 85vh;">
-            <div class="card h-100" style="background-color: rgba(33,	38,	52, 0.7); border: 1px solid #3c4752;">
-                <div class="card-header" style="background-color: #1e2936; color: #F2F2F2;"><h5 class="card-title"><i class="fa-solid fa-money-check-dollar"></i> Pago</h5></div>
+        <div class="col" style="height: 85vh;">
+            <div class="card h-100" style="background-color: #fefbf6; border: 1px solid #4b4d39;">
+                <div class="card-header" style="background-color: #fefbf6;"><h5 class="card-title" style="font-weight: bold; color: #4b4d39;"><i class="fa-solid fa-money-check-dollar"></i> Pago</h5></div>
                 <div class="card-body p-4" style="height: 60vh; overflow-y: auto;">
 
                     <div class="mb-5">
@@ -208,45 +211,37 @@
                                         <option value="{{ convenio.id }}">{{ convenio.nombre }}</option>
                                     {% endfor %}
                                 </select>
-                                <button type="submit" class="btn" style="background-color: #1D919C; border: 1px solid #1D919C; color: white;">Ingresar</button>
+                                <button type="submit" class="btn" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;">Ingresar</button>
                             </div>
                             <div id="adv" class="form-text">
-                                <small class=" text-white">Al seleccionar un convenio, deberá presentar un comprobante o documento de afiliación al momento de la atención.</small>
+                                <small style="color: #4b4d39;">Al seleccionar un convenio, deberá presentar un comprobante o documento de afiliación al momento de la atención.</small>
                             </div>
                         </form>
                     </div>
-                    <hr style="border: 1px solid white;">
+                    <hr style="border: 1px solid #4b4d39;">
                     <div class="mt-4 mb-4">
-                        <p class="text-white">Subtotal: {{ subtotal }}</p>
-                        <p class="text-white">IVA: {{ iva }}</p>
-                        <p class="text-white">Convenio {{ nombre }} {{ descuento }}%: {{ total_descuento }}</p>
+                        <p class="" style="color: #4b4d39">Subtotal: {{ subtotal }}</p>
+                        <p class="" style="color: #4b4d39">IVA: {{ iva }}</p>
+                        <p class="" style="color: #4b4d39">Convenio {{ nombre }} {{ descuento }}%: {{ total_descuento }}</p>
                         <br>
-                        <h3 class="text-white">Total a Pagar: {{ total }} </h3>
+                        <h3 class="" style="color: #4b4d39">Total a Pagar: {{ total }} </h3>
                     </div>
                     <hr>
                     <div class="mt-4">
-                        <h5 class="text-white">
-                            <small>Medio de Pago</small>
-                        </h5>
-                        <br>
-                        <div class="d-flex justify-content-center align-items-center flex-column gap-3 p-0 m-0 w-100">
 
-                            <div class="d-flex justify-content-center align-items-center flex-row p-0">
-                                <form method="post" action="{{ url }}">
-                                    <input type="hidden" name="token_ws" value="{{ token }}" />
-                                    <a class="btn" type="submit"><img src="{% static 'img/webpay.png' %}" alt="" width="150" height="50"></a>
-                                </form>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="form-floating d-flex justify-content-center align-items-center gap-2 flex-column">
+                                <select class="form-select" name="metodo_pago" id="metodo_pago" required>
+                                    <option value="" disabled selected>Seleccione un método de pago</option>
+                                    <option value="tarjeta">Tarjeta de Débito/Crédito</option>
+                                    <option value="transferencia">Transferencia Bancaria</option>
+                                    <option value="efectivo">Efectivo</option>
+                                </select>
+                                <label for="metodo_pago">Método de Pago</label>
+                                <button type="submit" class="btn mt-3" style=" width: 40%; background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;" name="metodo_pago" id="metodo_pago">Pagar</button>
                             </div>
-
-                            <div class="d-flex justify-content-center align-items-center flex-row p-0">
-                                <a href="#"> <img src="{% static 'img/transferencia.png' %}" width="150" alt=""> </a>
-                            </div>
-
-                            <div class="d-flex justify-content-center align-items-center flex-row p-0">
-                                <a href="#" style="text-decoration: none; color: white; font-weight: bold"> <img src="{% static 'img/efectivo.svg' %}" width="50" alt=""> Efectivo </a>
-                            </div>
-
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>

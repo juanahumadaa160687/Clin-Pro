@@ -33,3 +33,33 @@ Time: 15:43
 Phone Number: +56962275944
 Message: Su hora médica para el día 2025-10-15 a las 11:00, con el profesional Gonzalo Medina ha sido agendada correctamente
 --------------------
+Date: 6/10/2025
+Time: 20:19
+Phone Number: +5687654347
+Message: Su hora médica para el día 2025-10-15 a las 09:00, con el profesional Gonzalo Medina ha sido agendada correctamente
+--------------------
+Date: 6/10/2025
+Time: 20:22
+Phone Number: +56962275944
+Message: Su hora médica para el día 2025-10-15 a las 10:00, con el profesional Gonzalo Medina ha sido agendada correctamente
+--------------------
+Date: 6/10/2025
+Time: 21:40
+Phone Number: +56962275944
+Message: Su hora médica para el día 2025-10-15 a las 17:00, con el profesional Gonzalo Medina ha sido agendada correctamente
+--------------------
+Date: 6/10/2025
+Time: 22:4
+Phone Number: +56962275944
+Message: Su hora médica para el día 2025-10-17 a las 15:00, con el profesional Gonzalo Medina ha sido agendada correctamente
+--------------------
+Date: 6/10/2025
+Time: 22:16
+Phone Number: +56962275944
+Message: Su hora médica para el día 2025-10-14 a las 12:00, con el profesional Juan Pérez ha sido agendada correctamente
+--------------------
+Date: 6/10/2025
+Time: 22:27
+Phone Number: +56962275944
+Message: Su hora médica para el día 2025-10-15 a las 18:00, con el profesional Gonzalo Medina ha sido agendada correctamente
+--------------------

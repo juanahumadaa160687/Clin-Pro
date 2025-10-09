@@ -7,12 +7,66 @@ from sweetify import sweetify
 from administracion.models import Servicio, PersonalSalud
 from clinpro.decorators import allowed_users
 from clinpro.models import ReservaHora
+from recepcion.forms import PacienteNoRegistradoForm
+from recepcion.models import NoRegistrado
+
 
 # Create your views here.
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['Secretaria'])
+#@login_required(login_url='login')
+#@allowed_users(allowed_roles=['Secretaria'])
 def reservas_view(request):
-    return render(request, 'recepcion/reservas_recepcion.html')
+
+    form = PacienteNoRegistradoForm()
+
+    ruts = NoRegistrado.objects.values('rut')
+    print(ruts)
+
+    if request.method == 'POST' and 'search' in request.POST:
+
+        rut = request.POST.getlist('search')[0]
+        print(rut)
+
+        try:
+            paciente = NoRegistrado.objects.filter(rut=rut).values('rut', 'nombre', 'telefono', 'email').first()
+            print(f"Paciente encontrado: {paciente}")
+            sweetify.success(request, 'Paciente encontrado', button='Aceptar', timer=3000)
+            return render(request, 'recepcion/reservas_recepcion.html', {'paciente': paciente})
+
+        except NoRegistrado.DoesNotExist:
+            print("Paciente no encontrado")
+            sweetify.error(request, 'Paciente no encontrado. Por favor, ingrese sus datos.', button='Aceptar', timer=3000)
+            return render(request, 'recepcion/reservas_recepcion.html', {'form': form})
+
+
+    elif request.method == 'POST' and 'noregistro' in request.POST:
+
+            rut = request.POST.get('rut')
+            nombre = request.POST.get('nombre')
+            email = request.POST.get('email')
+            telefono = request.POST.get('telefono')
+            rol = 'Paciente'
+
+            paciente = NoRegistrado.objects.create(
+                nombre=nombre,
+                rut=rut,
+                telefono=telefono,
+                email=email,
+                rol=rol
+            )
+
+            paciente.save()
+
+            if paciente is None:
+                sweetify.error(request, 'Error al registrar paciente. Intente nuevamente.', button='Aceptar', timer=3000)
+                return render(request, 'recepcion/reservas_recepcion.html', {'form': form})
+
+
+            print(nombre, rut, telefono, email, rol)
+            sweetify.success(request, 'Paciente registrado exitosamente.', button='Aceptar', timer=3000)
+            return redirect('reservas')
+
+
+    return render(request, 'recepcion/reservas_recepcion.html', {'form': form, 'ruts': ruts})
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['Secretaria'])
@@ -69,23 +123,12 @@ def calendar_view(request):
 
     return render(request, 'recepcion/calendar_recepcion.html', {'servicios': servicios, 'profesionales': profesionales})
 
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['Secretaria'])
+#@login_required(login_url='login')
+#@allowed_users(allowed_roles=['Secretaria'])
 def pagos_view(request):
 
+
     return render(request, 'recepcion/pagos_recepcion.html')
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['Secretaria'])
-def validar_pago_view(request):
-
-    return redirect('pagos_recepcion')
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['Secretaria'])
-def modificar_reserva_view(request):
-
-    return render(request, 'recepcion/modificar_reserva.html')
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['Secretaria'])

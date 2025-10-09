@@ -31,7 +31,6 @@
             const calendarEl = document.getElementById('calendar');
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                themeSystem: 'bootstrap5',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
@@ -54,6 +53,62 @@
         });
     </script>
 
+    <style>
+        :root {
+            --fc-small-font-size: .85em;
+            --fc-page-bg-color: #fefbf6;
+            --fc-neutral-bg-color: rgba(208, 208, 208, 0.3);
+            --fc-neutral-text-color: #4b4d39;
+            --fc-border-color: #4b4d39;
+
+            --fc-button-text-color: #fefbf6;
+            --fc-button-bg-color: #4b4d39;
+            --fc-button-border-color: #4b4d39;
+            --fc-button-hover-bg-color: #1e2b37;
+            --fc-button-hover-border-color: #1a252f;
+            --fc-button-active-bg-color: #1a252f;
+            --fc-button-active-border-color: #151e27;
+
+            --fc-event-bg-color: #4b4d39;
+            --fc-event-border-color: #4b4d39;
+            --fc-event-text-color: #fefbf6;
+            --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
+
+            --fc-more-link-bg-color: #4b4d39;
+            --fc-more-link-text-color: #4b4d39;
+
+            --fc-event-resizer-thickness: 8px;
+            --fc-event-resizer-dot-total-width: 8px;
+            --fc-event-resizer-dot-border-width: 1px;
+
+            --fc-non-business-color: rgba(215, 215, 215, 0.3);
+            --fc-bg-event-color: rgb(143, 223, 130);
+            --fc-bg-event-opacity: 0.3;
+            --fc-highlight-color: rgba(188, 232, 241, 0.3);
+            --fc-today-bg-color: rgba(255, 220, 40, 0.15);
+            --fc-now-indicator-color: red;
+
+            a{
+                text-decoration: none;
+                color: #4b4d39;
+                a:hover {
+                    text-decoration: none;
+                    color: #2e0d14;
+                }
+            }
+        }
+        & .fc-col-header-cell-cushion {
+            display: inline-block; // x-browser for when sticky (when multi-tier header)
+            padding: 2px 4px;
+            text-decoration: none;
+            color: #4b4d39;
+            .fc-col-header-cell-cushion:hover {
+                text-decoration: none;
+                color: #2e0d14;
+            }
+        }
+    </style>
+
 {% endblock %}
 
 
@@ -72,7 +127,7 @@
                     </select>
                 </div>
                 <div class="col-12">
-                    <button class="btn btn-primary mt-2 mb-2" type="submit" name="servicio" id="servicio"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <button class="btn mt-2 mb-2" type="submit" name="servicio" id="servicio" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #f1f7f6; border-radius: 0 5px 5px 0;"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </form>
         </div>
@@ -88,17 +143,17 @@
                     </select>
                 </div>
                 <div class="col-12">
-                    <button class="btn btn-primary mt-2 mb-2" type="submit" name="personal" id="personal"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <button class="btn mt-2 mb-2" type="submit" name="personal" id="personal" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #f1f7f6; border-radius: 0 5px 5px 0;"><i class="fa-solid fa-magnifying-glass"></i></button>
                 </div>
             </form>
         </div>
 
         <div class="w-100 d-flex justify-content-start align-items-center flex-row">
-            <h1 class="text-start text-white">Dashboard Recepción</h1>
+            <h1 class="text-start" style="color: #4b4d39;">Dashboard Recepción</h1>
         </div>
     </div>
 
-    <div class="m-0 p-3" style="background-color: white">
+    <div class="m-0 p-3" style="background-color: #fefbf6">
         <div id='calendar'></div>
     </div>
 {% endblock %}

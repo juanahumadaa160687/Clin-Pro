@@ -56,7 +56,7 @@ def confirmacionregistro(remitentes, destinatario, nombre):
     remitente = remitentes.lower()
     destinatarios = destinatario.lower()
 
-    html_content = render_to_string('confirmacion_registro.html', {'nombre': nombre})
+    html_content = render_to_string('accounts/confirmacion_registro.html', {'nombre': nombre})
     text_content = strip_tags(html_content)
 
     msg = EmailMultiAlternatives(
@@ -87,7 +87,7 @@ def sendWhatsapp(telefono, fecha, hora_reserva, nombre):
 
     hora = datetime.datetime.now().hour
 
-    minutos = datetime.datetime.now().minute + 2
+    minutos = datetime.datetime.now().minute + 1
 
     pywhatkit.sendwhatmsg(telefono, mensaje, hora, minutos, 10, True, 2)
 

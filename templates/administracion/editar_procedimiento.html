@@ -1,0 +1,36 @@
+{% extends 'base_funcionarios.html' %}
+{% load static %}
+
+{% block title %} Editar Procedimiento {% endblock title %}
+
+{% block content %}
+    <div class="d-flex justify-content-center align-items-center flex-column" style="min-height: 100vh; overflow-y: auto;">
+
+        <div class="mb-2 p-0 w-100" >
+            <h1 class="text-start " style="font-weight: bold; color: #4b4d39">Editar Procedimiento</h1>
+        </div>
+        <div class="card mb-2 p-0" style="background-color: #fefbf6; border: 1px solid #4b4d39; width: 100%;">
+            <div class="card-body p-4 m-0" >
+                <form method="POST" enctype="multipart/form-data" class="row g-3 text-white" name="editar_procedimiento" id="editar_procedimiento" style="width: 100%;">
+                    {% csrf_token %}
+                    <div class="col-6 form-group mb-1">
+                        {{ form.procedimiento.label }}
+                        {{ form.procedimiento }}
+                    </div>
+                    <div class="col-6 form-group mb-1">
+                        {{ form.precio.label }}
+                        {{ form.precio }}
+                    </div>
+                    <div class="col-12 form-group mb-1">
+                        {{ form.personal_salud.label }}
+                        {{ form.personal_salud }}
+                    </div>
+                    <div class="d-flex justify-content-end flex-column align-items-end w-100 mb-2">
+                        <button type="submit" class="btn" name="editar_procedimiento" id="editar_procedimiento" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,26 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
-
-class User(AbstractUser):
-    email = models.EmailField(verbose_name='email', max_length=100, unique=True)
-    password1 = models.CharField(verbose_name='password', max_length=128, null=True, blank=True)
-    rut = models.CharField(verbose_name='RUT', max_length=128, null=True, blank=True)
-    nombre = models.CharField(verbose_name='nombre', max_length=128, null=True, blank=True)
-    telefono = models.CharField(verbose_name='telefono', max_length=128, null=True, blank=True)
-    rol = models.CharField(verbose_name='rol', max_length=128, null=True, blank=True)
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
-    def __str__(self):
-        return f"{self.rut} {self.nombre}"
-
-    class Meta:
-        verbose_name = 'Usuario'
-        verbose_name_plural = 'Usuarios'
+from accounts.models import User
 
 
 ########################################################################################################################

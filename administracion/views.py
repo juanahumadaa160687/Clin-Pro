@@ -1,29 +1,28 @@
 import datetime
-from calendar import month
 from io import BytesIO
+
 from django.contrib.auth.models import Group
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Count, Sum
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from django.urls import reverse_lazy
-from pyasn1_modules.rfc2985 import dateOfBirth
 
 from clinpro.functions import money_format
 from clinpro.decorators import allowed_users
-from administracion.forms import LoginPersonalForm, RegistroPersonalForm, ServicioForm, ProcedimientoForm, \
+from administracion.forms import RegistroPersonalForm, ServicioForm, ProcedimientoForm, \
     PersonalSaludForm
-from administracion.models import PersonalSalud, Servicio, Procedimiento, Agenda
-from clinpro.models import User, Convenio, Pago, ReservaHora
+from administracion.models import PersonalSalud, Servicio, Procedimiento
+from accounts.models import User
+from clinpro.models import ReservaHora
 import sweetify
-from django.contrib.auth import login as auth_login, authenticate
 from xhtml2pdf import pisa
 
 
-@login_required(login_url='login')
+
 @allowed_users(allowed_roles=['Administrador'])
 def dashboard_admin(request):
 
@@ -324,9 +323,6 @@ def procedimientos_view(request):
     procedimientos_disponibles=data
     print(procedimientos_disponibles)
 
-
-
-    print(procedimientos_disponibles)
     procedimiento_form = ProcedimientoForm()
 
     if request.method == 'POST' and 'procedimiento' in request.POST:
@@ -337,6 +333,10 @@ def procedimientos_view(request):
         print(precio)
         personal_salud = request.POST.getlist('personal_salud')
         print(personal_salud)
+
+        nuevo_procedimiento = Procedimiento.objects.create(procedimiento=procedimiento, precio=precio)
+        nuevo_procedimiento.personal_salud.set(personal_salud)
+        nuevo_procedimiento.save()
 
         if Procedimiento.objects.filter(procedimiento=procedimiento).exists():
             sweetify.error(request, 'El nombre del procedimiento ya está registrado. Por favor, inténtelo de nuevo.', button='Aceptar')
@@ -361,30 +361,19 @@ def procedimientos_view(request):
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['Administrador'])
 def editar_servicio(request, servicio_id):
-    if servicio_id is None:
-        return redirect('servicios')
 
-    if request.method == 'POST' and 'servicio' in request.POST:
-        nombre = request.POST.get('nombre')
-        personal = request.POST.getlist('personal')
+    servicios = get_object_or_404(Servicio, id=servicio_id)
 
-        servicio = Servicio.objects.get(pk=servicio_id)
+    if request.method == 'POST':
+        form = ServicioForm(request.POST, instance=servicios)
+        if form.is_valid():
+            form.save()
+            sweetify.success(request, f"Servicio Editado con Éxito.", button='Aceptar')
+            return redirect('servicios')
+    else:
+        form = ServicioForm(instance=servicios)
 
-        if nombre:
-            servicio.nombre = nombre
-        else:
-            servicio.nombre = servicio.nombre
-
-        if personal:
-            servicio.personal.set(personal)
-        else:
-            servicio.personal = servicio.personal
-
-        servicio.save()
-        sweetify.success(request, f"Servicio Editado con Éxito.", button='Aceptar')
-        return redirect('servicios')
-
-    return render(request, 'administracion/editar_servicio.html')
+    return render(request, 'administracion/editar_servicio.html', {'form': form})
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['Administrador'])
@@ -409,6 +398,21 @@ def eliminar_procedimiento(request, procedimiento_id):
     procedimiento.delete()
     sweetify.success(request, f"Procedimiento Eliminado con Éxito.", button='Aceptar')
     return redirect('servicios')
+
+def editar_procedimiento(request, procedimiento_id):
+
+    procedimiento = get_object_or_404(Procedimiento, pk=procedimiento_id)
+
+    if request.method == 'POST':
+        form = ProcedimientoForm(request.POST, instance=procedimiento)
+        if form.is_valid():
+            form.save()
+            sweetify.success(request, f"Procedimiento Editado con Éxito.", button='Aceptar')
+            return redirect('procedimientos')
+    else:
+        form = ProcedimientoForm(instance=procedimiento)
+
+    return render(request, 'administracion/editar_procedimiento.html', {'form': form})
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['Administrador'])

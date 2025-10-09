@@ -12,9 +12,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+
 from dotenv import load_dotenv
 
-import clinpro
+import accounts
 
 load_dotenv()
 
@@ -43,14 +44,24 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'clinpro',
+
     'social_django',
-    'administracion',
     'django_password_eye',
     'sweetify',
-    'recepcion'
+    'crispy_forms',
+    'crispy_bootstrap5',
+
+    'clinpro',
+    'administracion',
+    'recepcion',
+    'personal_salud',
+    'accounts'
 
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -106,9 +117,9 @@ DATABASES = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'clinpro.backends.EmailBackend',
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'accounts.backends.EmailBackend',
 )
 
 
@@ -131,9 +142,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-SESSION_COOKIE_AGE = 3600  # 1 hour in seconds
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Expire the session when the browser is closed
-SESSION_SAVE_EVERY_REQUEST = True  # Reset the session timer on each request
 
 
 # Internationalization
@@ -171,11 +180,10 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 SOCIAL_AUTH_REDIRECT_URI = os.getenv('REDIRECT_URI')
 
 LOGIN_REDIRECT_URL = '/reserva_hora/'
-LOGOUT_REDIRECT_URL = ''
 
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['email', 'password', 'first_name', 'last_name']
 
-AUTH_USER_MODEL = 'clinpro.User'
+AUTH_USER_MODEL = 'accounts.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

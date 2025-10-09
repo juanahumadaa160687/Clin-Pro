@@ -1,26 +1,18 @@
+from datetime import datetime, time, date
 import os
 import random
-from django.contrib.auth.models import Group
-from django.core import serializers
-from django.shortcuts import render, redirect
-from django.contrib import messages
 from django.utils.dateformat import time_format
+from django.shortcuts import redirect
 
-from administracion.forms import LoginPersonalForm
-from administracion.models import *
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.decorators import login_required
-
-from .decorators import allowed_users
-from .forms import LoginUserForm, RegistroUserForm
-from .functions import sendWhatsapp, conf_pago, confirmacionregistro
-from .models import User, Convenio, Pago, ReservaHora
-from transbank.webpay.webpay_plus.transaction import Transaction
-from datetime import datetime, time, timedelta, date
-from .task import sendConfirmacion
-from administracion.models import *
 import sweetify
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from transbank.webpay.transaccion_completa.transaction import Transaction
 
+from accounts.forms import RegistroUserForm
+from administracion.models import Servicio, PersonalSalud, Procedimiento, Agenda
+from clinpro.functions import conf_pago, sendWhatsapp
+from clinpro.models import ReservaHora, Convenio, Pago
 
 
 #Landing Page
@@ -31,151 +23,7 @@ def index(request):
 
 #######################################################################################################################
 
-# login page view
-def login(request):
-
-    if request.method == 'POST':
-
-        form = LoginUserForm()
-
-        email = request.POST['email']
-        password = request.POST['password1']
-
-        user = authenticate(request, email=email, password=password)
-        print(user)
-
-        if user is not None:
-
-            rol = User.objects.get(email=email).rol
-
-            if rol == 'Administrador':
-                auth_login(request, user)
-                sweetify.success(request, f'Bienvenido {user.nombre}.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
-                return redirect('dashboard')
-
-            elif rol == 'PersonalSalud':
-                auth_login(request, user)
-                sweetify.success(request, f'Bienvenido {user.nombre}.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
-                return redirect('dashboard_fichas')
-
-            elif rol == 'Secretaria':
-                auth_login(request, user)
-                sweetify.success(request, f'Bienvenida {user.nombre}.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
-                return redirect('dashboard_recepcion')
-
-
-            auth_login(request, user)
-
-            return redirect('reserva_hora')
-
-        else:
-            sweetify.error(request, 'Usuario o contraseña incorrectos.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
-
-    else:
-        form = LoginUserForm()
-
-    return render(request, 'login.html', {'form': form})
-
-#######################################################################################################################
-
-def registro(request):
-    if request.method == 'POST':
-        form = RegistroUserForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.rut = form.cleaned_data.get('rut')
-            user.email = form.cleaned_data.get('email')
-            user.nombre = form.cleaned_data.get('nombre')
-            user.telefono = form.cleaned_data.get('telefono')
-            user.set_password(form.cleaned_data.get('password1'))
-            user.username = user.email.split('@')[0]  # Asignar username basado en el email
-            user.rol = 'Paciente'
-
-            user.save()
-
-            grupo_paciente, created = Group.objects.get_or_create(name='Paciente')
-            user.groups.add(grupo_paciente)
-
-            remitente = os.getenv('EMAIL_HOST_USER')
-            destinatario = user.email
-            nombre = user.nombre
-
-            confirmacionregistro(remitente, destinatario, nombre)
-
-            sweetify.success(request, 'Registro exitoso. Ahora puedes iniciar sesión.', button='Aceptar', timer=3000, persistent='Ok', icon='success')
-            return redirect('login')
-        else:
-            sweetify.error(request, 'Error en el registro. Por favor, verifica los datos ingresados.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
-    else:
-        form = RegistroUserForm()
-
-    return render(request, 'register.html', {'form': form})
-
-#password reset page view
-#@allowed_users(allowed_roles=['Administrador', 'Paciente'])
-def password_reset(request):
-
-    return render(request, 'registration/password_reset_form.html')
-
-def password_reset_done(request):
-    return render(request, 'registration/password_reset_done.html')
-
-def password_reset_confirm(request, uidb64, token):
-    return render(request, 'registration/password_reset_confirm.html')
-
-def password_reset_complete(request):
-    return render(request, 'registration/password_reset_complete.html')
-
-#######################################################################################################################
-
-# user profile page view
-
 @login_required(login_url='login')
-@allowed_users(allowed_roles=['Paciente'])
-def profile(request, id):
-
-    if ReservaHora.objects.filter(user_id=id).exists():
-        reserva = ReservaHora.objects.filter(user_id=id).order_by('-id')
-        return render(request, 'profile.html', {'reserva': reserva,})
-
-    else:
-        sweetify.info(request, 'No tienes horas reservadas aún', button='Aceptar', timer=3000, persistent='Ok', icon='info')
-        return render(request, 'profile.html',)
-
-
-#######################################################################################################################
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['Paciente'])
-def edit_profile(request, id):
-    user = User.objects.get(id=id)
-
-    if request.method == 'POST':
-        form = RegistroUserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Tu perfil ha sido actualizado exitosamente.')
-            return redirect('profile', id=user.id)
-        else:
-            sweetify.error(request, 'Error al actualizar el perfil. Por favor, verifica los datos ingresados.', button='Aceptar', timer=3000, persistent='Ok', icon='error')
-    else:
-        form = RegistroUserForm()
-
-    return render(request, 'edit_profile.html', {'form': form})
-
-
-#######################################################################################################################
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['Paciente'])
-def delete_profile(request, id):
-    user = request.user
-    user.delete()
-    messages.success(request, 'Tu cuenta ha sido eliminada exitosamente.')
-    return redirect('index')
-
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['Paciente'])
 def reserva_hora(request):
 
     servicios = Servicio.objects.values('nombre').distinct()
@@ -418,8 +266,6 @@ def pago_exitoso(request):
 
     sendWhatsapp(telefono, fecha_reserva, hora_reserva, nombre_profesional)
 
-    request.session.clear()
-
     return render(request, 'reserva_hora/pago_exitoso.html',
                   {
                       'monto': monto,
@@ -431,12 +277,6 @@ def pago_exitoso(request):
                       'tipo_pago': tipo_pago
                   })
 
-
-# logout page view
-@login_required(login_url='login')
-def logout(request):
-    auth_logout(request)
-    return redirect('index')
 
 #######################################################################################################################
 
