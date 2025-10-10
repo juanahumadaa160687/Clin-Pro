@@ -24,56 +24,52 @@
 
 {% block content %}
 
-    <div class="w-100 mb-4">
-        <div class="d-flex justify-content-end">
-            <form action="" method="POST" class="row row-cols-lg-auto g-0 align-items-center">
-                {% csrf_token %}
-                <div class="col-12">
-                    <input type="text" class="form-control" list="rutOptions" name="search" id="search" placeholder="Rut del paciente" required style="border-radius: 5px 0 0 5px; border: 1px solid #4b4d39;">
-                    <datalist id="rutOptions">
-                        {% for rut in ruts %}
-                            <option value="{{ rut.rut }}"></option>
-                        {% endfor %}
-                    </datalist>
-                </div>
-                <div class="col-12">
-                    <button class="btn mt-2 mb-2" type="submit" name="search" id="search" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #f1f7f6; border-radius: 0 5px 5px 0;"><i class="fa-solid fa-magnifying-glass" style="color: #f1f7f6"></i></button>
-                </div>
-            </form>
-        </div>
-        <div class="w-100 d-flex justify-content-center align-items-end flex-row w-100">
-            <div class="d-flex justify-content-between align-items-center flex-row w-100">
-                <h1 class="text-start" style="font-weight: bold; color: #4b4d39">Ficha Clínica</h1>
+<div class="w-100 mb-4">
+    <div class="d-flex justify-content-end">
+        <form action="" method="POST" class="row row-cols-lg-auto g-0 align-items-center">
+            {% csrf_token %}
+            <div class="col-12">
+                <input type="text" class="form-control" name="search" id="search" placeholder="Rut del paciente" required style="border-radius: 5px 0 0 5px; border: 1px solid #4b4d39;">
             </div>
+            <div class="col-12">
+                <button class="btn mt-2 mb-2" type="submit" name="search" id="search" style="background-color: #4b4d39; border: 1px solid #4b4d39; color: #f1f7f6; border-radius: 0 5px 5px 0;"><i class="fa-solid fa-magnifying-glass" style="color: #f1f7f6"></i></button>
+            </div>
+        </form>
+    </div>
+    <div class="w-100 d-flex justify-content-center align-items-end flex-row w-100">
+        <div class="d-flex justify-content-between align-items-center flex-row w-100">
+            <h1 class="text-start" style="font-weight: bold; color: #4b4d39">Ficha Clínica</h1>
         </div>
     </div>
+</div>
 
-    <div class="my-5">
-        <ul class="nav nav-tabs justify-content-end" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nl nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Antecedentes Personales</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nl nav-link" id="consulta-tab" data-bs-toggle="tab" data-bs-target="#consulta" type="button" role="tab" aria-controls="consulta" aria-selected="false">Medicina</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nl nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Odontología</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nl nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Salud Mental</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nl nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Nutrición</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nl nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Kinesiología</button>
-            </li>
-        </ul>
+<div class="my-5">
+    <ul class="nav nav-tabs justify-content-end" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nl nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Antecedentes Personales</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nl nav-link" id="consulta-tab" data-bs-toggle="tab" data-bs-target="#consulta" type="button" role="tab" aria-controls="consulta" aria-selected="false">Medicina</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nl nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Odontología</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nl nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Salud Mental</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nl nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Nutrición</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nl nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Kinesiología</button>
+        </li>
+    </ul>
 
-        <div class="tab-content mt-5" id="myTabContent">
+    <div class="tab-content mt-5" id="myTabContent">
 
-        {% if ficha %}
+    {% if ficha %}
             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <h2 class="text-end" style="width: 100%">Ficha: {{ ficha.nro_ficha }}</h2>
                 <div class="card mt-4" style="background-color: #fefbf6; border: 1px solid #4b4d39;">
                     <div class="card-header" style="background-color: #fefbf6;">
                         <h5 class="card-title" style="color: #4b4d39;">Antecedentes Personales</h5>
@@ -85,65 +81,96 @@
                                 <input type="text" class="form-control" id="rut" name="rut" value="{{ ficha.rut }}" readonly style="border: 1px solid #4b4d39;">
                                 <label for="rut" class="form-label" style="font-weight: bold; color: #4b4d39;">RUT</label>
                             </div>
-                            <div class="form-floating col-md-9 mb-3">
+                            <div class="form-floating col-md-6 mb-3">
                                 <input type="text" class="form-control" id="nombre" name="nombre" value="{{ ficha.nombre }}" readonly style="border: 1px solid #4b4d39;">
                                 <label for="nombre" class="form-label" style="font-weight: bold; color: #4b4d39;">Nombre Completo:</label>
+                            </div>
+                            <div class="form-floating col-md-3 mb-3">
+                                <input type="text" class="form-control" id="sexo" name="sexo" value="{{ ficha.sexo }}" readonly style="border: 1px solid #4b4d39;">
+                                <label for="sexo" class="form-label" style="font-weight: bold; color: #4b4d39;">Sexo:</label>
                             </div>
                             <div class="col-md-4 mb-3 form-floating">
                                 <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ ficha.fecha_nacimiento }}" readonly placeholder="Fecha de Nacimiento" style="border: 1px solid #4b4d39;">
                                 <label for="fecha_nacimiento" class="form-label" style="font-weight: bold; color: #4b4d39;">Fecha de Nacimiento:</label>
                             </div>
                             <div class="form-floating col-md-4 mb-3">
+                                <input type="text" class="form-control" id="edad" name="edad" value="{{ ficha.edad }}" readonly style="border: 1px solid #4b4d39;">
+                                <label for="edad" class="form-label" style="font-weight: bold; color: #4b4d39;">Edad:</label>
+                            </div>
+                            <div class="form-floating col-md-4 mb-3">
                                 <input type="text" class="form-control" id="telefono" name="telefono" value="{{ ficha.telefono }}" readonly style="border: 1px solid #4b4d39;">
                                 <label for="telefono" class="form-label" style="font-weight: bold; color: #4b4d39;">Teléfono:</label>
                             </div>
-                            <div class="form-floating col-md-4 mb-3">
+                            <div class="form-floating col-md-3 mb-3">
                                 <input type="email" class="form-control" id="email" name="email" value="{{ ficha.email }}" readonly style="border: 1px solid #4b4d39;">
                                 <label for="email" class="form-label" style="font-weight: bold; color: #4b4d39;">Email:</label>
                             </div>
-                            <div class="form-floating col-md-9 mb-3">
+                            <div class="form-floating col-md-6 mb-3">
                                 <input type="text" class="form-control" id="direccion" name="direccion" value="{{ ficha.direccion }}" readonly style="border: 1px solid #4b4d39;">
                                 <label for="direccion" class="form-label" style="font-weight: bold; color: #4b4d39;">Dirección:</label>
                             </div>
                             <div class="form-floating col-md-3 mb-3">
+                                <input type="text" class="form-control" id="e_civil" name="e_civil" value="{{ ficha.e_civil }}" readonly style="border: 1px solid #4b4d39;">
+                                <label for="e_civil" class="form-label" style="font-weight: bold; color: #4b4d39;">Estado Civil:</label>
+                            </div>
+                            <div class="form-floating col-md-4 mb-3">
+                                <input type="text" class="form-control" id="nacionalidad" name="nacionalidad" value="{{ ficha.nacionalidad }}" readonly style="border: 1px solid #4b4d39;">
+                                <label for="nacionalidad" class="form-label" style="font-weight: bold; color: #4b4d39;">Nacionalidad:</label>
+                            </div>
+                            <div class="form-floating col-md-4 mb-3">
+                                <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ ficha.lugar_nacimiento }}" readonly style="border: 1px solid #4b4d39;">
+                                <label for="lugar_nacimiento" class="form-label" style="font-weight: bold; color: #4b4d39;">Lugar de Nacimiento:</label>
+                            </div>
+                            <div class="form-floating col-md-4 mb-3">
                                 <input type="text" class="form-control" id="prevision" name="prevision" value="{{ ficha.prevision }}" readonly style="border: 1px solid #4b4d39;">
                                 <label for="prevision" class="form-label" style="font-weight: bold; color: #4b4d39;">Previsión:</label>
                             </div>
-                            <div class="form-floating col-md-4 mb-3">
-                                <input type="text" class="form-control" id="grupo_sanguineo" name="grupo_sanguineo" value="{{ ficha.grupo_sanguineo }}" readonly style="border: 1px solid #4b4d39;">
-                                <label for="grupo_sanguineo" class="form-label" style="font-weight: bold; color: #4b4d39;">Grupo Sanguíneo:</label>
+                            {% if ficha.edad < 18 %}
+                                <div class = "col-md-12 mb-3" style="border: 1px solid #4b4d39; border-radius: 5px;">
+                                    <div class="form-floating col-md-4 mb-3">
+                                        <input type="text" class="form-control" id="nombre_responsable" name="nombre_responsable" value="{{ ficha.nombre_responsable }}" readonly style="border: 1px solid #4b4d39;">
+                                        <label for="nombre_responsable" class="form-label" style="font-weight: bold; color: #4b4d39;">Nombre del Responsable:</label>
+                                    </div>
+                                    <div class="form-floating col-md-4 mb-3">
+                                        <input type="text" class="form-control" id="parentesco" name="parentesco" value="{{ ficha.parentesco }}" readonly style="border: 1px solid #4b4d39;">
+                                        <label for="parentesco" class="form-label" style="font-weight: bold; color: #4b4d39;">Parentesco:</label>
+                                    </div>
+                                    <div class="form-floating col-md-4 mb-3">
+                                        <input type="text" class="form-control" id="telefono_responsable" name="telefono_responsable" value="{{ ficha.telefono_responsable }}" readonly style="border: 1px solid #4b4d39;">
+                                        <label for="telefono_responsable" class="form-label" style="font-weight: bold; color: #4b4d39;">Telefono del Responsable:</label>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="form-floating col-md-12 mb-3">
+                                <textarea  class="form-control" id="ant_medicos" name="ant_medicos" style=" border: 1px solid #4b4d39;" readonly>{{ ficha.antecedentes_medicos }}</textarea>
+                                <label for="ant_medicos" class="form-label" style="font-weight: bold; color: #4b4d39;">Antecedentes Médicos</label>
                             </div>
-                            <div class="form-floating col-md-4 mb-3">
-                                <input type="text" class="form-control" id="alergias" name="alergias" value="{{ ficha.alergias }}" readonly style="border: 1px solid #4b4d39;">
-                                <label for="alergias" class="form-label" style="font-weight: bold; color: #4b4d39;">Alergias:</label>
+                            <div class="form-floating col-md-12 mb-3">
+                                <textarea  class="form-control" id="alergias" name="alergias" style="border: 1px solid #4b4d39;" readonly>{{ ficha.alergias }}</textarea>
+                                <label for="alergias" class="form-label" style="font-weight: bold; color: #4b4d39;">Alérgias</label>
                             </div>
-                            <div class="form-floating col-md-4 mb-3">
-                                <input type="text" class="form-control" id="medicacion_actual" name="medicacion_actual" value="{{ ficha.medicacion_actual }}" readonly style="border: 1px solid #4b4d39;">
-                                <label for="medicacion_actual" class="form-label" style="font-weight: bold; color: #4b4d39;">Medicación Actual:</label>
+                            <div class="form-floating col-md-12 mb-3">
+                                <textarea  class="form-control" id="medicamentos" name="medicamentos" style="border: 1px solid #4b4d39;" readonly>{{ ficha.medicamentos }}</textarea>
+                                <label for="medicamentos" class="form-label" style="font-weight: bold; color: #4b4d39;">Medicamentos</label>
+                            </div>
+                            <div class="form-floating col-md-12 mb-3">
+                                <textarea  class="form-control" id="habitos" name="habitos" style="border: 1px solid #4b4d39;" readonly>{{ ficha.habitos }}</textarea>
+                                <label for="habitos" class="form-label" style="font-weight: bold; color: #4b4d39;">Hábitos</label>
                             </div>
                             <div class="d-flex justify-content-end flex-column align-items-end w-100 mb-2">
-                                <button type="submit" class="btn" name="personales" id="personales" style="width: 20%; background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;">Actualizar</button>
+                                <a href="#" type="submit" class="btn" id="personales" style="width: 20%; background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;">Actualizar</a>
                             </div>
                         </form>
                     </div>
+                    <div class="card-footer text-muted">
+                        <p class="text-end me-1"><small class="text-muted">Fecha de Ingreso: {{ ficha.created_at }}</small></p>
+                    </div>
                 </div>
 
-            <div class="card mt-4" style="background-color: #fefbf6; border: 1px solid #4b4d39;">
-                <div class="card-header" style="background-color: #fefbf6;">
-                    <h5 class="card-title" style="color: #4b4d39;">Motivo de Consulta</h5>
-                </div>
-                <div class="card-body d-flex justify-content-center align-items-center">
-                    <form method="POST" enctype="multipart/form-data" class="row g-3 mt-3 mb-3" name="consulta" id="consulta">
-                        {% csrf_token %}
-                        <div class="form-floating col-md-3 mb-3">
-                            <textarea  class="form-control" id="rut" name="rut" value="{{ ficha.rut }}" readonly style="border: 1px solid #4b4d39;"></textarea>
-                            <label for="rut" class="form-label" style="font-weight: bold; color: #4b4d39;">Motivo de Consulta</label>
-                        </div>
-                    </form>
-                </div>
-            </div>
 
-            {% else %}
+    {% else %}
+
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                     <div class="card mt-4" style="background-color: #fefbf6; border: 1px solid #4b4d39;">
                         <div class="card-header" style="background-color: #fefbf6;">
@@ -153,91 +180,108 @@
                             <form method="POST" enctype="multipart/form-data" class="row g-3 mt-3 mb-3" name="personales" id="personales">
                                 {% csrf_token %}
                                 <div class="form-floating col-md-3 mb-3">
-                                    <input type="text" class="form-control" id="rut" name="rut" value="{{ ficha.rut }}" readonly style="border: 1px solid #4b4d39;">
+                                    <input type="text" class="form-control" id="rut" name="rut" value="{{ ficha.rut }}" style="border: 1px solid #4b4d39;">
                                     <label for="rut" class="form-label" style="font-weight: bold; color: #4b4d39;">RUT</label>
                                 </div>
-                                <div class="form-floating col-md-9 mb-3">
-                                    <input type="text" class="form-control" id="nombre" name="nombre" value="{{ ficha.nombre }}" readonly style="border: 1px solid #4b4d39;">
+                                <div class="form-floating col-md-6 mb-3">
+                                    <input type="text" class="form-control" id="nombre" name="nombre" value="{{ ficha.nombre }}" style="border: 1px solid #4b4d39;">
                                     <label for="nombre" class="form-label" style="font-weight: bold; color: #4b4d39;">Nombre Completo:</label>
                                 </div>
-                                <div class="col-md-4 mb-3 form-floating">
-                                    <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" placeholder="Fecha de Nacimiento" style="border: 1px solid #4b4d39;">
+                                <div class="form-floating col-md-3 mb-3">
+                                    <input type="text" class="form-control" id="sexo" name="sexo" value="{{ ficha.sexo }}" style="border: 1px solid #4b4d39;">
+                                    <label for="sexo" class="form-label" style="font-weight: bold; color: #4b4d39;">Sexo:</label>
+                                </div>
+                                <div class="form-floating col-md-4 mb-3 form-floating">
+                                    <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ ficha.fecha_nacimiento }}" placeholder="Fecha de Nacimiento" style="border: 1px solid #4b4d39;">
                                     <label for="fecha_nacimiento" class="form-label" style="font-weight: bold; color: #4b4d39;">Fecha de Nacimiento:</label>
                                 </div>
                                 <div class="form-floating col-md-4 mb-3">
-                                    <input type="text" class="form-control" id="telefono" name="telefono" value="{{ ficha.telefono }}" readonly style="border: 1px solid #4b4d39;">
-                                    <label for="telefono" class="form-label" style="font-weight: bold; color: #4b4d39;">Teléfono:</label>
+                                    <input type="text" class="form-control" id="edad" name="edad" value="{{ ficha.edad }}" style="border: 1px solid #4b4d39;">
+                                    <label for="edad" class="form-label" style="font-weight: bold; color: #4b4d39;">Edad:</label>
                                 </div>
                                 <div class="form-floating col-md-4 mb-3">
-                                    <input type="email" class="form-control" id="email" name="email" value="{{ ficha.email }}" readonly style="border: 1px solid #4b4d39;">
+                                    <input type="text" class="form-control" id="telefono" name="telefono" value="{{ ficha.telefono }}" style="border: 1px solid #4b4d39;">
+                                    <label for="telefono" class="form-label" style="font-weight: bold; color: #4b4d39;">Teléfono:</label>
+                                </div>
+                                <div class="form-floating col-md-3 mb-3">
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ ficha.email }}" style="border: 1px solid #4b4d39;">
                                     <label for="email" class="form-label" style="font-weight: bold; color: #4b4d39;">Email:</label>
                                 </div>
                                 <div class="form-floating col-md-9 mb-3">
-                                    <input type="text" class="form-control" id="direccion" name="direccion"  style="border: 1px solid #4b4d39;">
+                                    <input type="text" class="form-control" id="direccion" name="direccion" value="{{ ficha.direccion }}" style="border: 1px solid #4b4d39;">
                                     <label for="direccion" class="form-label" style="font-weight: bold; color: #4b4d39;">Dirección:</label>
                                 </div>
-                                <div class="form-floating col-md-3 mb-3">
-                                    <select class="form-select" id="prevision" name="prevision" style="border: 1px solid #4b4d39;">
-                                        <option value="" selected>Seleccione...</option>
-                                        <option value="Fonasa">Fonasa</option>
-                                        <option value="Isapre">Isapre</option>
-                                        <option value="Particular">Particular</option>
-                                        <option value="Otro">Otro</option>
-                                    </select>
+                                <div class="form-floating col-md-4 mb-3">
+                                    <input type="text" class="form-control" id="nacionalidad" name="nacionalidad" value="{{ ficha.nacionalidad }}" style="border: 1px solid #4b4d39;">
+                                    <label for="nacionalidad" class="form-label" style="font-weight: bold; color: #4b4d39;">Nacionalidad:</label>
+                                </div>
+                                <div class="form-floating col-md-4 mb-3">
+                                    <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento" value="{{ ficha.lugar_nacimiento }}" style="border: 1px solid #4b4d39;">
+                                    <label for="lugar_nacimiento" class="form-label" style="font-weight: bold; color: #4b4d39;">Lugar de Nacimiento:</label>
+                                </div>
+                                <div class="form-floating col-md-4 mb-3">
+                                    <input type="text" class="form-control" id="prevision" name="prevision" value="{{ ficha.prevision }}" style="border: 1px solid #4b4d39;">
                                     <label for="prevision" class="form-label" style="font-weight: bold; color: #4b4d39;">Previsión:</label>
                                 </div>
-                                <div class="form-floating col-md-4 mb-3">
-                                    <input type="text" class="form-control" id="grupo_sanguineo" name="grupo_sanguineo" style="border: 1px solid #4b4d39;">
-                                    <label for="grupo_sanguineo" class="form-label" style="font-weight: bold; color: #4b4d39;">Grupo Sanguíneo:</label>
+
+                                {% if ficha.edad < 18 %}
+                                    <div class = "col-md-12 mb-3" style="border: 1px solid #4b4d39; border-radius: 5px;">
+                                        <div class="form-floating col-md-4 mb-3">
+                                            <input type="text" class="form-control" id="nombre_responsable" name="nombre_responsable" value="{{ ficha.nombre_responsable }}" style="border: 1px solid #4b4d39;">
+                                            <label for="nombre_responsable" class="form-label" style="font-weight: bold; color: #4b4d39;">Nombre del Responsable:</label>
+                                        </div>
+                                        <div class="form-floating col-md-4 mb-3">
+                                            <input type="text" class="form-control" id="parentesco" name="parentesco" value="{{ ficha.parentesco }}" style="border: 1px solid #4b4d39;">
+                                            <label for="parentesco" class="form-label" style="font-weight: bold; color: #4b4d39;">Parentesco:</label>
+                                        </div>
+                                        <div class="form-floating col-md-4 mb-3">
+                                            <input type="text" class="form-control" id="telefono_responsable" name="telefono_responsable" value="{{ ficha.telefono_responsable }}" style="border: 1px solid #4b4d39;">
+                                            <label for="telefono_responsable" class="form-label" style="font-weight: bold; color: #4b4d39;">Telefono del Responsable:</label>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="form-floating">
+                                    <textarea  class="form-control" id="ant_medicos" name="ant_medicos" style="border: 1px solid #4b4d39;"></textarea>
+                                    <label for="ant_medicos" class="form-label" style="font-weight: bold; color: #4b4d39;">Antecedentes Médicos</label>
                                 </div>
-                                <div class="form-floating col-md-4 mb-3">
-                                    <input type="text" class="form-control" id="alergias" name="alergias" style="border: 1px solid #4b4d39;">
-                                    <label for="alergias" class="form-label" style="font-weight: bold; color: #4b4d39;">Alergias:</label>
+                                <div class="form-floating">
+                                    <textarea  class="form-control" id="alergias" name="alergias" style="border: 1px solid #4b4d39;"></textarea>
+                                    <label for="alergias" class="form-label" style="font-weight: bold; color: #4b4d39;">Alérgias</label>
                                 </div>
-                                <div class="form-floating col-md-4 mb-3">
-                                    <input type="text" class="form-control" id="medicacion_actual" name="medicacion_actual" style="border: 1px solid #4b4d39;">
-                                    <label for="medicacion_actual" class="form-label" style="font-weight: bold; color: #4b4d39;">Medicación Actual:</label>
+                                <div class="form-floating">
+                                    <textarea  class="form-control" id="medicamentos" name="medicamentos" style="border: 1px solid #4b4d39;"></textarea>
+                                    <label for="medicamentos" class="form-label" style="font-weight: bold; color: #4b4d39;">Medicamentos</label>
                                 </div>
+                                <div class="form-floating">
+                                    <textarea  class="form-control" id="habitos" name="habitos" style="border: 1px solid #4b4d39;"></textarea>
+                                    <label for="habitos" class="form-label" style="font-weight: bold; color: #4b4d39;">Hábitos</label>
+                                </div>
+
                                 <div class="d-flex justify-content-end flex-column align-items-end w-100 mb-2">
-                                    <button type="submit" class="btn" name="personales" id="personales" style="width: 20%; background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;">Ingresar</button>
+                                    <a href="#" type="submit" class="btn" id="personales" style="width: 20%; background-color: #4b4d39; border: 1px solid #4b4d39; color: #fefbf6;">Guardar</a>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="card mt-4" style="background-color: #fefbf6; border: 1px solid #4b4d39;">
-                <div class="card-header" style="background-color: #fefbf6;">
-                    <h5 class="card-title" style="color: #4b4d39;">Motivo de Consulta</h5>
-                </div>
-                <div class="card-body d-flex justify-content-center align-items-center">
-                    <form method="POST" enctype="multipart/form-data" class="row g-1 mt-3 mb-3" name="consulta" id="consulta">
-                        {% csrf_token %}
-                        <div class="form-floating col-12 mb-1|">
-                            <textarea class="form-control" id="consulta" name="consulta" style="border: 1px solid #4b4d39; width: 1000px; height: 200px"></textarea>
-                            <label for="consulta" class="form-label" style="font-weight: bold; color: #4b4d39;">Motivo de Consulta</label>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            {% endif %}
-
-            </div>
-            <div class="tab-pane fade" id="consulta" role="tabpanel" aria-labelledby="profile-tab">
-                <h2 class="mb-3">Profile</h2>
-                <p class="lead">This is the profile tab content.</p>
-            </div>
-            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <h2 class="mb-3">Profile</h2>
-                <p class="lead">This is the profile tab content.</p>
-            </div>
-            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-                <h2 class="mb-3">Contact</h2>
-                <p class="lead">This is the contact tab content.</p>
-            </div>
-        </div>
+        {% endif %}
     </div>
+
+    <div class="tab-pane fade" id="consulta" role="tabpanel" aria-labelledby="profile-tab">
+        <h2 class="mb-3">Profile</h2>
+        <p class="lead">This is the profile tab content.</p>
+    </div>
+    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <h2 class="mb-3">Profile</h2>
+        <p class="lead">This is the profile tab content.</p>
+    </div>
+    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+        <h2 class="mb-3">Contact</h2>
+        <p class="lead">This is the contact tab content.</p>
+    </div>
+</div>
 
 {% endblock content %}
 

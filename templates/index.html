@@ -46,9 +46,23 @@
                     <a class="nav-link" style="color: #fff9f0" aria-current="page" href="#clinica">Nuestra Clínica</a>
                 </li>
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" style="color: #fff9f0" href="{% url 'profile' request.user.id %}">{{ request.user.nombre }}</a>
-                    </li>
+                    {% if user.rol == 'Administrador' %}
+                        <li class="nav-item">
+                            <a class="nav-link" style="color: #fff9f0" href="{% url 'dashboard' %}">{{ request.user.first_name }} {{ request.user.last_name }}</a>
+                        </li>
+                    {% elif user.rol == 'Secretaria' %}
+                        <li class="nav-item">
+                            <a class="nav-link" style="color: #fff9f0" href="{% url 'dashboard_recepcion' %}">{{ request.user.first_name }} {{ request.user.last_name }}</a>
+                        </li>
+                    {% elif user.rol == 'Personal Salud' %}
+                        <li class="nav-item">
+                            <a class="nav-link" style="color: #fff9f0" href="{% url 'dashboard_fichas' %}">{{ request.user.first_name }} {{ request.user.last_name }}</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" style="color: #fff9f0" href="{% url 'profile' request.user.id %}">{{ request.user.first_name }} {{ request.user.last_name }}</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" style="color: #fff9f0" href="{% url 'logout' %}">Cerrar Sesión</a>
                     </li>

@@ -54,7 +54,7 @@
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'profile' id=request.user.pk %}">{{ request.user.nombre }}</a>
+                        <a class="nav-link text-white" href="{% url 'profile' id=request.user.pk %}">{{ request.user.first_name }} {{ request.user.last_name }}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'logout' %}">Cerrar Sesión</a>

@@ -95,3 +95,55 @@ def sendWhatsapp(telefono, fecha, hora_reserva, nombre):
 
 def money_format(value):
     return "${:,.0f}".format(value).replace(",", ".")
+
+
+def reserva_cancelada(remitente, destinatario, nombre_paciente, fecha_reserva, hora_reserva, profesional):
+    asunto = "Cancelación de Reserva de Hora"
+    remitente = remitente.lower()
+    destinatarios = destinatario.lower()
+
+    context = {
+        "receiver_name": nombre_paciente,
+        "fecha": datetime.datetime.now().strftime("%d/%m/%Y"),
+        "fecha_reserva": fecha_reserva,
+        "hora_reserva": hora_reserva,
+        "profesional": profesional,
+    }
+
+    html_content = render_to_string('recepcion/reserva_cancelada_email.html', context)
+    text_content = strip_tags(html_content)
+
+    msg = EmailMultiAlternatives(
+        asunto,
+        text_content,
+        remitente,
+        [destinatarios]
+    )
+
+    msg.mixed_subtype='related'
+    msg.attach_alternative(html_content, "text/html")
+
+    image_path = settings.BASE_DIR / 'static' / 'img' / 'logo.png'
+    with open(image_path, 'rb') as img:
+        img = MIMEImage(img.read())
+        img.add_header('Content-ID', '<logo.png>')
+        img.add_header('Content-Disposition', 'inline', filename='logo.png')
+        msg.attach(img)
+
+    msg.send()
+
+    print("Correo enviado correctamente")
+
+def sendWhatsappConfirmacion(telefono, fecha_reserva, hora_reserva, nombre_profesional):
+
+    link_confirmacion = "http://127.0.0.1:3000/confirmar_reserva/"
+
+    mensaje = f"Le recordamos que su hora médica para el día {fecha_reserva} a las {hora_reserva}, con el profesional {nombre_profesional}, debe ser confirmada aquí {link_confirmacion}."
+
+    hora = datetime.datetime.now().hour
+
+    minutos = datetime.datetime.now().minute + 1
+
+    pywhatkit.sendwhatmsg(telefono, mensaje, hora, minutos, 10, True, 2)
+
+    print("Mensaje de WhatsApp enviado correctamente")

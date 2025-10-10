@@ -1,24 +1,39 @@
-import pywhatkit
 from celery import shared_task
 from datetime import datetime, timedelta
+from clinpro.models import Pago, ReservaHora
+from administracion.models import Agenda
+from clinpro.functions import reserva_cancelada, sendWhatsapp, sendWhatsappConfirmacion
 
 
 @shared_task
-def sendConfirmacion(telefono, fecha, hora_inicio):
+def sendConfirmacion():
 
-    def sendWhatsapp(telefono):
+   reservas = ReservaHora.objects.filter(fecha_reserva=datetime.now().day + 3).all()
 
-        enlace_confirmacion = "http://127.0.0.1:8000/confirmar_hora/"
+   for r in reservas:
+         if not r.is_confirmada:
+            sendWhatsappConfirmacion(r.user.telefono, r.fecha_reserva, r.hora_reserva, r.profesional.user.nombre)
+            print(f"Mensaje de WhatsApp enviado a {r.user.nombre} para la reserva el día {r.fecha_reserva} a las {r.hora_reserva} con el profesional {r.profesional.user.nombre}.")
 
-        mensaje = (f"Tiene una hora agendada para el día {fecha} a las {hora_inicio} hrs. "
-                   f"Por favor, confirme su hora en: {enlace_confirmacion}")
+   print("Tarea de envío de confirmación completada.")
 
-        hora = datetime.datetime.now().hour
 
-        minutos = datetime.datetime.now().minute + 1
+@shared_task
+def cancelarReservasNoPagadas():
 
-        pywhatkit.sendwhatmsg(telefono, mensaje, hora, minutos, 10, True, 2)
-
-    sendWhatsapp(telefono)
-
-    print(f"Mensaje enviado a {telefono}")
+    pagos = Pago.objects.filter(is_pagado=False).all()
+    for p in pagos:
+        if (datetime.now().date() - p.fecha).days > 1:
+            reservas = ReservaHora.objects.filter(pago=p).all()
+            for r in reservas:
+                agendas = Agenda.objects.filter(profesional=r.profesional).all()
+                for a in agendas:
+                    if a.profesional.id == r.profesional.id:
+                        reserva_cancelada(p.id, r.user.email, r.user.nombre, r.profesional.user.nombre, r.fecha_reserva, r.hora_reserva)
+                        a.delete()
+                        print(f"Agenda con ID {a.id} eliminada por no tener confirmación de pago en 24hrs.")
+                r.delete()
+                print(f"Reserva con ID {r.id} cancelada por no tener confirmación de pago en 24hrs.")
+            p.delete()
+            print(f"Pago con ID {p.id} cancelado por no tener confirmación de pago en 24hrs.")
+    print("Tarea de cancelación de reservas no confirmadas completada.")

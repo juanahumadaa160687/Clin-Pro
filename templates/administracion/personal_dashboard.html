@@ -53,8 +53,12 @@
                                 {{ form.rut }}
                             </div>
                             <div class="col-4 form-group mb-1">
-                                {{ form.nombre.label }}
-                                {{ form.nombre }}
+                                {{ form.first_name.label }}
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-4 form-group mb-1">
+                                {{ form.last_name.label }}
+                                {{ form.last_name }}
                             </div>
                             <div class="col-4 form-group mb-1">
                                 {{ form.telefono.label }}
@@ -131,30 +135,5 @@
 {% endblock %}
 
 {% block script %}
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://cdn.datatables.net/2.3.0/js/dataTables.js"></script>
 
-    <script>
-
-        let table = new DataTable('#tableProc',{
-            data: [
-                {% for personal in personal_servicio %}
-                    {
-                        id: '{{ personal.personal__user_id }}',
-                        titulo: '{{ personal.personal__user__rut }}',
-                        especialidad: '{{ personal.personal__user__nombre }}',
-                        universidad: '{{ personal.personal__user__email }}',
-                        acciones: '<a href="#" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen-to-square"></i></a> <a href="#" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>',
-                    },
-                {% endfor %}
-            ],
-            columns: [
-                { data: 'id', visible: false },
-                { data: 'titulo' },
-                { data: 'especialidad' },
-                { data: 'universidad' },
-                { data: 'acciones' },
-            ],
-        });
-    </script>
 {% endblock script %}

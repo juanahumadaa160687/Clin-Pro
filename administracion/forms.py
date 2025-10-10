@@ -26,10 +26,15 @@ class RegistroPersonalForm(UserCreationForm):
         validators=[RegexValidator(r'^\d{7,8}-[0-9kK]$', message='El RUT debe tener el formato 12345678-9 o 1234567-8')],
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'RUT (e.g., 12345678-9)', 'required': 'true'})
     )
-    nombre = forms.CharField(
-        label='Nombre Completo',
+    first_name = forms.CharField(
+        label='Nombre',
         max_length=100,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre Completo', 'required': 'true'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre', 'required': 'true'})
+    )
+    last_name = forms.CharField(
+        label='Apellido',
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Apellido', 'required': 'true'})
     )
     telefono = forms.CharField(
         label='Teléfono',
@@ -45,7 +50,7 @@ class RegistroPersonalForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['email', 'password1', 'password2', 'rut', 'nombre', 'telefono', 'rol']
+        fields = ['email', 'password1', 'password2', 'rut', 'first_name', 'last_name', 'telefono', 'rol']
 
 class PersonalSaludForm(ModelForm):
     prefijo = forms.CharField(

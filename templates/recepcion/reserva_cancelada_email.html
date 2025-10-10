@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title></title>
+</head>
+<body>
+<div class="">
+    <div class="" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; flex-direction: column" >
+        <img src="cid:logo.png" alt="" width="100" height="100">
+        <h1 style="text-align: center">Cancelación de Cita Médica</h1>
+    </div>
+    <div class="content">
+        <p>Sr(a). {{ receiver_name }}:</p>
+
+        <p>Con fecha <strong>{{ fecha }}</strong> le informamos que su reserva para el {{ fecha_reserva }} a las {{ hora_reserva }} con el profesional {{ profesional }} fue cancelada por motivos de no pago en el plazo de 24hrs.</p>
+        <p>Si necesita reagendar su cita médica, deberá realizar el proceso nuevamente</p>
+
+        <h3>Detalles de la reserva cancelada:</h3>
+        <ul style="list-style: none;">
+            <li>Fecha de la reserva: {{ fecha_reserva }}</li>
+            <li>Hora de la reserva: {{ hora_reserva }}</li>
+            <li></li>
+            <li>Profesional: {{ profesional }}</li>
+        </ul>
+        <br>
+        <p>Gracias por su preferencia.</p>
+        <p>ATTE <br>Clinicare</p>
+    </div>
+    <br>
+    <div class="footer">
+
+        <p>Este es un correo automático, por favor no responder.</p>
+        <p>Si tiene alguna duda, por favor contáctenos a través de nuestro correo de soporte:
+            <a href="mailto:clinicare_clinica@clinicarecl" >soporte_clinica@clinicare.cl</a>
+    </div>
+</div>
+</body>
+</html>

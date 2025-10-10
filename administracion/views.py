@@ -72,7 +72,7 @@ def dashboard_admin(request):
         return render(request, 'administracion/dashboard_admin.html', {'servicios': servicios, 'servicio_form': servicio_form})
 
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
-    template_name = 'password_reset.html'
+    template_name = 'accounts/password_reset.html'
     email_template_name = 'password_reset_email.html'
     subject_template_name = 'password_reset_subject.txt'
     success_message = "Se ha enviado un correo electrónico con instrucciones para restablecer su contraseña."
@@ -91,7 +91,8 @@ def dashboard_personal(request):
         registro_personal = RegistroPersonalForm()
 
         rut = request.POST.getlist('rut')[0]
-        nombre = request.POST.getlist('nombre')[0]
+        first_name = request.POST.getlist('first_name')[0]
+        last_name = request.POST.getlist('last_name')[0]
         email = request.POST.getlist('email')[0]
         telefono = request.POST.getlist('telefono')[0]
         rol = request.POST.getlist('rol')[0]
@@ -112,12 +113,12 @@ def dashboard_personal(request):
             sweetify.error(request, 'La contraseña debe tener al menos 8 caracteres. Por favor, inténtelo de nuevo.', button='Aceptar')
             return render(request, 'administracion/personal_dashboard.html', {'form': registro_personal, 'per_salud_form': per_salud_form,})
 
-        user = User.objects.create_user(rut=rut, nombre=nombre, email=email, telefono=telefono, rol=rol, password=password1, username=username)
+        user = User.objects.create_user(rut=rut, first_name=first_name, last_name=last_name, email=email, telefono=telefono, rol=rol, password=password1, username=username)
 
         user.save()
 
         if user:
-            sweetify.success(request, f"Usuario {nombre} Registrado con Éxito.", button='Aceptar')
+            sweetify.success(request, f"Usuario {first_name} {last_name} Registrado con Éxito.", button='Aceptar')
             group = Group.objects.get(name=rol)
             user.groups.add(group)
             return render(request, 'administracion/personal_dashboard.html', {'form': registro_personal, 'per_salud_form': per_salud_form,})

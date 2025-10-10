@@ -5,41 +5,46 @@
 
 {% block title %} Perfil de Usuario {% endblock title %}
 
-{% block seccion %}Bienvenido {{ request.user.nombre }}{% endblock seccion %}
+{% block seccion %}Bienvenido {{ request.user.first_name }}  {{ request.user.last_name }}{% endblock seccion %}
 
 {% block content %}
 
-    <section class="px-0 py-0 m-0" style="height: 80vh; background-color: #fefbf6;">
+    <section class="p-0 m-0 d-flex w-100 justify-content-center align-items-center flex-column" style="height: 90vh; background-color: #fefbf6;">
 
-        <div class="row d-flex w-100 p-5 justify-content-center align-items-start flex-row h-100">
-            <div class="col-3 d-flex align-items-center justify-content-center flex-column m-0">
-                <div class="card" style="box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #fefbf6;">
-                    <div class="card-header" ><h4 class="card-title" style="color: #1D919C">Datos de Usuario</h4></div>
+        <div class="row d-flex w-100 justify-content-center align-items-center flex-column h-100 p-2">
+
+            <div class="col-12">
+                <div class="card" style="box-shadow: 10px 10px 15px #CCC; border-radius: 15px;background-color: #fefbf6;">
                     <div class="card-body w-100">
-                        <div class="row d-flex align-items-center justify-content-center flex-column w-100">
-                            <div class="col d-flex align-items-start justify-content-start">
-                                <p class="text-start"><strong>Nombre:</strong> <small>{{ request.user.nombre }}</small></p>
+                        <div class="row d-flex align-items-center justify-content-center flex-row w-100">
+
+                            <div class="col d-flex align-items-start justify-content-center flex-column">
+                                <p class="text-start"><strong>Nombre: </strong></p>
+                                <p class="text-start">{{ request.user.first_name }} {{ request.user.last_name }}</p>
                             </div>
-                            <div class="col d-flex align-items-start justify-content-start">
-                                <p class="text-start"><strong>RUT:</strong> <small>{{ request.user.rut }}</small></p>
+                            <div class="col d-flex align-items-start justify-content-center flex-column">
+                                <p class="text-start"><strong>RUT:</strong></p>
+                                <p class="text-start">{{ request.user.rut }}</p>
                             </div>
-                            <div class="col d-flex align-items-start justify-content-start">
-                                <p class="text-start"><strong>Email:</strong> <small>{{ request.user.email }}</small></p>
+                            <div class="col d-flex align-items-start justify-content-center flex-column">
+                                <p class="text-start"><strong>Email:</strong></p>
+                                <p class="text-start">{{ request.user.email }}</p>
                             </div>
-                            <div class="col d-flex align-items-start justify-content-start">
-                                <p class="text-start"><strong>Teléfono:</strong> <small>{{ request.user.telefono }}</small></p>
+                            <div class="col d-flex align-items-start justify-content-center flex-column">
+                                <p class="text-start"><strong>Teléfono:</strong></p>
+                                <p class="text-start">{{ request.user.telefono }}</p>
                             </div>
-                        </div>
-                        <br>
-                        <div class="row d-flex align-items-center justify-content-center flex-column gap-3 p-3">
-                            <a class="btn btn-primary"  href="{% url 'edit_profile' id=request.user.id %}"><i class="fa-solid fa-pen-to-square"></i> Editar Información</a>
-                            <a class="btn btn-secondary"  href="{% url 'change_password' %}"><i class="fa-solid fa-key"></i> Cambiar Contraseña</a>
-                            <a class="btn btn-danger"  href="{% url 'delete_profile' id=request.user.id %}"><i class="fa-solid fa-trash"></i> Eliminar Cuenta</a>
+                            <div class="col d-flex align-items-center justify-content-around flex-row gap-2 p-1">
+                                <a class="btn btn-primary"  href="{% url 'edit_profile' id=request.user.id %}" style="width: 15%"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <a class="btn btn-secondary"  href="{% url 'change_password' %}" style="width: 15%"><i class="fa-solid fa-key"></i></a>
+                                <a class="btn btn-danger"  href="{% url 'delete_profile' id=request.user.id %}" style="width: 15%"><i class="fa-solid fa-trash"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-9">
+            <br>
+            <div class="col-12">
                 <div class="card" style="width: 100%; box-shadow: 10px 10px 15px #CCC; border-radius: 15px; height: 60vh; overflow-y: auto; background-color: #fefbf6;">
                     <div class="card-header"><h4 class="card-title" style="color: #1D919C">Historial de Horas</h4></div>
                     <div class="card-body">
